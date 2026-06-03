@@ -1,7 +1,7 @@
 {
-  "name": "SCWRA Society Dashboard",
+  "name": "SCWRA Dashboard",
   "short_name": "SCWRA",
-  "description": "SCWRA Society Dashboard - Live financial tracking, dues & member management",
+  "description": "Senior Citizens Residential Welfare Association - Live financial tracking, dues & member management",
   "start_url": "./Society_Dashboard.html",
   "display": "standalone",
   "background_color": "#1a1a2e",
