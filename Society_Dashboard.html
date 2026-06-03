@@ -4,20 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Society Dashboard | Live Data</title>
-    
-    <!-- PWA Meta Tags -->
-    <meta name="description" content="Senior Citizens Residential Welfare Association - Financial Dashboard & Member Management">
-    <meta name="theme-color" content="#667eea">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="VN Society">
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- App Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192.png">
     <style>
         * {
             margin: 0;
@@ -537,39 +523,39 @@
             <p style="color: #666; margin-top: 10px;">Fetching from Google Sheets</p>
         </div>
     </div>
-    
+
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>&#127970; Senior Citizens Residential Welfare Association</h1>
+            <h1>ðŸ˜ï¸ Senior Citizens Residential Welfare Association</h1>
             <p>Society Meeting Dashboard | <span id="currentDate">Loading...</span></p>
-            <div class="live-indicator loading" id="liveIndicator">&#128260; Loading Data...</div>
+            <div class="live-indicator loading" id="liveIndicator">â³ Loading Data...</div>
         </div>
         
         <!-- Key Metrics -->
         <div class="metrics-grid">
             <div class="metric-card green">
-                <div class="icon">&#128176;</div>
+                <div class="icon">ðŸ’°</div>
                 <div class="value" id="currentBalance">--</div>
                 <div class="label">Current Balance</div>
             </div>
             <div class="metric-card blue">
-                <div class="icon">&#128181;</div>
+                <div class="icon">ðŸ“¥</div>
                 <div class="value" id="totalInflow">--</div>
                 <div class="label">Total Inflow</div>
             </div>
             <div class="metric-card orange">
-                <div class="icon">&#128184;</div>
+                <div class="icon">ðŸ“¤</div>
                 <div class="value" id="totalOutflow">--</div>
                 <div class="label">Total Outflow</div>
             </div>
             <div class="metric-card red">
-                <div class="icon">&#9888;&#65039;</div>
+                <div class="icon">âš ï¸</div>
                 <div class="value" id="totalOutstanding">--</div>
                 <div class="label">Outstanding Dues</div>
             </div>
             <div class="metric-card purple">
-                <div class="icon">&#127968;</div>
+                <div class="icon">ðŸ </div>
                 <div class="value" id="propertiesWithDues">--</div>
                 <div class="label">Properties with Dues</div>
             </div>
@@ -577,83 +563,87 @@
         
         <!-- Outstanding Alert -->
         <div class="alert-box">
-            <h2>&#9888;&#65039; <span id="alertAmount">--</span></h2>
+            <h2>âš ï¸ <span id="alertAmount">--</span></h2>
             <p id="alertText">Loading outstanding dues information...</p>
         </div>
         
         <!-- Member Summary -->
-        <div class="section-title">&#128101; Member Summary</div>
+        <div class="section-title">ðŸ‘¥ Member Summary</div>
         
         <div class="metrics-grid">
             <div class="metric-card blue">
-                <div class="icon">&#128101;</div>
+                <div class="icon">ðŸ‘¥</div>
                 <div class="value" id="totalMembers">--</div>
                 <div class="label">Total Members</div>
             </div>
             <div class="metric-card green">
-                <div class="icon">&#9989;</div>
+                <div class="icon">âœ…</div>
                 <div class="value" id="activeMembers">--</div>
                 <div class="label">Active Members</div>
             </div>
             <div class="metric-card orange">
-                <div class="icon">&#10060;</div>
+                <div class="icon">â¸ï¸</div>
                 <div class="value" id="inactiveMembers">--</div>
-                <div class="label">Inactive/Vacant</div>
+                <div class="label">Inactive Members</div>
             </div>
             <div class="metric-card green">
-                <div class="icon">&#127775;</div>
+                <div class="icon">ðŸ’¯</div>
                 <div class="value" id="fullyPaid">--</div>
                 <div class="label">Fully Paid</div>
             </div>
-        <div class="section-title">&#127942; Key Achievements (Nov 2025 - May 2026)</div>
+        </div>
+        
+        <!-- Achievements Section -->
+        <div class="section-title">ðŸ† Key Achievements (Nov 2025 - May 2026)</div>
         
         <div class="two-col">
             <div class="card">
-                <h3>&#9989; Governance &amp; Registration</h3>
+                <h3>âœ… Governance & Registration</h3>
                 <ul class="achievement-list">
-                    <li>&#9989; Elections completed, new committee formed</li>
-                    <li>&#9989; Society registration amended</li>
-                    <li>&#9989; MoA &amp; Bye-Laws finalized</li>
-                    <li>&#9989; PAN Card obtained</li>
-                    <li>&#9989; Bank A/C opened (HDFC)</li>
-                    <li>&#9989; NOC mandate for property transactions</li>
+                    <li>âœ… Elections completed, new committee formed</li>
+                    <li>âœ… Society registration amended</li>
+                    <li>âœ… MoA & Bye-Laws finalized</li>
+                    <li>âœ… PAN Card obtained</li>
+                    <li>âœ… Bank A/C opened (HDFC)</li>
+                    <li>âœ… NOC mandate for property transactions</li>
                 </ul>
             </div>
             
             <div class="card">
-                <h3>&#127959; Infrastructure Projects</h3>
+                <h3>ðŸ—ï¸ Infrastructure Projects</h3>
                 <ul class="achievement-list">
-                    <li>&#9989; Rs.42 Lakh - Drainage Project (Started) <span style="font-size: 0.85em; color: #856404; background: #fff3cd; padding: 2px 8px; border-radius: 4px; margin-left: 5px;">Phase I: 1-2 streets only</span></li>
-                    <li>&#9989; Rs.40 Lakh - CC Roads (Approved)</li>
-                    <li>&#9989; 5 New Street Lights installed</li>
-                    <li>&#9989; Road repairs completed (Rs.46,900)</li>
-                    <li>&#9989; MLA Foundation Stone - 31 May 2026</li>
+                    <li>âœ… Rs.42 Lakh - Drainage Project (Started) <span style="font-size: 0.85em; color: #856404; background: #fff3cd; padding: 2px 8px; border-radius: 4px; margin-left: 5px;">Phase I: 1-2 streets only</span></li>
+                    <li>âœ… Rs.40 Lakh - CC Roads (Approved)</li>
+                    <li>âœ… 5 New Street Lights installed</li>
+                    <li>âœ… Road repairs completed (Rs.46,900)</li>
+                    <li>âœ… MLA Foundation Stone - 31 May 2026</li>
                 </ul>
             </div>
             
             <div class="card">
-                <h3>&#128187; Digital Transformation</h3>
+                <h3>ðŸ’» Digital Transformation</h3>
                 <ul class="achievement-list">
-                    <li>&#9989; Zero-cost Governance App built</li>
-                    <li>&#9989; <span id="digitizedOwners">250+</span> owners digitized</li>
-                    <li>&#9989; Live financial dashboards</li>
-                    <li>&#9989; 20 years data gap - now digitized</li>
-                    <li>&#9989; Monthly reports automated</li>
+                    <li>âœ… Zero-cost Governance App built</li>
+                    <li>âœ… <span id="digitizedOwners">250+</span> owners digitized</li>
+                    <li>âœ… Live financial dashboards</li>
+                    <li>âœ… 20 years data gap - now digitized</li>
+                    <li>âœ… Monthly reports automated</li>
                 </ul>
             </div>
             
             <div class="card">
-                <h3>&#128101; Community Issues Resolved</h3>
+                <h3>ðŸ¤ Community Issues Resolved</h3>
                 <ul class="achievement-list">
-                    <li>&#9989; Road blockage cleared</li>
-                    <li>&#128260; Dog menace reduced (Plot 143 tenant vacated) - monitoring</li>
-                    <li>&#9989; Route 43 bus resumed (Govt) - communicated to residents</li>
-                    <li class="pending">&#128260; Encroachment - Monitoring</li>
+                    <li>âœ… Road blockage cleared</li>
+                    <li>ðŸ”„ Dog menace reduced (Plot 143 tenant vacated) - monitoring</li>
+                    <li>âœ… Route 43 bus resumed (Govt) - communicated to residents</li>
+                    <li class="pending">ðŸ”„ Encroachment - Monitoring</li>
+                </ul>
             </div>
         </div>
         
         <!-- Outstanding Dues Section -->
-        <div class="section-title">&#9888;&#65039; Outstanding Dues Analysis <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">&#128308; LIVE</span></div>
+        <div class="section-title">âš ï¸ Outstanding Dues Analysis <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">ðŸ”´ LIVE</span></div>
         
         <div class="two-col">
             <div class="card">
@@ -682,7 +672,7 @@
         </div>
         
         <!-- Financial Overview Section -->
-        <div class="section-title">&#128176; Financial Overview <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">&#128308; LIVE</span></div>
+        <div class="section-title">ðŸ’° Financial Overview <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">ðŸ”´ LIVE</span></div>
         
         <div class="two-col">
             <div class="card">
@@ -728,7 +718,7 @@
         </div>
         
         <!-- Internal Order Analysis Section -->
-        <div class="section-title">&#128202; Internal Order Analysis <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">&#128308; LIVE</span></div>
+        <div class="section-title">ðŸ“Š Internal Order Analysis <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">ðŸ”´ LIVE</span></div>
         
         <div class="two-col">
             <div class="card">
@@ -779,38 +769,38 @@
         </div>
         
         <!-- Infrastructure Projects -->
-        <div class="section-title">&#127959; Infrastructure Projects</div>
+        <div class="section-title">ðŸ—ï¸ Infrastructure Projects</div>
         
         <div class="metrics-grid">
             <div class="metric-card green">
-                <div class="icon">&#128176;</div>
+                <div class="icon">ðŸš°</div>
                 <div class="value">Rs.42 Lakh</div>
                 <div class="label">Drainage Project<br><span class="badge badge-progress">In Progress</span></div>
                 <div style="font-size: 0.75em; color: #666; margin-top: 8px; padding: 6px; background: #fff3cd; border-radius: 6px;">âš ï¸ Phase I: Only 1-2 streets covered<br>(Not entire colony)</div>
             </div>
             <div class="metric-card blue">
-                <div class="icon">&#128679;</div>
+                <div class="icon">ðŸ›£ï¸</div>
                 <div class="value">Rs.40 Lakh</div>
                 <div class="label">CC Roads<br><span class="badge badge-done">Approved</span></div>
             </div>
             <div class="metric-card purple">
-                <div class="icon">&#127942;</div>
+                <div class="icon">ðŸ›ï¸</div>
                 <div class="value">Rs.82 Lakh</div>
                 <div class="label">Total Sanctioned</div>
             </div>
             <div class="metric-card orange">
-                <div class="icon">&#128197;</div>
+                <div class="icon">ðŸŽ‰</div>
                 <div class="value">31 May</div>
                 <div class="label">MLA Foundation Stone</div>
             </div>
         </div>
+        
         <!-- Footer -->
         <div class="footer">
-            <p><strong>&#127970; Senior Citizens Residential Welfare Association</strong></p>
-            <p>Together for a Better Community | <span id="footerDate">--</span></p>
+            <p><strong>ðŸ˜ï¸ Senior Citizens Residential Welfare Association</strong></p>
             <p>Together for a Better Community | <span id="footerDate">--</span></p>
             <p style="margin-top: 10px; font-size: 0.9em;">
-                &#128202; Live Data Dashboard | Auto-refreshes from Google Sheets
+                ðŸ“Š Live Data Dashboard | Auto-refreshes from Google Sheets
             </p>
         </div>
     </div>
@@ -859,65 +849,40 @@
         // ============================================================
         // DATA LOADING
         // ============================================================
-        function loadData() {
+        async function loadData() {
             const indicator = document.getElementById('liveIndicator');
             indicator.className = 'live-indicator loading';
-            indicator.textContent = '⏳ Loading Data...';
+            indicator.textContent = 'â³ Loading Data...';
             
-            // Use JSONP to bypass CORS
-            const callbackName = 'jsonpCallback_' + Date.now();
-            const script = document.createElement('script');
-            
-            window[callbackName] = function(data) {
-                // Cleanup
-                delete window[callbackName];
-                if (script.parentNode) script.parentNode.removeChild(script);
+            try {
+                const response = await fetch(APPS_SCRIPT_URL);
+                if (!response.ok) throw new Error('Failed to fetch data');
                 
-                if (data.error) {
-                    showError(data.error);
-                    return;
-                }
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
                 
-                // Success - process data
                 processData(data);
+                
                 indicator.className = 'live-indicator';
-                indicator.textContent = '🟢 LIVE DATA | ' + new Date().toLocaleTimeString();
+                indicator.textContent = 'ðŸ”´ LIVE DATA | ' + new Date().toLocaleTimeString();
+                
                 document.getElementById('loadingOverlay').style.display = 'none';
-            };
-            
-            script.onerror = function() {
-                delete window[callbackName];
-                if (script.parentNode) script.parentNode.removeChild(script);
-                showError('Failed to connect to server');
-            };
-            
-            // Set timeout for slow connections
-            setTimeout(function() {
-                if (window[callbackName]) {
-                    delete window[callbackName];
-                    if (script.parentNode) script.parentNode.removeChild(script);
-                    showError('Request timed out. Please try again.');
-                }
-            }, 30000);
-            
-            script.src = APPS_SCRIPT_URL + '?callback=' + callbackName;
-            document.body.appendChild(script);
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                indicator.className = 'live-indicator error';
+                indicator.textContent = 'âŒ Error: ' + error.message;
+                document.getElementById('loadingOverlay').innerHTML = `
+                    <div class="loading-content">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">âŒ</div>
+                        <h3>Failed to Load Data</h3>
+                        <p style="color: #666; margin: 20px 0;">${error.message}</p>
+                        <button onclick="location.reload()" style="padding: 12px 30px; background: #003366; color: white; border: none; border-radius: 8px; cursor: pointer;">ðŸ”„ Retry</button>
+                    </div>
+                `;
+            }
         }
         
-        function showError(message) {
-            const indicator = document.getElementById('liveIndicator');
-            indicator.className = 'live-indicator error';
-            indicator.textContent = '❌ Error: ' + message;
-            document.getElementById('loadingOverlay').innerHTML = `
-                <div class="loading-content">
-                    <div style="font-size: 4rem; margin-bottom: 20px;">❌</div>
-                    <h3>Failed to Load Data</h3>
-                    <p style="color: #666; margin: 20px 0;">${message}</p>
-                    <button onclick="location.reload()" style="padding: 12px 30px; background: #003366; color: white; border: none; border-radius: 8px; cursor: pointer;">🔄 Retry</button>
-                </div>
-            `;
-        }
-
         function refreshData() {
             document.getElementById('loadingOverlay').style.display = 'flex';
             document.getElementById('loadingOverlay').innerHTML = `
@@ -1106,7 +1071,7 @@
             document.getElementById('paymentStatusSummary').innerHTML = `
                 <div class="progress-container">
                     <div class="progress-label">
-                        <span>&#9989; Fully Paid</span>
+                        <span>âœ… Fully Paid</span>
                         <span>${status.fullyPaid} properties (${fullyPaidPct}%)</span>
                     </div>
                     <div class="progress-bar">
@@ -1132,7 +1097,7 @@
                     </div>
                 </div>
                 <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px;">
-                    <strong>&#9989; Fully Paid:</strong> \${fullyPaid} properties - Thank you! &#127881;
+                    <strong>âœ… Fully Paid:</strong> ${fullyPaid} properties - Thank you! ðŸ™
                 </div>
             `;
         }
@@ -1305,7 +1270,7 @@
                 orderData.festival.items.forEach(item => {
                     const netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
                     const netPrefix = item.net >= 0 ? '+' : '';
-                    const netLabel = item.net >= 0 ? '✅ Surplus' : '❌ Deficit';
+                    const netLabel = item.net >= 0 ? 'âœ… Surplus' : 'âŒ Deficit';
                     festivalHTML += `
                         <tr>
                             <td>${item.name}</td>
@@ -1385,93 +1350,5 @@
             return 'Rs.' + Math.round(amount).toLocaleString('en-IN');
         }
     </script>
-    <!-- PWA Service Worker Registration -->
-    <script>
-        // Register Service Worker for PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
-                    .then(registration => {
-                        console.log('✅ Service Worker registered:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('❌ Service Worker registration failed:', error);
-                    });
-            });
-        }
-        
-        // PWA Install Prompt
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Show install button/banner
-            showInstallBanner();
-        });
-        
-        function showInstallBanner() {
-            // Create install banner
-            const banner = document.createElement('div');
-            banner.id = 'pwa-install-banner';
-            banner.innerHTML = `
-                <div style="
-                    position: fixed;
-                    bottom: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    padding: 15px 25px;
-                    border-radius: 50px;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-                    display: flex;
-                    align-items: center;
-                    gap: 15px;
-                    z-index: 10000;
-                    font-family: 'Segoe UI', sans-serif;
-                ">
-                    <span>ðŸ“± Install App for quick access!</span>
-                    <button onclick="installPWA()" style="
-                        background: white;
-                        color: #667eea;
-                        border: none;
-                        padding: 8px 20px;
-                        border-radius: 25px;
-                        font-weight: bold;
-                        cursor: pointer;
-                    ">Install</button>
-                    <button onclick="dismissBanner()" style="
-                        background: transparent;
-                        color: white;
-                        border: 1px solid white;
-                        padding: 8px 15px;
-                        border-radius: 25px;
-                        cursor: pointer;
-                    ">✕</button>
-                </div>
-            `;
-            document.body.appendChild(banner);
-        }
-        
-        function installPWA() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('✅ User accepted install');
-                    }
-                    deferredPrompt = null;
-                    dismissBanner();
-                });
-            }
-        }
-        
-        function dismissBanner() {
-            const banner = document.getElementById('pwa-install-banner');
-            if (banner) banner.remove();
-        }
-    </script>
 </body>
 </html>
-
