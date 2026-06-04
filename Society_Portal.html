@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Member Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+        body.admin-mode { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        body.user-mode { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .header h1 { font-size: 2.3rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1rem; opacity: 0.9; }
+        .badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-top: 10px; }
+        .admin-badge { background: #ffd700; color: #000; }
+        .user-badge { background: #38ef7d; color: #000; }
+        .live-badge { background: #ff6b6b; color: white; margin-left: 10px; animation: pulse 2s infinite; }
+        .cached-badge { background: #17a2b8; color: white; margin-left: 10px; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        
+        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin-bottom: 30px; }
+        
+        /* Search Section */
+        .search-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .tab-btn { padding: 12px 24px; border: none; border-radius: 30px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; background: #f0f0f0; color: #666; }
+        .tab-btn:hover { background: #e0e0e0; }
+        .tab-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        body.admin-mode .tab-btn.active { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        
+        .search-input-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        .search-input { flex: 1; min-width: 250px; padding: 15px 20px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: border-color 0.3s ease; }
+        .search-input:focus { outline: none; border-color: #667eea; }
+        .search-btn { padding: 15px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.3s ease; }
+        body.admin-mode .search-btn { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        .search-btn:hover { transform: translateY(-2px); }
+        .search-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        
+        .refresh-btn { padding: 15px 20px; background: #ff6b6b; color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .refresh-btn:hover { background: #ee5a5a; }
+        .logout-btn { padding: 15px 20px; background: #6c757d; color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .logout-btn:hover { background: #5a6268; }
+        
+        /* Admin Stats */
+        .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #e8f4fd 0%, #f0f4ff 100%); border-radius: 15px; border: 2px solid #1e3c72; }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.8rem; font-weight: 700; color: #1e3c72; }
+        .stat-label { font-size: 0.85rem; color: #666; }
+        
+        /* Results */
+        .results-card { display: none; }
+        .results-card.show { display: block; }
+        .property-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .property-tab { padding: 10px 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: all 0.3s ease; background: white; color: #667eea; }
+        body.admin-mode .property-tab { border-color: #1e3c72; color: #1e3c72; }
+        .property-tab:hover { background: #f0f4ff; }
+        .property-tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: transparent; }
+        body.admin-mode .property-tab.active { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        .property-content { display: none; }
+        .property-content.active { display: block; }
+        
+        /* Member Info */
+        .member-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; padding: 20px; background: #f8f9fa; border-radius: 15px; margin-bottom: 25px; }
+        .info-item { display: flex; flex-direction: column; }
+        .info-label { font-size: 0.8rem; color: #888; margin-bottom: 3px; }
+        .info-value { font-size: 1rem; font-weight: 600; color: #333; }
+        .info-value.masked { color: #666; letter-spacing: 1px; }
+        
+        .proxy-info { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .proxy-info h4 { color: #856404; margin-bottom: 10px; }
+        .proxy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+        
+        .inactive-notice { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: center; }
+        .inactive-notice h4 { margin-bottom: 10px; }
+        .inactive-notice ul { text-align: left; max-width: 450px; margin: 15px auto; line-height: 1.8; }
+        
+        /* Summary Cards */
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .summary-card { padding: 15px; border-radius: 15px; text-align: center; }
+        .summary-card.total { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        body.admin-mode .summary-card.total { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        .summary-card.paid { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+        .summary-card.outstanding { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: white; }
+        .summary-card.advance { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .summary-amount { font-size: 1.6rem; font-weight: 700; margin-bottom: 5px; }
+        .summary-label { font-size: 0.8rem; opacity: 0.9; }
+        
+        .payment-comment { padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; text-align: center; }
+        .comment-excellent { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+        .comment-improve { background: linear-gradient(135deg, #f5af19 0%, #f12711 100%); color: white; }
+        .comment-pay { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: white; }
+        
+        /* Tables */
+        .section-title { font-size: 1.1rem; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #667eea; }
+        body.admin-mode .section-title { border-color: #1e3c72; }
+        .table-container { overflow-x: auto; margin-bottom: 25px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 8px; text-align: left; font-weight: 600; }
+        body.admin-mode th { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        td { padding: 8px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f8f9fa; }
+        .status-paid { color: #11998e; font-weight: 600; }
+        .status-unpaid { color: #eb3349; font-weight: 600; }
+        .status-partial { color: #f5a623; font-weight: 600; }
+        .amount-positive { color: #11998e; }
+        .amount-negative { color: #eb3349; }
+        .bill-period { background: #e8f4fd; color: #1976d2; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+        
+        .no-results { text-align: center; padding: 50px; color: #888; }
+        
+        /* Buttons */
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+        .print-btn { padding: 12px 25px; background: #333; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+        .print-btn:hover { background: #555; }
+        
+        .data-status { font-size: 0.85rem; padding: 8px 15px; border-radius: 8px; margin-top: 15px; display: inline-block; }
+        .data-status.loading { background: #fff3cd; color: #856404; }
+        .data-status.success { background: #d4edda; color: #155724; }
+        .data-status.error { background: #f8d7da; color: #721c24; }
+        .data-status.info { background: #d1ecf1; color: #0c5460; }
+        
+        .help-text { font-size: 0.85rem; color: #666; margin-top: 8px; }
+        .pii-notice { font-size: 0.75rem; color: #999; margin-top: 10px; font-style: italic; }
+        
+        /* Loading */
+        .loading { display: none; text-align: center; padding: 30px; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        body.admin-mode .spinner { border-top-color: #1e3c72; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .initial-loading { background: white; border-radius: 20px; padding: 50px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        
+        /* Login Form */
+        .verify-input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: border-color 0.3s; }
+        .verify-input:focus { outline: none; border-color: #667eea; }
+        .verify-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 15px; transition: transform 0.3s, box-shadow 0.3s; }
+        .verify-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); }
+        
+        /* Auto-refresh indicator */
+        .auto-refresh-info { background: #e7f3ff; border: 1px solid #b3d7ff; padding: 10px 15px; border-radius: 8px; margin-top: 15px; font-size: 0.85rem; color: #004085; }
+        .auto-refresh-info strong { color: #002752; }
+        
+        /* Print Styles */
+        @media print { 
+            body { background: white !important; padding: 0; } 
+            .card { box-shadow: none; } 
+            .search-card, .admin-stats, .search-tabs, .search-input-group, .btn-group, .property-tabs, .data-status, .auto-refresh-info, .help-text, .pii-notice { display: none !important; } 
+            .results-card { display: block !important; box-shadow: none; }
+            .property-content { display: block !important; page-break-after: always; }
+        }
+    </style>
+</head>
+<body class="user-mode">
+    <div class="container">
+        <div class="header">
+            <h1 id="portalTitle">🏘️ Society Member Portal</h1>
+            <p id="portalSubtitle">View your payment history and balance</p>
+            <span class="badge user-badge" id="roleBadge">🔐 MEMBER ACCESS</span>
+            <span class="badge cached-badge" id="dataBadge">📦 CACHED DATA</span>
+        </div>
+        
+        <div class="initial-loading" id="initialLoading">
+            <div class="spinner"></div>
+            <h3>Loading...</h3>
+        </div>
+        
+        <div class="card" id="searchCard" style="display: none;">
+            <!-- Admin Stats (only visible for admins) -->
+            <div class="admin-stats" id="adminStats" style="display: none;">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalMembers">0</div>
+                    <div class="stat-label">Total Members</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="activeMembers">0</div>
+                    <div class="stat-label">Active Members</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="inactiveMembers">0</div>
+                    <div class="stat-label">Inactive Members</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalOutstanding">₹0</div>
+                    <div class="stat-label">Total Outstanding</div>
+                </div>
+            </div>
+            
+            <!-- Search Tabs (only visible for admins) -->
+            <div class="search-tabs" id="searchTabs" style="display: none;">
+                <button class="tab-btn active" data-search="plot">🏠 Plot No</button>
+                <button class="tab-btn" data-search="name">👤 Name</button>
+                <button class="tab-btn" data-search="mobile">📱 Mobile No</button>
+                <button class="tab-btn" data-search="email">📧 Email ID</button>
+                <button class="tab-btn" data-search="status">📊 Status</button>
+            </div>
+            
+            <!-- Search Input (only visible for admins) -->
+            <div class="search-input-group" id="searchGroup" style="display: none;">
+                <input type="text" class="search-input" id="searchInput" placeholder="Enter Plot Number (e.g., 101, 102)">
+                <button class="search-btn" id="searchBtn" onclick="searchMember()">🔍 Search</button>
+                <button class="refresh-btn" id="refreshBtn" onclick="forceRefreshData()">⚡ Force Refresh</button>
+                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+            
+            <!-- User buttons (only visible for users) -->
+            <div class="btn-group" id="userButtons" style="display: none;">
+                <button class="print-btn" onclick="window.print()">🖨️ Print Statement</button>
+                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+            
+            <p class="help-text" id="helpText"></p>
+            <p class="pii-notice" id="piiNotice" style="display: none;">🔒 Mobile numbers and email addresses are masked for privacy protection</p>
+            
+            <div class="data-status success" id="dataStatus">✅ Data loaded</div>
+            
+            <!-- Auto-refresh info for users -->
+            <div class="auto-refresh-info" id="autoRefreshInfo" style="display: none;">
+                📅 <strong>Data auto-refreshes every 4 hours.</strong> Last updated: <span id="lastUpdateTime">-</span>
+                <br>Next refresh: <span id="nextRefreshTime">-</span>
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Searching...</p>
+        </div>
+        
+        <div class="card results-card" id="resultsCard">
+            <div class="property-tabs" id="propertyTabs"></div>
+            <div id="propertyContents"></div>
+            <div class="btn-group">
+                <button class="print-btn" onclick="window.print()">🖨️ Print Statement</button>
+            </div>
+        </div>
+        
+        <div class="card" id="noResults" style="display: none;">
+            <div class="no-results">
+                <span style="font-size: 4rem;">😕</span>
+                <h3>No member found</h3>
+                <p>Please check your search criteria and try again</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ============================================================
+        // CONFIGURATION
+        // ============================================================
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+        
+        // Admin email whitelist
+        const ADMIN_EMAILS = [
+            'bilsaibaba@gmail.com',
+            'premikakatta1@gmail.com',
+            'parthok@gmail.com'
+        ];
+        
+        // Cache duration: 4 hours for users
+        const USER_CACHE_DURATION_MS = 4 * 60 * 60 * 1000; // 4 hours
+        
+        // ============================================================
+        // STATE
+        // ============================================================
+        let memberData = {};
+        let dataLoaded = false;
+        let currentUser = null; // { email, isAdmin, member (for users) }
+        let autoRefreshTimer = null;
+        
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const searchInput = document.getElementById('searchInput');
+        const placeholders = {
+            'plot': 'Enter Plot Number (e.g., 101, 102)',
+            'name': 'Enter Owner or Proxy Name',
+            'mobile': 'Enter Mobile Number',
+            'email': 'Enter Email ID',
+            'status': 'Enter "active" or "inactive"'
+        };
+        
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedUser = sessionStorage.getItem('societyPortalUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                initializePortal();
+            } else {
+                showLoginForm();
+            }
+        });
+        
+        // ============================================================
+        // LOGIN
+        // ============================================================
+        function showLoginForm() {
+            document.body.className = 'user-mode';
+            document.getElementById('initialLoading').innerHTML = `
+                <div style="text-align: center; max-width: 400px; margin: 0 auto;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🏘️</div>
+                    <h2 style="color: #333; margin-bottom: 10px;">Society Portal Login</h2>
+                    <p style="color: #666; margin-bottom: 30px;">Enter your registered email to access your statement</p>
+                    
+                    <input type="email" id="loginEmail" class="verify-input" placeholder="📧 Enter your Email ID">
+                    
+                    <button onclick="processLogin()" class="verify-btn">🔓 Login</button>
+                    
+                    <p style="color: #999; font-size: 0.85rem; margin-top: 25px; line-height: 1.6;">
+                        🔒 Use your registered email (Owner or Proxy email).<br><br>
+                        <strong>Admins:</strong> Use your authorized admin email for full access.<br>
+                        <strong>Members:</strong> View your own statement only.<br><br>
+                        📞 Need help? Contact: <strong>scwa.vampuguda@gmail.com</strong>
+                    </p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                const input = document.getElementById('loginEmail');
+                if (input) {
+                    input.addEventListener('keypress', (e) => { 
+                        if (e.key === 'Enter') processLogin(); 
+                    });
+                    input.focus();
+                }
+            }, 100);
+        }
+        
+        async function processLogin() {
+            const emailInput = document.getElementById('loginEmail').value.trim().toLowerCase();
+            
+            if (!emailInput) {
+                alert('Please enter your email');
+                return;
+            }
+            
+            // Check if admin
+            const isAdmin = ADMIN_EMAILS.includes(emailInput);
+            
+            document.getElementById('initialLoading').innerHTML = `
+                <div class="spinner"></div>
+                <h3>${isAdmin ? 'Loading admin portal...' : 'Verifying your email...'}</h3>
+            `;
+            
+            try {
+                // Fetch data
+                let data = null;
+                let fromCache = false;
+                
+                if (!isAdmin) {
+                    // For users, check cache first
+                    const cachedData = localStorage.getItem('societyData');
+                    const cacheTime = localStorage.getItem('societyDataTime');
+                    
+                    if (cachedData && cacheTime) {
+                        const age = Date.now() - parseInt(cacheTime);
+                        if (age < USER_CACHE_DURATION_MS) {
+                            data = JSON.parse(cachedData);
+                            fromCache = true;
+                        }
+                    }
+                }
+                
+                if (!data) {
+                    const response = await fetch(APPS_SCRIPT_URL);
+                    if (!response.ok) throw new Error('Failed to connect to server');
+                    data = await response.json();
+                    if (data.error) throw new Error(data.error);
+                    
+                    // Save to cache
+                    localStorage.setItem('societyData', JSON.stringify(data));
+                    localStorage.setItem('societyDataTime', Date.now().toString());
+                }
+                
+                memberData = data;
+                
+                if (isAdmin) {
+                    // Admin login
+                    currentUser = { email: emailInput, isAdmin: true };
+                    sessionStorage.setItem('societyPortalUser', JSON.stringify(currentUser));
+                    initializePortal();
+                } else {
+                    // User login - find their member record
+                    let foundMember = null;
+                    
+                    for (const [key, member] of Object.entries(memberData)) {
+                        if (key.startsWith('_')) continue;
+                        
+                        const ownerEmail = String(member.email || '').toLowerCase().trim();
+                        const proxyEmail = String(member.proxyEmail || '').toLowerCase().trim();
+                        
+                        if (ownerEmail === emailInput || proxyEmail === emailInput) {
+                            foundMember = member;
+                            break;
+                        }
+                    }
+                    
+                    if (!foundMember) {
+                        throw new Error('Email not found. Please use the email registered with the society.');
+                    }
+                    
+                    currentUser = { email: emailInput, isAdmin: false, member: foundMember };
+                    sessionStorage.setItem('societyPortalUser', JSON.stringify(currentUser));
+                    initializePortal(fromCache);
+                }
+                
+            } catch (error) {
+                document.getElementById('initialLoading').innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">❌</div>
+                        <h3 style="color: #dc3545;">Login Failed</h3>
+                        <p style="color: #666; margin: 20px 0;">${error.message}</p>
+                        <button onclick="showLoginForm()" style="padding: 12px 30px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;">
+                            🔄 Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('societyPortalUser');
+            if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+            currentUser = null;
+            memberData = {};
+            dataLoaded = false;
+            document.getElementById('searchCard').style.display = 'none';
+            document.getElementById('resultsCard').classList.remove('show');
+            document.getElementById('noResults').style.display = 'none';
+            document.getElementById('initialLoading').style.display = 'block';
+            showLoginForm();
+        }
+        
+        // ============================================================
+        // INITIALIZE PORTAL
+        // ============================================================
+        function initializePortal(fromCache = false) {
+            dataLoaded = true;
+            
+            if (currentUser.isAdmin) {
+                initializeAdminPortal();
+            } else {
+                initializeUserPortal(fromCache);
+            }
+        }
+        
+        function initializeAdminPortal() {
+            // Set admin styling
+            document.body.className = 'admin-mode';
+            document.getElementById('portalTitle').textContent = '🏘️ Society Admin Portal';
+            document.getElementById('portalSubtitle').textContent = 'Complete Member Management & Statements';
+            document.getElementById('roleBadge').className = 'badge admin-badge';
+            document.getElementById('roleBadge').textContent = '👑 ADMIN ACCESS';
+            document.getElementById('dataBadge').className = 'badge live-badge';
+            document.getElementById('dataBadge').textContent = '🔴 LIVE DATA';
+            
+            // Show admin elements
+            document.getElementById('adminStats').style.display = 'grid';
+            document.getElementById('searchTabs').style.display = 'flex';
+            document.getElementById('searchGroup').style.display = 'flex';
+            document.getElementById('userButtons').style.display = 'none';
+            document.getElementById('autoRefreshInfo').style.display = 'none';
+            document.getElementById('piiNotice').style.display = 'none';
+            document.getElementById('helpText').innerHTML = '👑 <strong>Admin Mode:</strong> Full access to all members | Search by Status: "active" or "inactive"';
+            
+            // Update stats
+            updateAdminStats();
+            
+            // Show portal
+            document.getElementById('initialLoading').style.display = 'none';
+            document.getElementById('searchCard').style.display = 'block';
+            
+            const cacheStatus = memberData._cached ? '📦 Server Cached' : '🔄 Fresh';
+            document.getElementById('dataStatus').innerHTML = '✅ Admin: <strong>' + currentUser.email + '</strong> | ' + cacheStatus + ' | ' + new Date().toLocaleTimeString();
+        }
+        
+        function initializeUserPortal(fromCache = false) {
+            // Set user styling
+            document.body.className = 'user-mode';
+            document.getElementById('portalTitle').textContent = '🏘️ My Society Statement';
+            document.getElementById('portalSubtitle').textContent = 'View your payment history and balance';
+            document.getElementById('roleBadge').className = 'badge user-badge';
+            document.getElementById('roleBadge').textContent = '🔐 MEMBER ACCESS';
+            document.getElementById('dataBadge').className = 'badge cached-badge';
+            document.getElementById('dataBadge').textContent = '📦 AUTO-UPDATED';
+            
+            // Hide admin elements, show user elements
+            document.getElementById('adminStats').style.display = 'none';
+            document.getElementById('searchTabs').style.display = 'none';
+            document.getElementById('searchGroup').style.display = 'none';
+            document.getElementById('userButtons').style.display = 'flex';
+            document.getElementById('autoRefreshInfo').style.display = 'block';
+            document.getElementById('piiNotice').style.display = 'block';
+            document.getElementById('helpText').textContent = '📋 Your statement is shown below. Data refreshes automatically every 4 hours.';
+            
+            // Update auto-refresh times
+            updateRefreshTimes();
+            
+            // Start auto-refresh timer
+            startAutoRefresh();
+            
+            // Show portal
+            document.getElementById('initialLoading').style.display = 'none';
+            document.getElementById('searchCard').style.display = 'block';
+            
+            const cacheAge = getCacheAge();
+            document.getElementById('dataStatus').innerHTML = '✅ Logged in as: <strong>' + maskEmail(currentUser.email) + '</strong> | Plot: <strong>' + currentUser.member.plotNo + '</strong>';
+            
+            // Automatically display user's statement
+            displayUserStatement();
+        }
+        
+        // ============================================================
+        // DATA FUNCTIONS
+        // ============================================================
+        async function forceRefreshData() {
+            if (!currentUser.isAdmin) return;
+            
+            const dataStatus = document.getElementById('dataStatus');
+            dataStatus.className = 'data-status loading';
+            dataStatus.innerHTML = '⚡ Force refreshing from Google Sheets...';
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL + '?refresh=true');
+                if (!response.ok) throw new Error('Failed to fetch data');
+                
+                memberData = await response.json();
+                if (memberData.error) throw new Error(memberData.error);
+                
+                // Update cache
+                localStorage.setItem('societyData', JSON.stringify(memberData));
+                localStorage.setItem('societyDataTime', Date.now().toString());
+                
+                dataLoaded = true;
+                updateAdminStats();
+                
+                dataStatus.className = 'data-status success';
+                dataStatus.innerHTML = '✅ Admin: <strong>' + currentUser.email + '</strong> | 🔄 Fresh data | ' + new Date().toLocaleTimeString();
+                
+                // Update badge
+                document.getElementById('dataBadge').textContent = '🔴 LIVE DATA';
+                
+            } catch (error) {
+                dataStatus.className = 'data-status error';
+                dataStatus.innerHTML = '❌ Refresh failed: ' + error.message;
+            }
+        }
+        
+        async function autoRefreshUserData() {
+            if (currentUser.isAdmin) return;
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL);
+                if (!response.ok) return;
+                
+                const data = await response.json();
+                if (data.error) return;
+                
+                memberData = data;
+                localStorage.setItem('societyData', JSON.stringify(data));
+                localStorage.setItem('societyDataTime', Date.now().toString());
+                
+                // Update user's member data
+                for (const [key, member] of Object.entries(memberData)) {
+                    if (key.startsWith('_')) continue;
+                    const ownerEmail = String(member.email || '').toLowerCase().trim();
+                    const proxyEmail = String(member.proxyEmail || '').toLowerCase().trim();
+                    if (ownerEmail === currentUser.email || proxyEmail === currentUser.email) {
+                        currentUser.member = member;
+                        sessionStorage.setItem('societyPortalUser', JSON.stringify(currentUser));
+                        break;
+                    }
+                }
+                
+                updateRefreshTimes();
+                displayUserStatement();
+                
+            } catch (error) {
+                console.error('Auto-refresh failed:', error);
+            }
+        }
+        
+        function startAutoRefresh() {
+            if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+            
+            // Check every 5 minutes if we need to refresh
+            autoRefreshTimer = setInterval(() => {
+                const cacheTime = localStorage.getItem('societyDataTime');
+                if (cacheTime) {
+                    const age = Date.now() - parseInt(cacheTime);
+                    if (age >= USER_CACHE_DURATION_MS) {
+                        autoRefreshUserData();
+                    }
+                }
+                updateRefreshTimes();
+            }, 5 * 60 * 1000); // Check every 5 minutes
+        }
+        
+        function getCacheAge() {
+            const cacheTime = localStorage.getItem('societyDataTime');
+            if (!cacheTime) return 'Unknown';
+            const age = Date.now() - parseInt(cacheTime);
+            const minutes = Math.floor(age / 60000);
+            const hours = Math.floor(minutes / 60);
+            if (hours > 0) return hours + ' hour' + (hours > 1 ? 's' : '') + ' ago';
+            if (minutes > 0) return minutes + ' min ago';
+            return 'Just now';
+        }
+        
+        function updateRefreshTimes() {
+            const cacheTime = localStorage.getItem('societyDataTime');
+            if (cacheTime) {
+                const cacheDate = new Date(parseInt(cacheTime));
+                const nextRefresh = new Date(parseInt(cacheTime) + USER_CACHE_DURATION_MS);
+                
+                document.getElementById('lastUpdateTime').textContent = cacheDate.toLocaleString();
+                document.getElementById('nextRefreshTime').textContent = nextRefresh.toLocaleString();
+            }
+        }
+        
+        function updateAdminStats() {
+            let total = 0, active = 0, inactive = 0, totalOutstanding = 0;
+            
+            for (const [key, member] of Object.entries(memberData)) {
+                if (key.startsWith('_')) continue;
+                total++;
+                if (String(member.status || '').includes('Active')) active++;
+                if (String(member.status || '').includes('Inactive')) inactive++;
+                
+                (member.invoices || []).forEach(inv => {
+                    if ((inv.balance || 0) > 0) totalOutstanding += inv.balance;
+                });
+            }
+            
+            document.getElementById('totalMembers').textContent = total;
+            document.getElementById('activeMembers').textContent = active;
+            document.getElementById('inactiveMembers').textContent = inactive;
+            document.getElementById('totalOutstanding').textContent = '₹' + totalOutstanding.toLocaleString('en-IN');
+        }
+        
+        // ============================================================
+        // DISPLAY FUNCTIONS
+        // ============================================================
+        function displayUserStatement() {
+            const member = currentUser.member;
+            document.getElementById('propertyTabs').style.display = 'none';
+            document.getElementById('propertyContents').innerHTML = generatePropertyContent(member, false);
+            document.getElementById('resultsCard').classList.add('show');
+        }
+        
+        function searchMember() {
+            if (!dataLoaded || !currentUser.isAdmin) return;
+            
+            const searchType = document.querySelector('.tab-btn.active').dataset.search;
+            const searchValue = searchInput.value.trim().toLowerCase();
+            
+            if (!searchValue) {
+                alert('Please enter a search value');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultsCard').classList.remove('show');
+            document.getElementById('noResults').style.display = 'none';
+            
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                let foundMembers = [];
+                
+                for (const [key, member] of Object.entries(memberData)) {
+                    if (key.startsWith('_')) continue;
+                    let match = false;
+                    let matchType = 'owner';
+                    
+                    switch(searchType) {
+                        case 'plot':
+                            const plotNo = String(member.plotNo || '').toLowerCase();
+                            match = plotNo === searchValue || plotNo.includes(searchValue);
+                            break;
+                        case 'name':
+                            if (String(member.name || '').toLowerCase().includes(searchValue)) { match = true; matchType = 'owner'; }
+                            if (!match && member.representedBy && String(member.representedBy).toLowerCase().includes(searchValue)) { match = true; matchType = 'proxy'; }
+                            break;
+                        case 'mobile':
+                            const cleanSearch = searchValue.replace(/[\s\-\+]/g, '');
+                            const cleanOwnerMobile = String(member.mobile || '').replace(/[\s\-\+]/g, '').toLowerCase();
+                            if (cleanOwnerMobile.includes(cleanSearch)) { match = true; matchType = 'owner'; }
+                            const cleanProxyMobile = String(member.proxyMobile || '').replace(/[\s\-\+]/g, '').toLowerCase();
+                            if (!match && cleanProxyMobile.includes(cleanSearch)) { match = true; matchType = 'proxy'; }
+                            break;
+                        case 'email':
+                            if (String(member.email || '').toLowerCase().includes(searchValue)) { match = true; matchType = 'owner'; }
+                            if (!match && String(member.proxyEmail || '').toLowerCase().includes(searchValue)) { match = true; matchType = 'proxy'; }
+                            break;
+                        case 'status':
+                            const status = String(member.status || '').toLowerCase();
+                            // Exact match for active/inactive to avoid "active" matching "inactive"
+                            if (searchValue === 'active') {
+                                match = status.includes('active') && !status.includes('inactive');
+                            } else if (searchValue === 'inactive') {
+                                match = status.includes('inactive');
+                            } else {
+                                match = status.includes(searchValue);
+                            }
+                            break;
+                    }
+                    if (match) { foundMembers.push({ ...member, matchType }); }
+                }
+                
+                if (foundMembers.length > 0) {
+                    displayResults(foundMembers);
+                } else {
+                    document.getElementById('noResults').style.display = 'block';
+                }
+            }, 300);
+        }
+        
+        function displayResults(members) {
+            const tabsContainer = document.getElementById('propertyTabs');
+            const contentsContainer = document.getElementById('propertyContents');
+            tabsContainer.innerHTML = '';
+            contentsContainer.innerHTML = '';
+            
+            if (members.length > 1) {
+                tabsContainer.style.display = 'flex';
+                members.forEach((member, index) => {
+                    const tab = document.createElement('button');
+                    tab.className = 'property-tab' + (index === 0 ? ' active' : '');
+                    tab.textContent = '🏠 Plot ' + member.plotNo;
+                    tab.onclick = () => switchPropertyTab(index);
+                    tabsContainer.appendChild(tab);
+                });
+            } else {
+                tabsContainer.style.display = 'none';
+            }
+            
+            members.forEach((member, index) => {
+                const content = document.createElement('div');
+                content.className = 'property-content' + (index === 0 ? ' active' : '');
+                content.id = 'property-' + index;
+                content.innerHTML = generatePropertyContent(member, currentUser.isAdmin);
+                contentsContainer.appendChild(content);
+            });
+            
+            document.getElementById('resultsCard').classList.add('show');
+        }
+        
+        function switchPropertyTab(index) {
+            document.querySelectorAll('.property-tab').forEach((tab, i) => { tab.classList.toggle('active', i === index); });
+            document.querySelectorAll('.property-content').forEach((content, i) => { content.classList.toggle('active', i === index); });
+        }
+        
+        function generatePropertyContent(member, showFullDetails = false) {
+            let totalBilled = 0, totalPaid = 0, totalOutstanding = 0;
+            (member.invoices || []).forEach(inv => {
+                totalBilled += inv.billAmount || 0;
+                totalPaid += inv.paidAmount || 0;
+                if ((inv.balance || 0) > 0) totalOutstanding += inv.balance;
+            });
+            const advance = totalPaid > totalBilled ? totalPaid - totalBilled : 0;
+            const paymentComment = getPaymentComment(totalBilled, totalPaid, totalOutstanding);
+            
+            let html = '<div class="member-info">';
+            html += '<div class="info-item"><span class="info-label">Property ID</span><span class="info-value">' + (member.propertyID || '-') + '</span></div>';
+            html += '<div class="info-item"><span class="info-label">Plot No</span><span class="info-value">' + (member.plotNo || '-') + '</span></div>';
+            html += '<div class="info-item"><span class="info-label">Owner Name</span><span class="info-value">' + (member.name || '-') + '</span></div>';
+            html += '<div class="info-item"><span class="info-label">House No</span><span class="info-value">' + (member.house || '-') + '</span></div>';
+            html += '<div class="info-item"><span class="info-label">Lane No</span><span class="info-value">' + (member.laneNo || '-') + '</span></div>';
+            html += '<div class="info-item"><span class="info-label">Occupancy</span><span class="info-value">' + (member.occupancyStatus || '-') + '</span></div>';
+            html += '<div class="info-item"><span class="info-label">Facing</span><span class="info-value">' + (member.facing || '-') + '</span></div>';
+            
+            // Show full details for admin, masked for users
+            if (showFullDetails) {
+                html += '<div class="info-item"><span class="info-label">Mobile</span><span class="info-value">' + (member.mobile || '-') + '</span></div>';
+                html += '<div class="info-item"><span class="info-label">Email</span><span class="info-value">' + (member.email || '-') + '</span></div>';
+            } else {
+                html += '<div class="info-item"><span class="info-label">Mobile 🔒</span><span class="info-value masked">' + maskMobile(member.mobile) + '</span></div>';
+                html += '<div class="info-item"><span class="info-label">Email 🔒</span><span class="info-value masked">' + maskEmail(member.email) + '</span></div>';
+            }
+            
+            html += '<div class="info-item"><span class="info-label">Status</span><span class="info-value">' + (member.status || '-') + '</span></div>';
+            html += '</div>';
+            
+            // Inactive notice
+            if (String(member.status || '').includes('Inactive')) {
+                html += '<div class="inactive-notice">';
+                html += '<h4>⚠️ Membership Inactive</h4>';
+                html += '<p>Your membership is currently inactive. To receive updates and access society services:</p>';
+                html += '<ul>';
+                html += '<li>📝 Please provide your updated owner details</li>';
+                html += '<li>🏠 Contact the society office to activate your membership</li>';
+                html += '<li>💰 Clear any pending dues to restore active status</li>';
+                html += '</ul>';
+                html += '<p style="margin-top: 15px; font-size: 0.9rem;">📞 Contact: Society Office | 📧 scwa.vampuguda@gmail.com</p>';
+                html += '</div>';
+            }
+            
+            // Proxy info
+            if (member.representedBy) {
+                html += '<div class="proxy-info"><h4>👤 Represented By (Proxy)</h4><div class="proxy-grid">';
+                html += '<div class="info-item"><span class="info-label">Name</span><span class="info-value">' + member.representedBy + '</span></div>';
+                html += '<div class="info-item"><span class="info-label">Relation</span><span class="info-value">' + (member.proxyRelation || '-') + '</span></div>';
+                if (showFullDetails) {
+                    html += '<div class="info-item"><span class="info-label">Mobile</span><span class="info-value">' + (member.proxyMobile || '-') + '</span></div>';
+                    html += '<div class="info-item"><span class="info-label">Email</span><span class="info-value">' + (member.proxyEmail || '-') + '</span></div>';
+                } else {
+                    html += '<div class="info-item"><span class="info-label">Mobile 🔒</span><span class="info-value masked">' + maskMobile(member.proxyMobile) + '</span></div>';
+                    html += '<div class="info-item"><span class="info-label">Email 🔒</span><span class="info-value masked">' + maskEmail(member.proxyEmail) + '</span></div>';
+                }
+                html += '</div></div>';
+            }
+            
+            // Summary cards
+            html += '<div class="summary-cards">';
+            html += '<div class="summary-card total"><div class="summary-amount">₹' + totalBilled.toLocaleString('en-IN') + '</div><div class="summary-label">Total Billed</div></div>';
+            html += '<div class="summary-card paid"><div class="summary-amount">₹' + totalPaid.toLocaleString('en-IN') + '</div><div class="summary-label">Total Paid</div></div>';
+            html += '<div class="summary-card outstanding"><div class="summary-amount">₹' + totalOutstanding.toLocaleString('en-IN') + '</div><div class="summary-label">Outstanding</div></div>';
+            html += '<div class="summary-card advance"><div class="summary-amount">₹' + advance.toLocaleString('en-IN') + '</div><div class="summary-label">Advance</div></div>';
+            html += '</div>';
+            
+            // Payment comment
+            if (paymentComment.text) {
+                html += '<div class="payment-comment ' + paymentComment.class + '">' + paymentComment.text + '</div>';
+            }
+            
+            // Invoice table
+            html += '<h3 class="section-title">📋 Invoice Details</h3>';
+            html += '<div class="table-container"><table><thead><tr><th>Bill ID</th><th>Period</th><th>Bill Date</th><th>Bill Amount</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead><tbody>';
+            
+            if ((member.invoices || []).length === 0) {
+                html += '<tr><td colspan="7" style="text-align: center; color: #888;">No invoices found</td></tr>';
+            } else {
+                (member.invoices || []).forEach(inv => {
+                    const statusClass = String(inv.status || '').includes('Paid') ? 'status-paid' : String(inv.status || '').includes('Partial') ? 'status-partial' : 'status-unpaid';
+                    html += '<tr><td>' + (inv.billId || '') + '</td><td>' + (inv.period || '') + '</td><td>' + (inv.billDate || '') + '</td>';
+                    html += '<td>₹' + (inv.billAmount || 0).toLocaleString('en-IN') + '</td>';
+                    html += '<td class="amount-positive">₹' + (inv.paidAmount || 0).toLocaleString('en-IN') + '</td>';
+                    html += '<td class="' + ((inv.balance || 0) > 0 ? 'amount-negative' : '') + '">₹' + (inv.balance || 0).toLocaleString('en-IN') + '</td>';
+                    html += '<td class="' + statusClass + '">' + (inv.status || '') + '</td></tr>';
+                });
+            }
+            html += '</tbody></table></div>';
+            
+            // Payment history table
+            html += '<h3 class="section-title">💰 Payment History</h3>';
+            html += '<div class="table-container"><table><thead><tr><th>Date</th><th>Receipt No</th><th>Category</th><th>Bill Period</th><th>Description</th><th>Amount</th><th>Mode</th></tr></thead><tbody>';
+            
+            if ((member.payments || []).length === 0) {
+                html += '<tr><td colspan="7" style="text-align: center; color: #888;">No payments found</td></tr>';
+            } else {
+                (member.payments || []).forEach(pay => {
+                    const category = String(pay.category || '');
+                    const isRegular = category.includes('Regular') || category.includes('Maintenance');
+                    const periodDisplay = isRegular && pay.billPeriod ? '<span class="bill-period">📅 ' + pay.billPeriod + '</span>' : '-';
+                    html += '<tr><td>' + (pay.date || '') + '</td><td>' + (pay.receiptNo || '') + '</td><td>' + (pay.category || '') + '</td>';
+                    html += '<td>' + periodDisplay + '</td><td>' + (pay.description || '') + '</td>';
+                    html += '<td class="amount-positive">₹' + (pay.amount || 0).toLocaleString('en-IN') + '</td><td>' + (pay.mode || '') + '</td></tr>';
+                });
+            }
+            html += '</tbody></table></div>';
+            
+            return html;
+        }
+        
+        // ============================================================
+        // UTILITY FUNCTIONS
+        // ============================================================
+        function maskMobile(mobile) {
+            if (!mobile || mobile === '-') return '-';
+            const clean = String(mobile).replace(/[\s\-\+]/g, '');
+            if (clean.length < 6) return mobile;
+            return '******' + clean.slice(-4);
+        }
+        
+        function maskEmail(email) {
+            if (!email || email === '-') return '-';
+            const atIndex = String(email).indexOf('@');
+            if (atIndex < 0) return email;
+            const localPart = email.substring(0, atIndex);
+            const domain = email.substring(atIndex);
+            if (localPart.length <= 3) return localPart[0] + '***' + domain;
+            return localPart.substring(0, 3) + '*****' + domain;
+        }
+        
+        function getPaymentComment(totalBilled, totalPaid, totalOutstanding) {
+            if (totalBilled === 0) return { text: '', class: '' };
+            const paidPercent = (totalPaid / totalBilled) * 100;
+            if (totalOutstanding === 0 && totalPaid >= totalBilled) {
+                return { text: '🌟 Excellent! Thank you for being a responsible member. Your payments are fully up to date! 🎉', class: 'comment-excellent' };
+            } else if (paidPercent >= 50) {
+                return { text: '⚠️ Partially paid. Please clear the outstanding balance of ₹' + totalOutstanding.toLocaleString('en-IN') + ' to stay current.', class: 'comment-improve' };
+            } else {
+                return { text: '❗ Payment Required! Please pay your outstanding dues of ₹' + totalOutstanding.toLocaleString('en-IN') + ' at the earliest.', class: 'comment-pay' };
+            }
+        }
+        
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                searchInput.placeholder = placeholders[btn.dataset.search];
+                searchInput.value = '';
+            });
+        });
+        
+        searchInput.addEventListener('keypress', (e) => { 
+            if (e.key === 'Enter') searchMember(); 
+        });
+    </script>
+</body>
+</html>
