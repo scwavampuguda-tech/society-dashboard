@@ -599,7 +599,7 @@
         </div>
         
         <!-- Outstanding Dues Section -->
-        <div class="section-title">&#9888; Outstanding Dues Analysis <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">&#128308; LIVE</span> <a href="Society_Portal.html" style="font-size: 0.5em; background: #007bff; color: white; padding: 5px 15px; border-radius: 15px; margin-left: 15px; text-decoration: none; cursor: pointer;">&#128274; View My Statement</a></div>
+        <div class="section-title">&#9888; Outstanding Dues Analysis <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">&#128308; LIVE</span> <a href="Society_Portal.html" style="font-size: 0.5em; background: #007bff; color: white; padding: 5px 15px; border-radius: 15px; margin-left: auto; text-decoration: none; cursor: pointer;">&#128274; View My Statement</a></div>
         
         <div class="two-col">
             <div class="card">
@@ -1103,20 +1103,46 @@
             // Society Related Table
             let societyHTML = '';
             if (orderData.society && orderData.society.items.length > 0) {
-                orderData.society.items.forEach(item => {
-                    const netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
-                    const netPrefix = item.net >= 0 ? '+' : '';
+                // Merge Republic Day into Society Expense
+                var mergedItems = [];
+                var societyExpenseItem = null;
+                var republicDayItem = null;
+                
+                orderData.society.items.forEach(function(item) {
+                    if (item.name === 'Society Expense') {
+                        societyExpenseItem = {name: item.name, income: item.income, expense: item.expense, net: item.net};
+                    } else if (item.name === 'Republic Day') {
+                        republicDayItem = item;
+                    } else {
+                        mergedItems.push(item);
+                    }
+                });
+                
+                // Merge Republic Day into Society Expense
+                if (societyExpenseItem) {
+                    if (republicDayItem) {
+                        societyExpenseItem.income += republicDayItem.income;
+                        societyExpenseItem.expense += republicDayItem.expense;
+                        societyExpenseItem.net += republicDayItem.net;
+                    }
+                    mergedItems.push(societyExpenseItem);
+                }
+                
+                mergedItems.forEach(function(item) {
+                    var netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                    var netPrefix = item.net >= 0 ? '+' : '';
                     societyHTML += '<tr><td>' + item.name + '</td><td style="color: #28a745;">' + formatCurrency(item.income) + '</td><td style="color: #dc3545;">' + formatCurrency(item.expense) + '</td><td style="' + netClass + ' font-weight: bold;">' + netPrefix + formatCurrency(item.net) + '</td></tr>';
                 });
                 
                 // Totals row
-                const totals = orderData.society.totals;
-                const totalNetClass = totals.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
-                const totalNetPrefix = totals.net >= 0 ? '+' : '';
+                var totals = orderData.society.totals;
+                var totalNetClass = totals.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                var totalNetPrefix = totals.net >= 0 ? '+' : '';
                 societyHTML += '<tr class="total-row"><td><strong>TOTAL</strong></td><td style="color: #28a745;"><strong>' + formatCurrency(totals.income) + '</strong></td><td style="color: #dc3545;"><strong>' + formatCurrency(totals.expense) + '</strong></td><td style="' + totalNetClass + '"><strong>' + totalNetPrefix + formatCurrency(totals.net) + '</strong></td></tr>';
             } else {
                 societyHTML = '<tr><td colspan="4" style="text-align: center;">No data available</td></tr>';
             }
+            document.getElementById('societyOrdersTable').innerHTML = societyHTML;
             document.getElementById('societyOrdersTable').innerHTML = societyHTML;
             
             // Festival Events Table
