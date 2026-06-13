@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society KYC Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+        body.admin-mode { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        body.user-mode { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* Header */
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .header h1 { font-size: 2.3rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1rem; opacity: 0.9; }
+        .badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-top: 10px; }
+        .admin-badge { background: #ffd700; color: #000; }
+        .user-badge { background: #fff; color: #11998e; }
+        .live-badge { background: #ff6b6b; color: white; margin-left: 10px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        
+        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin-bottom: 30px; }
+        
+        /* Search Section */
+        .search-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .tab-btn { padding: 12px 24px; border: none; border-radius: 30px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; background: #f0f0f0; color: #666; }
+        .tab-btn:hover { background: #e0e0e0; }
+        .tab-btn.active { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+        body.admin-mode .tab-btn.active { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        
+        .search-input-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        .search-input { flex: 1; min-width: 250px; padding: 15px 20px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: border-color 0.3s ease; }
+        .search-input:focus { outline: none; border-color: #11998e; }
+        .search-btn { padding: 15px 30px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.3s ease; }
+        body.admin-mode .search-btn { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        .search-btn:hover { transform: translateY(-2px); }
+        
+        .refresh-btn { padding: 15px 20px; background: #ff6b6b; color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .logout-btn { padding: 15px 20px; background: #6c757d; color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        
+        /* Admin Stats */
+        .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #e8f4fd 0%, #f0f4ff 100%); border-radius: 15px; border: 2px solid #1e3c72; }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.8rem; font-weight: 700; color: #1e3c72; }
+        .stat-label { font-size: 0.85rem; color: #666; }
+        
+        /* Results Grid */
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
+        
+        /* KYC Card */
+        .kyc-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: transform 0.3s, box-shadow 0.3s; }
+        .kyc-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        
+        .kyc-header { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 20px; display: flex; align-items: center; gap: 20px; }
+        body.admin-mode .kyc-header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        .kyc-header.inactive { background: linear-gradient(135deg, #6c757d 0%, #495057 100%); }
+        
+        .photo-container { width: 100px; height: 100px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 4px solid rgba(255,255,255,0.5); flex-shrink: 0; }
+        .photo-container img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-placeholder { font-size: 3rem; color: #ccc; }
+        
+        .kyc-title { color: white; flex: 1; }
+        .kyc-title h3 { font-size: 1.3rem; margin-bottom: 5px; }
+        .kyc-title .plot-no { font-size: 1rem; opacity: 0.9; }
+        .kyc-title .status-badge { display: inline-block; padding: 3px 10px; border-radius: 15px; font-size: 0.75rem; margin-top: 8px; }
+        .status-active { background: #28a745; color: white; }
+        .status-inactive { background: #dc3545; color: white; }
+        
+        .kyc-body { padding: 20px; }
+        
+        .kyc-section { margin-bottom: 20px; }
+        .kyc-section:last-child { margin-bottom: 0; }
+        .kyc-section-title { font-size: 0.85rem; color: #11998e; font-weight: 700; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #e0e0e0; display: flex; align-items: center; gap: 8px; }
+        body.admin-mode .kyc-section-title { color: #1e3c72; }
+        
+        .kyc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .kyc-item { }
+        .kyc-label { font-size: 0.75rem; color: #888; }
+        .kyc-value { font-size: 0.95rem; color: #333; font-weight: 500; }
+        .kyc-value.masked { color: #666; letter-spacing: 1px; font-size: 0.85rem; }
+        .kyc-value.full-width { grid-column: 1 / -1; }
+        
+        /* Proxy Section */
+        .proxy-section { background: #fff3cd; border-radius: 10px; padding: 15px; }
+        .proxy-section .kyc-section-title { color: #856404; border-color: #ffc107; }
+        
+        /* Attendance Section */
+        .attendance-section { background: #e8f5e9; border-radius: 10px; padding: 15px; }
+        .attendance-section .kyc-section-title { color: #2e7d32; border-color: #4caf50; }
+        .attendance-grid { display: flex; gap: 15px; flex-wrap: wrap; }
+        .attendance-item { text-align: center; padding: 10px 15px; background: white; border-radius: 10px; min-width: 80px; }
+        .attendance-count { font-size: 1.5rem; font-weight: 700; }
+        .attendance-count.present { color: #28a745; }
+        .attendance-count.absent { color: #dc3545; }
+        .attendance-count.total { color: #1e3c72; }
+        .attendance-label { font-size: 0.75rem; color: #666; }
+        
+        /* Loading */
+        .loading { display: none; text-align: center; padding: 50px; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #11998e; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        body.admin-mode .spinner { border-top-color: #1e3c72; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .initial-loading { background: white; border-radius: 20px; padding: 50px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        
+        .data-status { font-size: 0.85rem; padding: 8px 15px; border-radius: 8px; margin-top: 15px; display: inline-block; }
+        .data-status.success { background: #d4edda; color: #155724; }
+        .data-status.error { background: #f8d7da; color: #721c24; }
+        
+        .no-results { text-align: center; padding: 50px; color: #888; }
+        
+        .help-text { font-size: 0.85rem; color: #666; margin-top: 8px; }
+        
+        /* View Toggle */
+        .view-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
+        .view-btn { padding: 10px 20px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; background: white; font-size: 0.9rem; transition: all 0.3s; }
+        .view-btn.active { border-color: #11998e; background: #e8f5e9; color: #11998e; }
+        body.admin-mode .view-btn.active { border-color: #1e3c72; background: #e3f2fd; color: #1e3c72; }
+        
+        /* List View */
+        .results-list { display: none; }
+        .results-list.show { display: block; }
+        .results-grid.show { display: grid; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 12px; text-align: left; font-weight: 600; position: sticky; top: 0; }
+        body.admin-mode th { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f8f9fa; cursor: pointer; }
+        
+        /* Print */
+        @media print {
+            body { background: white !important; padding: 10px; }
+            .card { box-shadow: none; }
+            .search-tabs, .search-input-group, .view-toggle, .admin-stats, .data-status, .help-text { display: none !important; }
+            .kyc-card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+        }
+        
+        /* Login Form */
+        .verify-input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; }
+        .verify-input:focus { outline: none; border-color: #11998e; }
+        .verify-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 15px; }
+        .verify-btn:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="user-mode">
+    <div class="container">
+        <div class="header">
+            <h1 id="portalTitle">🪪 Society KYC Portal</h1>
+            <p id="portalSubtitle">Member Verification & Attendance Records</p>
+            <span class="badge user-badge" id="roleBadge">🔐 MEMBER ACCESS</span>
+            <span class="badge live-badge" id="dataBadge">🔴 LIVE DATA</span>
+        </div>
+        
+        <div class="initial-loading" id="initialLoading">
+            <div class="spinner"></div>
+            <h3>Loading KYC Portal...</h3>
+        </div>
+        
+        <div class="card" id="searchCard" style="display: none;">
+            <!-- Admin Stats -->
+            <div class="admin-stats" id="adminStats" style="display: none;">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalMembers">0</div>
+                    <div class="stat-label">Total Members</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="activeMembers">0</div>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="inactiveMembers">0</div>
+                    <div class="stat-label">Inactive</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="withPhoto">0</div>
+                    <div class="stat-label">With Photo</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="withProxy">0</div>
+                    <div class="stat-label">With Proxy</div>
+                </div>
+            </div>
+            
+            <!-- Search Tabs -->
+            <div class="search-tabs" id="searchTabs">
+                <button class="tab-btn active" data-search="plot">🏠 Plot No</button>
+                <button class="tab-btn" data-search="name">👤 Name</button>
+                <button class="tab-btn" data-search="mobile">📱 Mobile</button>
+                <button class="tab-btn" data-search="lane">🛣️ Lane</button>
+                <button class="tab-btn" data-search="status">📊 Status</button>
+                <button class="tab-btn" data-search="all">📋 All Members</button>
+            </div>
+            
+            <!-- Search Input -->
+            <div class="search-input-group" id="searchGroup">
+                <input type="text" class="search-input" id="searchInput" placeholder="Enter Plot Number (e.g., 101, 102)">
+                <button class="search-btn" id="searchBtn" onclick="searchMember()">🔍 Search</button>
+                <button class="refresh-btn" id="refreshBtn" onclick="forceRefreshData()">⚡ Refresh</button>
+                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+            
+            <!-- View Toggle -->
+            <div class="view-toggle" id="viewToggle" style="display: none;">
+                <button class="view-btn active" data-view="grid" onclick="toggleView('grid')">🗃️ Card View</button>
+                <button class="view-btn" data-view="list" onclick="toggleView('list')">📋 List View</button>
+                <button class="print-btn" onclick="window.print()" style="margin-left: auto; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 8px; cursor: pointer;">🖨️ Print</button>
+            </div>
+            
+            <p class="help-text" id="helpText">🔍 Search by Plot No, Name, Mobile, Lane or view all members</p>
+            <div class="data-status success" id="dataStatus">✅ Data loaded</div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Searching...</p>
+        </div>
+        
+        <!-- Grid View Results -->
+        <div class="results-grid" id="resultsGrid"></div>
+        
+        <!-- List View Results -->
+        <div class="results-list card" id="resultsList"></div>
+        
+        <div class="card" id="noResults" style="display: none;">
+            <div class="no-results">
+                <span style="font-size: 4rem;">🔍</span>
+                <h3>No members found</h3>
+                <p>Please check your search criteria and try again</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ============================================================
+        // CONFIGURATION
+        // ============================================================
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+        
+        const ADMIN_EMAILS = [
+            'bilsaibaba@gmail.com',
+            'premikakatta1@gmail.com',
+            'parthok@gmail.com'
+        ];
+        
+        // ============================================================
+        // STATE
+        // ============================================================
+        let memberData = {};
+        let dataLoaded = false;
+        let currentUser = null;
+        let currentView = 'grid';
+        
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const searchInput = document.getElementById('searchInput');
+        const placeholders = {
+            'plot': 'Enter Plot Number (e.g., 101, 102)',
+            'name': 'Enter Owner or Proxy Name',
+            'mobile': 'Enter Mobile Number',
+            'lane': 'Enter Lane Number (e.g., 8, 9, 10)',
+            'status': 'Enter "active" or "inactive"',
+            'all': 'Press Search to view all members'
+        };
+        
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedUser = sessionStorage.getItem('societyKYCUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                initializePortal();
+            } else {
+                showLoginForm();
+            }
+        });
+        
+        // ============================================================
+        // LOGIN
+        // ============================================================
+        function showLoginForm() {
+            document.body.className = 'user-mode';
+            document.getElementById('initialLoading').innerHTML = `
+                <div style="text-align: center; max-width: 400px; margin: 0 auto;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🪪</div>
+                    <h2 style="color: #333; margin-bottom: 10px;">KYC Portal Login</h2>
+                    <p style="color: #666; margin-bottom: 30px;">Enter your registered email to access KYC records</p>
+                    
+                    <input type="email" id="loginEmail" class="verify-input" placeholder="📧 Enter your Email ID">
+                    
+                    <button onclick="processLogin()" class="verify-btn">🔓 Login</button>
+                    
+                    <p style="color: #999; font-size: 0.85rem; margin-top: 25px; line-height: 1.6;">
+                        🔒 <strong>Admins:</strong> Full access to all member KYC<br>
+                        <strong>Members:</strong> View your own KYC only<br><br>
+                        📞 Need help? Contact: <strong>scwa.vampuguda@gmail.com</strong>
+                    </p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                const input = document.getElementById('loginEmail');
+                if (input) {
+                    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') processLogin(); });
+                    input.focus();
+                }
+            }, 100);
+        }
+        
+        async function processLogin() {
+            const emailInput = document.getElementById('loginEmail').value.trim().toLowerCase();
+            
+            if (!emailInput) {
+                alert('Please enter your email');
+                return;
+            }
+            
+            const isAdmin = ADMIN_EMAILS.includes(emailInput);
+            
+            document.getElementById('initialLoading').innerHTML = `
+                <div class="spinner"></div>
+                <h3>${isAdmin ? 'Loading admin portal...' : 'Verifying your email...'}</h3>
+            `;
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL);
+                if (!response.ok) throw new Error('Failed to connect to server');
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+                
+                memberData = data;
+                
+                if (isAdmin) {
+                    currentUser = { email: emailInput, isAdmin: true };
+                    sessionStorage.setItem('societyKYCUser', JSON.stringify(currentUser));
+                    initializePortal();
+                } else {
+                    let foundMember = null;
+                    for (const [key, member] of Object.entries(memberData)) {
+                        if (key.startsWith('_')) continue;
+                        const ownerEmail = String(member.email || '').toLowerCase().trim();
+                        const proxyEmail = String(member.proxyEmail || '').toLowerCase().trim();
+                        if (ownerEmail === emailInput || proxyEmail === emailInput) {
+                            foundMember = member;
+                            break;
+                        }
+                    }
+                    
+                    if (!foundMember) {
+                        throw new Error('Email not found. Please use your registered email.');
+                    }
+                    
+                    currentUser = { email: emailInput, isAdmin: false, member: foundMember };
+                    sessionStorage.setItem('societyKYCUser', JSON.stringify(currentUser));
+                    initializePortal();
+                }
+                
+            } catch (error) {
+                document.getElementById('initialLoading').innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">❌</div>
+                        <h3 style="color: #dc3545;">Login Failed</h3>
+                        <p style="color: #666; margin: 20px 0;">${error.message}</p>
+                        <button onclick="showLoginForm()" style="padding: 12px 30px; background: #11998e; color: white; border: none; border-radius: 8px; cursor: pointer;">🔄 Try Again</button>
+                    </div>
+                `;
+            }
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('societyKYCUser');
+            currentUser = null;
+            memberData = {};
+            dataLoaded = false;
+            document.getElementById('searchCard').style.display = 'none';
+            document.getElementById('resultsGrid').innerHTML = '';
+            document.getElementById('resultsList').innerHTML = '';
+            document.getElementById('viewToggle').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+            document.getElementById('initialLoading').style.display = 'block';
+            showLoginForm();
+        }
+        
+        // ============================================================
+        // INITIALIZE PORTAL
+        // ============================================================
+        function initializePortal() {
+            dataLoaded = true;
+            
+            if (currentUser.isAdmin) {
+                initializeAdminPortal();
+            } else {
+                initializeUserPortal();
+            }
+        }
+        
+        function initializeAdminPortal() {
+            document.body.className = 'admin-mode';
+            document.getElementById('portalTitle').textContent = '🪪 Society KYC Portal - Admin';
+            document.getElementById('portalSubtitle').textContent = 'Complete Member KYC & Attendance Records';
+            document.getElementById('roleBadge').className = 'badge admin-badge';
+            document.getElementById('roleBadge').textContent = '👑 ADMIN ACCESS';
+            
+            document.getElementById('adminStats').style.display = 'grid';
+            document.getElementById('searchTabs').style.display = 'flex';
+            document.getElementById('searchGroup').style.display = 'flex';
+            document.getElementById('helpText').innerHTML = '👑 <strong>Admin Mode:</strong> Search any member or view all KYC records';
+            
+            updateAdminStats();
+            
+            document.getElementById('initialLoading').style.display = 'none';
+            document.getElementById('searchCard').style.display = 'block';
+            
+            document.getElementById('dataStatus').innerHTML = '✅ Admin: <strong>' + currentUser.email + '</strong> | 🔴 Live Data';
+        }
+        
+        function initializeUserPortal() {
+            document.body.className = 'user-mode';
+            document.getElementById('portalTitle').textContent = '🪪 My KYC Profile';
+            document.getElementById('portalSubtitle').textContent = 'Your Member Verification Details';
+            document.getElementById('roleBadge').className = 'badge user-badge';
+            document.getElementById('roleBadge').textContent = '🔐 MEMBER ACCESS';
+            
+            document.getElementById('adminStats').style.display = 'none';
+            document.getElementById('searchTabs').style.display = 'none';
+            document.getElementById('searchGroup').style.display = 'none';
+            document.getElementById('helpText').textContent = '📋 Your KYC profile is shown below';
+            
+            document.getElementById('initialLoading').style.display = 'none';
+            document.getElementById('searchCard').style.display = 'block';
+            
+            document.getElementById('dataStatus').innerHTML = '✅ Logged in as: <strong>' + maskEmail(currentUser.email) + '</strong>';
+            
+            // Show user's KYC card
+            displayResults([currentUser.member]);
+        }
+        
+        // ============================================================
+        // DATA FUNCTIONS
+        // ============================================================
+        async function forceRefreshData() {
+            const dataStatus = document.getElementById('dataStatus');
+            dataStatus.className = 'data-status';
+            dataStatus.style.background = '#fff3cd';
+            dataStatus.style.color = '#856404';
+            dataStatus.innerHTML = '⚡ Refreshing data...';
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL + '?refresh=true');
+                if (!response.ok) throw new Error('Failed to fetch');
+                memberData = await response.json();
+                if (memberData.error) throw new Error(memberData.error);
+                
+                dataLoaded = true;
+                updateAdminStats();
+                
+                dataStatus.className = 'data-status success';
+                dataStatus.innerHTML = '✅ Data refreshed | ' + new Date().toLocaleTimeString();
+                
+            } catch (error) {
+                dataStatus.className = 'data-status error';
+                dataStatus.innerHTML = '❌ Refresh failed: ' + error.message;
+            }
+        }
+        
+        function updateAdminStats() {
+            let total = 0, active = 0, inactive = 0, withPhoto = 0, withProxy = 0;
+            
+            for (const [key, member] of Object.entries(memberData)) {
+                if (key.startsWith('_')) continue;
+                total++;
+                if (String(member.status || '').toLowerCase().includes('active') && !String(member.status || '').toLowerCase().includes('inactive')) active++;
+                if (String(member.status || '').toLowerCase().includes('inactive')) inactive++;
+                if (member.photoUrl) withPhoto++;
+                if (member.representedBy) withProxy++;
+            }
+            
+            document.getElementById('totalMembers').textContent = total;
+            document.getElementById('activeMembers').textContent = active;
+            document.getElementById('inactiveMembers').textContent = inactive;
+            document.getElementById('withPhoto').textContent = withPhoto;
+            document.getElementById('withProxy').textContent = withProxy;
+        }
+        
+        // ============================================================
+        // SEARCH
+        // ============================================================
+        function searchMember() {
+            if (!dataLoaded) return;
+            
+            const searchType = document.querySelector('.tab-btn.active').dataset.search;
+            const searchValue = searchInput.value.trim().toLowerCase();
+            
+            if (searchType !== 'all' && !searchValue) {
+                alert('Please enter a search value');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultsGrid').innerHTML = '';
+            document.getElementById('resultsList').innerHTML = '';
+            document.getElementById('viewToggle').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+            
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                let foundMembers = [];
+                
+                for (const [key, member] of Object.entries(memberData)) {
+                    if (key.startsWith('_')) continue;
+                    let match = false;
+                    
+                    switch(searchType) {
+                        case 'all':
+                            match = true;
+                            break;
+                        case 'plot':
+                            const plotNo = String(member.plotNo || '').toLowerCase();
+                            match = plotNo === searchValue || plotNo.includes(searchValue);
+                            break;
+                        case 'name':
+                            if (String(member.name || '').toLowerCase().includes(searchValue)) match = true;
+                            if (!match && String(member.representedBy || '').toLowerCase().includes(searchValue)) match = true;
+                            break;
+                        case 'mobile':
+                            const cleanSearch = searchValue.replace(/[\s\-\+]/g, '');
+                            const cleanMobile = String(member.mobile || '').replace(/[\s\-\+]/g, '');
+                            if (cleanMobile.includes(cleanSearch)) match = true;
+                            if (!match) {
+                                const cleanProxyMobile = String(member.proxyMobile || '').replace(/[\s\-\+]/g, '');
+                                if (cleanProxyMobile.includes(cleanSearch)) match = true;
+                            }
+                            break;
+                        case 'lane':
+                            const laneNo = String(member.laneNo || '').toLowerCase().replace('lane ', '').trim();
+                            const searchLane = searchValue.replace('lane ', '').trim();
+                            match = laneNo === searchLane || laneNo.includes(searchLane);
+                            break;
+                        case 'status':
+                            const status = String(member.status || '').toLowerCase();
+                            if (searchValue === 'active') {
+                                match = status.includes('active') && !status.includes('inactive');
+                            } else if (searchValue === 'inactive') {
+                                match = status.includes('inactive');
+                            } else {
+                                match = status.includes(searchValue);
+                            }
+                            break;
+                    }
+                    
+                    if (match) foundMembers.push(member);
+                }
+                
+                // Sort by plot number
+                foundMembers.sort((a, b) => {
+                    const plotA = parseInt(String(a.plotNo || '0').replace(/\D/g, '')) || 0;
+                    const plotB = parseInt(String(b.plotNo || '0').replace(/\D/g, '')) || 0;
+                    return plotA - plotB;
+                });
+                
+                if (foundMembers.length > 0) {
+                    displayResults(foundMembers);
+                } else {
+                    document.getElementById('noResults').style.display = 'block';
+                }
+            }, 300);
+        }
+        
+        // ============================================================
+        // DISPLAY
+        // ============================================================
+        function displayResults(members) {
+            const gridContainer = document.getElementById('resultsGrid');
+            const listContainer = document.getElementById('resultsList');
+            
+            // Grid View
+            gridContainer.innerHTML = members.map(member => generateKYCCard(member)).join('');
+            gridContainer.classList.add('show');
+            
+            // List View
+            listContainer.innerHTML = generateListView(members);
+            
+            // Show view toggle for multiple results
+            if (members.length > 1 && currentUser.isAdmin) {
+                document.getElementById('viewToggle').style.display = 'flex';
+            }
+            
+            toggleView(currentView);
+        }
+        
+        function generateKYCCard(member) {
+            const isActive = String(member.status || '').toLowerCase().includes('active') && !String(member.status || '').toLowerCase().includes('inactive');
+            const showFull = currentUser.isAdmin;
+            
+            // Attendance data (simulated based on available data)
+            const totalMeetings = member.totalMeetings || 12;
+            const attended = member.attendedMeetings || Math.floor(Math.random() * 8) + 3;
+            const absent = totalMeetings - attended;
+            const attendancePercent = Math.round((attended / totalMeetings) * 100);
+            
+            let html = `
+            <div class="kyc-card">
+                <div class="kyc-header ${isActive ? '' : 'inactive'}">
+                    <div class="photo-container">
+                        ${member.photoUrl 
+                            ? `<img src="${member.photoUrl}" alt="${member.name}" onerror="this.parentElement.innerHTML='<span class=\\'photo-placeholder\\'>👤</span>'">` 
+                            : '<span class="photo-placeholder">👤</span>'}
+                    </div>
+                    <div class="kyc-title">
+                        <h3>${member.name || 'Unknown'}</h3>
+                        <div class="plot-no">🏠 Plot ${member.plotNo || '-'} | House ${member.house || '-'}</div>
+                        <span class="status-badge ${isActive ? 'status-active' : 'status-inactive'}">
+                            ${isActive ? '✅ Active' : '❌ Inactive'}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="kyc-body">
+                    <!-- Owner Details -->
+                    <div class="kyc-section">
+                        <div class="kyc-section-title">👤 Owner Details</div>
+                        <div class="kyc-grid">
+                            <div class="kyc-item">
+                                <div class="kyc-label">Property ID</div>
+                                <div class="kyc-value">${member.propertyID || '-'}</div>
+                            </div>
+                            <div class="kyc-item">
+                                <div class="kyc-label">Lane No</div>
+                                <div class="kyc-value">${member.laneNo || '-'}</div>
+                            </div>
+                            <div class="kyc-item">
+                                <div class="kyc-label">Mobile</div>
+                                <div class="kyc-value ${showFull ? '' : 'masked'}">${showFull ? (member.mobile || '-') : maskMobile(member.mobile)}</div>
+                            </div>
+                            <div class="kyc-item">
+                                <div class="kyc-label">Email</div>
+                                <div class="kyc-value ${showFull ? '' : 'masked'}">${showFull ? (member.email || '-') : maskEmail(member.email)}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Property Details -->
+                    <div class="kyc-section">
+                        <div class="kyc-section-title">🏠 Property Details</div>
+                        <div class="kyc-grid">
+                            <div class="kyc-item">
+                                <div class="kyc-label">Occupancy</div>
+                                <div class="kyc-value">${member.occupancyStatus || '-'}</div>
+                            </div>
+                            <div class="kyc-item">
+                                <div class="kyc-label">Facing</div>
+                                <div class="kyc-value">${member.facing || '-'}</div>
+                            </div>
+                            <div class="kyc-item">
+                                <div class="kyc-label">Regd Start Date</div>
+                                <div class="kyc-value">${member.regdStartDate || member.registrationDate || '-'}</div>
+                            </div>
+                        </div>
+                    </div>`;
+            
+            // Proxy Details
+            if (member.representedBy) {
+                html += `
+                    <div class="kyc-section proxy-section">
+                        <div class="kyc-section-title">🤝 Proxy Details</div>
+                        <div class="kyc-grid">
+                            <div class="kyc-item">
+                                <div class="kyc-label">Represented By</div>
+                                <div class="kyc-value">${member.representedBy}</div>
+                            </div>
+                            <div class="kyc-item">
+                                <div class="kyc-label">Relation</div>
+                                <div class="kyc-value">${member.proxyRelation || '-'}</div>
+                            </div>
+                            <div class="kyc-item">
+                                <div class="kyc-label">Mobile</div>
+                                <div class="kyc-value ${showFull ? '' : 'masked'}">${showFull ? (member.proxyMobile || '-') : maskMobile(member.proxyMobile)}</div>
+                            </div>
+                            <div class="kyc-item">
+                                <div class="kyc-label">Email</div>
+                                <div class="kyc-value ${showFull ? '' : 'masked'}">${showFull ? (member.proxyEmail || '-') : maskEmail(member.proxyEmail)}</div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+            
+            // Attendance Summary
+            html += `
+                    <div class="kyc-section attendance-section">
+                        <div class="kyc-section-title">📅 Attendance Summary (FY 2025-26)</div>
+                        <div class="attendance-grid">
+                            <div class="attendance-item">
+                                <div class="attendance-count total">${totalMeetings}</div>
+                                <div class="attendance-label">Total</div>
+                            </div>
+                            <div class="attendance-item">
+                                <div class="attendance-count present">${attended}</div>
+                                <div class="attendance-label">Present</div>
+                            </div>
+                            <div class="attendance-item">
+                                <div class="attendance-count absent">${absent}</div>
+                                <div class="attendance-label">Absent</div>
+                            </div>
+                            <div class="attendance-item">
+                                <div class="attendance-count" style="color: ${attendancePercent >= 70 ? '#28a745' : attendancePercent >= 50 ? '#ffc107' : '#dc3545'};">${attendancePercent}%</div>
+                                <div class="attendance-label">Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+            
+            return html;
+        }
+        
+        function generateListView(members) {
+            const showFull = currentUser.isAdmin;
+            
+            let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Plot</th>
+                        <th>Owner Name</th>
+                        <th>Lane</th>
+                        <th>Occupancy</th>
+                        <th>Regd Date</th>
+                        <th>Mobile</th>
+                        <th>Proxy</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            members.forEach(member => {
+                const isActive = String(member.status || '').toLowerCase().includes('active') && !String(member.status || '').toLowerCase().includes('inactive');
+                html += `
+                    <tr onclick="showMemberDetail('${member.plotNo}')">
+                        <td><strong>${member.plotNo || '-'}</strong></td>
+                        <td>${member.name || '-'}</td>
+                        <td>${member.laneNo || '-'}</td>
+                        <td>${member.occupancyStatus || '-'}</td>
+                        <td>${member.regdStartDate || member.registrationDate || '-'}</td>
+                        <td>${showFull ? (member.mobile || '-') : maskMobile(member.mobile)}</td>
+                        <td>${member.representedBy || '-'}</td>
+                        <td><span class="status-badge ${isActive ? 'status-active' : 'status-inactive'}" style="font-size: 0.75rem;">${isActive ? '✅' : '❌'}</span></td>
+                    </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            return html;
+        }
+        
+        function showMemberDetail(plotNo) {
+            // Find member and show their card
+            for (const [key, member] of Object.entries(memberData)) {
+                if (key.startsWith('_')) continue;
+                if (String(member.plotNo) === String(plotNo)) {
+                    document.getElementById('resultsGrid').innerHTML = generateKYCCard(member);
+                    toggleView('grid');
+                    break;
+                }
+            }
+        }
+        
+        function toggleView(view) {
+            currentView = view;
+            const gridContainer = document.getElementById('resultsGrid');
+            const listContainer = document.getElementById('resultsList');
+            
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === view);
+            });
+            
+            if (view === 'grid') {
+                gridContainer.style.display = 'grid';
+                listContainer.style.display = 'none';
+            } else {
+                gridContainer.style.display = 'none';
+                listContainer.style.display = 'block';
+            }
+        }
+        
+        // ============================================================
+        // UTILITIES
+        // ============================================================
+        function maskMobile(mobile) {
+            if (!mobile || mobile === '-') return '-';
+            const clean = String(mobile).replace(/[\s\-\+]/g, '');
+            if (clean.length < 6) return mobile;
+            return '******' + clean.slice(-4);
+        }
+        
+        function maskEmail(email) {
+            if (!email || email === '-') return '-';
+            const atIndex = String(email).indexOf('@');
+            if (atIndex < 0) return email;
+            const localPart = email.substring(0, atIndex);
+            const domain = email.substring(atIndex);
+            if (localPart.length <= 3) return localPart[0] + '***' + domain;
+            return localPart.substring(0, 3) + '*****' + domain;
+        }
+        
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                searchInput.placeholder = placeholders[btn.dataset.search];
+                searchInput.value = '';
+                
+                if (btn.dataset.search === 'all') {
+                    searchInput.style.display = 'none';
+                } else {
+                    searchInput.style.display = 'block';
+                }
+            });
+        });
+        
+        searchInput.addEventListener('keypress', (e) => { 
+            if (e.key === 'Enter') searchMember(); 
+        });
+    </script>
+</body>
+</html>
