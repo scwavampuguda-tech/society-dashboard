@@ -10,9 +10,69 @@
         body.admin-mode { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
         body.user-mode { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .container { max-width: 1200px; margin: 0 auto; }
-        .header { text-align: center; color: white; margin-bottom: 30px; }
-        .header h1 { font-size: 2.3rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        .header p { font-size: 1rem; opacity: 0.9; }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            margin-bottom: 30px;
+            padding: 18px 25px;
+            background: rgba(0,0,0,0.18);
+            border-radius: 18px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+        }
+        .header-logo-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+        .header-logo-img {
+            width: 85px;
+            height: 85px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: white;
+            padding: 4px;
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 15px rgba(255,215,0,0.6), 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .header-logo-img:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 25px rgba(255,215,0,0.9), 0 6px 20px rgba(0,0,0,0.4);
+        }
+        .header-regd-no {
+            font-size: 0.68em;
+            color: #FFD700;
+            font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+        .header-center {
+            flex: 1;
+            text-align: center;
+            padding: 0 15px;
+        }
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-bottom: 6px;
+        }
+        @media (max-width: 600px) {
+            .header { flex-direction: column; gap: 12px; text-align: center; }
+            .header-logo-img { width: 65px; height: 65px; }
+            .header h1 { font-size: 1.4rem; }
+        }
         .badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-top: 10px; }
         .admin-badge { background: #ffd700; color: #000; }
         .user-badge { background: #38ef7d; color: #000; }
@@ -148,17 +208,145 @@
             .results-card { display: block !important; box-shadow: none; }
             .property-content { display: block !important; page-break-after: always; }
         }
+    
+        /* UPI Pay Buttons */
+
+        /* --- Keyframe Animations --- */
+
+        /* Pay Now: Shimmer sweep */
+        @keyframes shimmerSweep {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* Pay All: Fire glow pulse */
+        @keyframes fireGlow {
+            0%   { box-shadow: 0 0 8px 2px rgba(255,100,0,0.5),
+                               0 0 16px 4px rgba(255,60,0,0.3); }
+            25%  { box-shadow: 0 0 20px 8px rgba(255,140,0,0.9),
+                               0 0 40px 14px rgba(255,60,0,0.6),
+                               0 0 60px 20px rgba(255,200,0,0.3); }
+            50%  { box-shadow: 0 0 28px 10px rgba(255,80,0,1),
+                               0 0 55px 18px rgba(255,40,0,0.7),
+                               0 0 80px 28px rgba(255,160,0,0.35); }
+            75%  { box-shadow: 0 0 18px 6px rgba(255,130,0,0.85),
+                               0 0 38px 12px rgba(255,60,0,0.55),
+                               0 0 58px 18px rgba(255,200,0,0.25); }
+            100% { box-shadow: 0 0 8px 2px rgba(255,100,0,0.5),
+                               0 0 16px 4px rgba(255,60,0,0.3); }
+        }
+        @keyframes fireShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- Pay Now Button: Shimmer Sweep --- */
+        .pay-now-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(
+                100deg,
+                #00b09b 0%,
+                #00b09b 30%,
+                #adffd6 48%,
+                #ffffff 52%,
+                #adffd6 56%,
+                #96c93d 70%,
+                #96c93d 100%
+            );
+            background-size: 250% auto;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.72em;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+            margin-left: 6px;
+            vertical-align: middle;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.25);
+            box-shadow: 0 2px 8px rgba(0,176,155,0.4);
+            animation: shimmerSweep 4s linear infinite;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .pay-now-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 18px 6px rgba(0,230,180,0.8);
+            animation-play-state: paused;
+        }
+
+        /* --- Pay All Button: Fire Glow --- */
+        .pay-all-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #ff4500, #ff8c00, #ffd200, #ff8c00, #ff4500);
+            background-size: 300% 300%;
+            color: white;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            border: none;
+            border-radius: 25px;
+            padding: 11px 26px;
+            font-size: 1em;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 14px;
+            letter-spacing: 0.4px;
+            animation: fireGlow 3s ease-in-out infinite,
+                       fireShift 3s ease-in-out infinite;
+            transition: transform 0.2s, filter 0.2s;
+        }
+        .pay-all-btn:hover {
+            transform: scale(1.07);
+            filter: brightness(1.15);
+            animation-play-state: paused;
+            box-shadow: 0 0 50px 18px rgba(255,100,0,1),
+                        0 0 90px 30px rgba(255,60,0,0.7);
+        }
+
+        .pay-all-wrap {
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body class="user-mode">
     <div class="container">
         <div class="header">
-            <h1 id="portalTitle">🏘️ Society Member Portal</h1>
-            <p id="portalSubtitle">View your payment history and balance</p>
-            <span class="badge user-badge" id="roleBadge">🔐 MEMBER ACCESS</span>
-            <span class="badge cached-badge" id="dataBadge">📦 CACHED DATA</span>
+
+            <!-- Logo Left -->
+            <div class="header-logo-wrap">
+                <img class="header-logo-img"
+                     src="icons/society_logo.png"
+                     alt="SCRWA Logo"
+                     onerror="this.style.display='none'">
+                <span class="header-regd-no">Regd No. 2240/2006</span>
+            </div>
+
+            <!-- Center Title -->
+            <div class="header-center">
+                <h1 id="portalTitle">&#127968; Society Member Portal</h1>
+                <p id="portalSubtitle">View your payment history and balance</p>
+                <span class="badge user-badge" id="roleBadge">&#128100; MEMBER ACCESS</span>
+                <span class="badge cached-badge" id="dataBadge">&#128225; CACHED DATA</span>
+            </div>
+
+            <!-- Logo Right -->
+            <div class="header-logo-wrap">
+                <img class="header-logo-img"
+                     src="icons/society_logo.png"
+                     alt="SCRWA Logo"
+                     onerror="this.style.display='none'">
+                <span class="header-regd-no">Regd No. 2240/2006</span>
+            </div>
+
         </div>
-        
+
         <div class="initial-loading" id="initialLoading">
             <div class="spinner"></div>
             <h3>Loading...</h3>
@@ -815,7 +1003,14 @@
             html += '<div class="summary-card outstanding"><div class="summary-amount">₹' + totalOutstanding.toLocaleString('en-IN') + '</div><div class="summary-label">Outstanding</div></div>';
             html += '<div class="summary-card advance"><div class="summary-amount">₹' + advance.toLocaleString('en-IN') + '</div><div class="summary-label">Advance</div></div>';
             html += '</div>';
-            
+            // Pay All Outstanding button
+            if (totalOutstanding > 0) {
+                const payAllUrl = 'upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&am=' + totalOutstanding + '&cu=INR&tn=' + encodeURIComponent('SCRWA Dues - All Outstanding');
+                html += '<div class="pay-all-wrap">';
+                html += '<a class="pay-all-btn" href="' + payAllUrl + '" title="Pay all outstanding dues">&#128242;&nbsp; Pay All Outstanding &nbsp;&#8377;' + totalOutstanding.toLocaleString('en-IN') + ' &nbsp;&#10230;</a>';
+                html += '</div>';
+            }
+
             // Payment comment
             if (paymentComment.text) {
                 html += '<div class="payment-comment ' + paymentComment.class + '">' + paymentComment.text + '</div>';
@@ -823,10 +1018,10 @@
             
             // Invoice table
             html += '<h3 class="section-title">📋 Invoice Details</h3>';
-            html += '<div class="table-container"><table><thead><tr><th>Bill ID</th><th>Period</th><th>Bill Date</th><th>Bill Amount</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead><tbody>';
+            html += '<div class="table-container"><table><thead><tr><th>Bill ID</th><th>Period</th><th>Bill Date</th><th>Bill Amount</th><th>Paid</th><th>Balance</th><th>Status</th><th>Pay</th></tr></thead><tbody>';
             
             if ((member.invoices || []).length === 0) {
-                html += '<tr><td colspan="7" style="text-align: center; color: #888;">No invoices found</td></tr>';
+                html += '<tr><td colspan="8" style="text-align: center; color: #888;">No invoices found</td></tr>';
             } else {
                 (member.invoices || []).forEach(inv => {
                     const statusClass = String(inv.status || '').includes('Paid') ? 'status-paid' : String(inv.status || '').includes('Partial') ? 'status-partial' : 'status-unpaid';
@@ -834,7 +1029,17 @@
                     html += '<td>₹' + (inv.billAmount || 0).toLocaleString('en-IN') + '</td>';
                     html += '<td class="amount-positive">₹' + (inv.paidAmount || 0).toLocaleString('en-IN') + '</td>';
                     html += '<td class="' + ((inv.balance || 0) > 0 ? 'amount-negative' : '') + '">₹' + (inv.balance || 0).toLocaleString('en-IN') + '</td>';
-                    html += '<td class="' + statusClass + '">' + (inv.status || '') + '</td></tr>';
+                    const invBalance = inv.balance || 0;
+                    const isPaid = String(inv.status || '').includes('Paid') && !String(inv.status || '').includes('Partial');
+                    let payCell = '<td>';
+                    if (!isPaid && invBalance > 0) {
+                        const upiUrl = 'upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&am=' + invBalance + '&cu=INR&tn=' + encodeURIComponent((inv.billId || '') + ' ' + (inv.period || ''));
+                        payCell += '<a class="pay-now-btn" href="' + upiUrl + '" title="Pay \u20B9' + invBalance.toLocaleString('en-IN') + ' via UPI">&#128242; Pay &#8377;' + invBalance.toLocaleString('en-IN') + '</a>';
+                    } else {
+                        payCell += '<span style="color:#27ae60;font-weight:700;">&#10003; Clear</span>';
+                    }
+                    payCell += '</td>';
+                    html += '<td class="' + statusClass + '">' + (inv.status || '') + '</td>' + payCell + '</tr>';
                 });
             }
             html += '</tbody></table></div>';
