@@ -1003,17 +1003,17 @@
             html += '<div class="summary-card outstanding"><div class="summary-amount">₹' + totalOutstanding.toLocaleString('en-IN') + '</div><div class="summary-label">Outstanding</div></div>';
             html += '<div class="summary-card advance"><div class="summary-amount">₹' + advance.toLocaleString('en-IN') + '</div><div class="summary-label">Advance</div></div>';
             html += '</div>';
-            // Pay All Outstanding button
+            // Payment comment
+            if (paymentComment.text) {
+                html += '<div class="payment-comment ' + paymentComment.class + '">' + paymentComment.text + '</div>';
+            }
+
+            // Pay All Outstanding button — below payment comment
             if (totalOutstanding > 0) {
                 const payAllUrl = 'upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&am=' + totalOutstanding + '&cu=INR&tn=' + encodeURIComponent('SCRWA Dues - All Outstanding');
                 html += '<div class="pay-all-wrap">';
                 html += '<a class="pay-all-btn" href="' + payAllUrl + '" title="Pay all outstanding dues">&#128242;&nbsp; Pay All Outstanding &nbsp;&#8377;' + totalOutstanding.toLocaleString('en-IN') + ' &nbsp;&#10230;</a>';
                 html += '</div>';
-            }
-
-            // Payment comment
-            if (paymentComment.text) {
-                html += '<div class="payment-comment ' + paymentComment.class + '">' + paymentComment.text + '</div>';
             }
             
             // Invoice table
