@@ -27,20 +27,68 @@
         .header {
             background: linear-gradient(135deg, #003366 0%, #004080 100%);
             color: white;
-            padding: 30px;
+            padding: 22px 30px;
             border-radius: 15px;
-            text-align: center;
             margin-bottom: 25px;
             box-shadow: 0 10px 30px rgba(0,51,102,0.3);
         }
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .header-logo-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+        .header-regd-no {
+            font-size: 0.68em;
+            color: #FFD700;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-align: center;
+            white-space: nowrap;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+        .header-logo-img {
+            flex-shrink: 0;
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: white;
+            padding: 4px;
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 15px rgba(255,215,0,0.6), 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .header-logo-img:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 25px rgba(255,215,0,0.9), 0 6px 20px rgba(0,0,0,0.4);
+        }
+        @media (max-width: 600px) {
+            .header-logo-img { width: 60px; height: 60px; }
+        }
+        .header-center {
+            flex: 1;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .header-inner { flex-direction: column; gap: 10px; }
+            
+        }
         
         .header h1 {
-            font-size: 2.2em;
-            margin-bottom: 10px;
+            font-size: 2em;
+            margin-bottom: 8px;
         }
         
         .header p {
-            font-size: 1.1em;
+            font-size: 1.05em;
             opacity: 0.9;
         }
         
@@ -311,49 +359,83 @@
         .payment-box {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
-            padding: 25px;
+            padding: 20px 25px;
             border-radius: 12px;
             margin-top: 20px;
         }
         
-        /* Payment Box Inner Layout */
+        /* Payment Box Layout */
         .payment-box-inner {
             display: flex;
-            align-items: center;
             gap: 0;
         }
         .payment-box-left {
             flex: 1;
-            padding-right: 20px;
+        }
+        .payment-box-left .payment-details {
+            margin-bottom: 0;
         }
         .payment-box-right {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
             background: white;
-            border-radius: 14px;
-            padding: 12px 12px 14px 12px;
-            min-width: 170px;
-            max-width: 170px;
+            border-radius: 12px;
+            padding: 10px 10px 8px 10px;
+            width: 165px;
+            min-width: 165px;
+            max-width: 165px;
             flex-shrink: 0;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.18);
-            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.18);
+            gap: 6px;
+            margin-left: 18px;
+            margin-top: -8px;
         }
-        
-        
         .qr-code-img {
-            width: 155px;
-            height: 155px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
+            width: 148px;
+            height: 148px;
+            border-radius: 6px;
+            border: 1px solid #eee;
             display: block;
-            image-rendering: pixelated;
         }
-        
-        
-        
+        .qr-upi-display {
+            text-align: center;
+            width: 100%;
+        }
+        .qr-upi-label {
+            font-size: 0.58em;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 4px;
+        }
+        .qr-upi-value {
+            display: block;
+            font-size: 0.62em;
+            color: #003366;
+            font-weight: 800;
+            word-break: break-all;
+            line-height: 1.4;
+            text-decoration: none;
+            background: #f0f7ff;
+            border: 1.5px solid #cce0ff;
+            border-radius: 8px;
+            padding: 5px 8px;
+            transition: all 0.2s;
+        }
+        .qr-upi-value:hover {
+            background: #dceeff;
+            color: #001a4d;
+        }
         @media (max-width: 600px) {
-            .payment-box-inner { flex-direction: column; gap: 15px; }
+            .payment-box-inner { flex-direction: column; }
+            .payment-box-right {
+                width: 100%; min-width: unset; max-width: unset;
+                margin-left: 0; margin-top: 15px;
+            }
+        }
             .payment-box-right {
             display: flex;
             align-items: center;
@@ -683,11 +765,36 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🏘️ Senior Citizens Residential Welfare Association</h1>
-            <p>Society Dashboard (Nov 2025 - <span id="currentPeriod">Loading...</span>) | <span id="currentDate">Loading...</span></p>
-            <div class="live-indicator loading" id="liveIndicator">⏳ Loading Data...</div>
+            <div class="header-inner">
+
+                <!-- Logo Left -->
+                <div class="header-logo-wrap">
+                    <img class="header-logo-img"
+                         src="icons/society_logo.png"
+                         alt="SCRWA Logo"
+                         onerror="this.style.display='none'">
+                    <span class="header-regd-no">Regd No. 2240/2006</span>
+                </div>
+
+                <!-- Center Title -->
+                <div class="header-center">
+                    <h1>&#127968; Senior Citizens Residential Welfare Association</h1>
+                    <p>Society Dashboard (Nov 2025 - <span id="currentPeriod">Loading...</span>) | <span id="currentDate">Loading...</span></p>
+                    <div class="live-indicator loading" id="liveIndicator">&#9679; Loading Data...</div>
+                </div>
+
+                <!-- Logo Right -->
+                <div class="header-logo-wrap">
+                    <img class="header-logo-img"
+                         src="icons/society_logo.png"
+                         alt="SCRWA Logo"
+                         onerror="this.style.display='none'">
+                    <span class="header-regd-no">Regd No. 2240/2006</span>
+                </div>
+
+            </div>
         </div>
-        
+
         <!-- Key Metrics -->
         <div class="metrics-grid">
             <div class="metric-card green">
@@ -914,11 +1021,13 @@
         
         <!-- Payment Details -->
         <div class="payment-box">
-            <h3>&#128179; Payment Details</h3>
             <div class="payment-box-inner">
 
-                <!-- Left: Bank Details -->
+                <!-- Left: Title + Bank Details -->
                 <div class="payment-box-left">
+                    <h3 style="color:white; border-bottom:2px solid rgba(255,255,255,0.3); padding-bottom:10px; margin-bottom:15px;">
+                        &#128179; Payment Details
+                    </h3>
                     <div class="payment-details">
                         <strong>Bank:</strong> HDFC Bank, Saket Road Branch<br>
                         <strong>Account Name:</strong> Senior Citizens Residential Welfare Association<br>
@@ -928,27 +1037,22 @@
                     </div>
                 </div>
 
-                <!-- Right: QR Code + UPI ID -->
+                <!-- Right: QR Code — top-right aligned -->
                 <div class="payment-box-right">
-
-                    <!-- QR Image — tap to open payment app -->
-                    <a href="upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&cu=INR" title="Tap to pay via GPay / PhonePe / Paytm" style="display:block;line-height:0;">
+                    <a href="upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&cu=INR"
+                       style="display:block;line-height:0;" title="Tap to pay">
                         <img class="qr-code-img"
                              src="https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&cu=INR&choe=UTF-8&chld=H|1"
-                             alt="Tap to Pay — UPI QR Code"
-                             onerror="this.onerror=null;this.src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&ecc=H&data=upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&cu=INR'">
+                             alt="UPI QR Code"
+                             onerror="this.onerror=null;this.src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&ecc=H&data=upi://pay?pa=seniorcitizensreside.82265756@hdfcbank'">
                     </a>
-
-                    <!-- UPI ID below QR -->
                     <div class="qr-upi-display">
                         <div class="qr-upi-label">&#128247; Scan or tap to pay</div>
                         <a class="qr-upi-value"
-                           href="upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&cu=INR"
-                           title="Tap to open GPay / PhonePe / Paytm">
+                           href="upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&cu=INR">
                            seniorcitizensreside<br>.82265756@hdfcbank
                         </a>
                     </div>
-
                 </div>
 
             </div>
