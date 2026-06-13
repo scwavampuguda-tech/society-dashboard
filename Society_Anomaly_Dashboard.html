@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Anomaly Dashboard | Data Quality</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(231,76,60,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.03) 10px,
+                rgba(255,255,255,0.03) 20px
+            );
+            animation: headerMove 20s linear infinite;
+        }
+        
+        @keyframes headerMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .scan-indicator {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            border-radius: 25px;
+            font-size: 0.9em;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+            animation: scanPulse 2s infinite;
+        }
+        
+        @keyframes scanPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+            50% { box-shadow: 0 0 25px rgba(255,255,255,0.6), 0 0 40px rgba(255,255,255,0.3); }
+        }
+        
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border-color: rgba(255,255,255,0.3);
+        }
+        
+        .summary-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .summary-card .count {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        
+        .summary-card .label {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .summary-card.critical { border-left: 4px solid #e74c3c; }
+        .summary-card.critical .count { color: #ff6b6b; }
+        
+        .summary-card.warning { border-left: 4px solid #f39c12; }
+        .summary-card.warning .count { color: #feca57; }
+        
+        .summary-card.info { border-left: 4px solid #3498db; }
+        .summary-card.info .count { color: #74b9ff; }
+        
+        .summary-card.success { border-left: 4px solid #27ae60; }
+        .summary-card.success .count { color: #55efc4; }
+        
+        /* Section Title */
+        .section-title {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 30px 0 20px 0;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .section-title .badge {
+            background: #e74c3c;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            animation: badgePulse 1.5s infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Anomaly Cards */
+        .anomaly-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 600px) {
+            .anomaly-grid { grid-template-columns: 1fr; }
+        }
+        
+        .anomaly-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .anomaly-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-color: rgba(255,255,255,0.2);
+        }
+        
+        .anomaly-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .anomaly-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1em;
+        }
+        
+        .anomaly-count {
+            background: #e74c3c;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+            animation: countPulse 2s infinite;
+        }
+        
+        .anomaly-count.warning { background: #f39c12; }
+        .anomaly-count.info { background: #3498db; }
+        .anomaly-count.success { background: #27ae60; }
+        
+        @keyframes countPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .anomaly-body {
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .anomaly-body::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .anomaly-body::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+        }
+        
+        .anomaly-body::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+        }
+        
+        .anomaly-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border-left: 3px solid #e74c3c;
+            transition: all 0.2s;
+        }
+        
+        .anomaly-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        
+        .anomaly-item.warning { border-left-color: #f39c12; }
+        .anomaly-item.info { border-left-color: #3498db; }
+        
+        .anomaly-item .plot-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .anomaly-item .plot-no {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .anomaly-item .owner-name {
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+        
+        .anomaly-item .detail {
+            text-align: right;
+            font-size: 0.85em;
+        }
+        
+        .anomaly-item .detail .value {
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        
+        .anomaly-item .detail .value.warning { color: #feca57; }
+        .anomaly-item .detail .value.info { color: #74b9ff; }
+        
+        .no-anomaly {
+            text-align: center;
+            padding: 40px;
+            color: #55efc4;
+            font-size: 1.2em;
+        }
+        
+        .no-anomaly .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            animation: successBounce 2s infinite;
+        }
+        
+        @keyframes successBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* AI Insights Section */
+        .insights-section {
+            background: linear-gradient(135deg, rgba(155,89,182,0.2) 0%, rgba(142,68,173,0.1) 100%);
+            border: 1px solid rgba(155,89,182,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .insights-title {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border-left: 3px solid #9b59b6;
+        }
+        
+        .insight-icon {
+            font-size: 1.5em;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .insight-text {
+            flex: 1;
+        }
+        
+        .insight-text strong {
+            color: #dda0dd;
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26,26,46,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .scanner {
+            width: 120px;
+            height: 120px;
+            border: 4px solid rgba(231,76,60,0.3);
+            border-top: 4px solid #e74c3c;
+            border-radius: 50%;
+            animation: scan 1s linear infinite;
+            margin: 0 auto 25px;
+            position: relative;
+        }
+        
+        .scanner::after {
+            content: '🔍';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5em;
+        }
+        
+        @keyframes scan {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        .loading-subtext {
+            opacity: 0.7;
+        }
+        
+        /* Refresh Button */
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(231,76,60,0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 100;
+        }
+        
+        .refresh-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(231,76,60,0.6);
+        }
+        
+        /* Back Button */
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(52,152,219,0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 100;
+            text-decoration: none;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(52,152,219,0.6);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            opacity: 0.7;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        /* Data Quality Score */
+        .quality-score {
+            background: linear-gradient(135deg, rgba(39,174,96,0.2) 0%, rgba(46,204,113,0.1) 100%);
+            border: 1px solid rgba(39,174,96,0.3);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(#27ae60 0deg, #27ae60 calc(var(--score) * 3.6deg), rgba(255,255,255,0.1) calc(var(--score) * 3.6deg));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        
+        .score-circle::before {
+            content: '';
+            width: 120px;
+            height: 120px;
+            background: #1a1a2e;
+            border-radius: 50%;
+            position: absolute;
+        }
+        
+        .score-value {
+            position: relative;
+            z-index: 1;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        
+        .score-label {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="scanner"></div>
+            <h3 class="loading-text">Scanning Data for Anomalies...</h3>
+            <p class="loading-subtext">Analyzing records from Google Sheets</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔍 Society Anomaly Dashboard</h1>
+            <p>Data Quality & Integrity Analysis | <span id="currentDate">Loading...</span></p>
+            <div class="scan-indicator" id="scanIndicator">⏳ Scanning...</div>
+        </div>
+        
+        <!-- Data Quality Score -->
+        <div class="quality-score">
+            <div class="score-circle" id="scoreCircle" style="--score: 0">
+                <span class="score-value" id="scoreValue">--%</span>
+            </div>
+            <div class="score-label">Data Quality Score</div>
+            <p style="margin-top: 10px; opacity: 0.7;" id="scoreDescription">Analyzing...</p>
+        </div>
+        
+        <!-- Summary Cards -->
+        <div class="summary-grid" id="summaryGrid">
+            <div class="summary-card critical">
+                <div class="icon">⚠️</div>
+                <div class="count" id="totalAnomalies">--</div>
+                <div class="label">Total Anomalies</div>
+            </div>
+            <div class="summary-card critical">
+                <div class="icon">🚪</div>
+                <div class="count" id="exitedNotPaid">--</div>
+                <div class="label">Exited - Not Paid</div>
+            </div>
+            <div class="summary-card warning">
+                <div class="icon">🏠</div>
+                <div class="count" id="occupantNotPaid">--</div>
+                <div class="label">Occupant - Not Paid</div>
+            </div>
+            <div class="summary-card info">
+                <div class="icon">📧</div>
+                <div class="count" id="emailMissing">--</div>
+                <div class="label">Email Missing</div>
+            </div>
+            <div class="summary-card info">
+                <div class="icon">📱</div>
+                <div class="count" id="phoneMissing">--</div>
+                <div class="label">Phone Missing</div>
+            </div>
+            <div class="summary-card warning">
+                <div class="icon">🏷️</div>
+                <div class="count" id="occupancyMissing">--</div>
+                <div class="label">Occupancy Missing</div>
+            </div>
+            <div class="summary-card critical">
+                <div class="icon">📄</div>
+                <div class="count" id="invoiceIssues">--</div>
+                <div class="label">Invoice Issues</div>
+            </div>
+            <div class="summary-card success">
+                <div class="icon">✅</div>
+                <div class="count" id="cleanRecords">--</div>
+                <div class="label">Clean Records</div>
+            </div>
+        </div>
+        
+        <!-- Critical Anomalies -->
+        <div class="section-title">
+            🚨 Critical Anomalies
+            <span class="badge" id="criticalBadge">0 Issues</span>
+        </div>
+        
+        <div class="anomaly-grid">
+            <!-- Exited but Not Paid -->
+            <div class="anomaly-card">
+                <div class="anomaly-header">
+                    <h3>🚪 Exited Status - Outstanding Dues</h3>
+                    <span class="anomaly-count" id="exitedCount">0</span>
+                </div>
+                <div class="anomaly-body" id="exitedNotPaidList">
+                    <div class="no-anomaly">
+                        <div class="icon">✅</div>
+                        No anomalies found
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Occupant but Not Paid -->
+            <div class="anomaly-card">
+                <div class="anomaly-header">
+                    <h3>🏠 Occupant - Not Paid</h3>
+                    <span class="anomaly-count warning" id="occupantCount">0</span>
+                </div>
+                <div class="anomaly-body" id="occupantNotPaidList">
+                    <div class="no-anomaly">
+                        <div class="icon">✅</div>
+                        No anomalies found
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Information Missing -->
+        <div class="section-title">
+            📇 Contact Information Issues
+            <span class="badge" id="contactBadge" style="background: #3498db;">0 Issues</span>
+        </div>
+        
+        <div class="anomaly-grid">
+            <!-- Email Missing -->
+            <div class="anomaly-card">
+                <div class="anomaly-header">
+                    <h3>📧 Email Missing (Owner/Proxy)</h3>
+                    <span class="anomaly-count info" id="emailCount">0</span>
+                </div>
+                <div class="anomaly-body" id="emailMissingList">
+                    <div class="no-anomaly">
+                        <div class="icon">✅</div>
+                        No anomalies found
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phone Missing -->
+            <div class="anomaly-card">
+                <div class="anomaly-header">
+                    <h3>📱 Phone Missing (Owner/Proxy)</h3>
+                    <span class="anomaly-count info" id="phoneCount">0</span>
+                </div>
+                <div class="anomaly-body" id="phoneMissingList">
+                    <div class="no-anomaly">
+                        <div class="icon">✅</div>
+                        No anomalies found
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Quality Issues -->
+        <div class="section-title">
+            📊 Data Quality Issues
+            <span class="badge" id="qualityBadge" style="background: #f39c12;">0 Issues</span>
+        </div>
+        
+        <div class="anomaly-grid">
+            <!-- Occupancy Status Missing -->
+            <div class="anomaly-card">
+                <div class="anomaly-header">
+                    <h3>🏷️ Occupancy Status Missing</h3>
+                    <span class="anomaly-count warning" id="occupancyCount">0</span>
+                </div>
+                <div class="anomaly-body" id="occupancyMissingList">
+                    <div class="no-anomaly">
+                        <div class="icon">✅</div>
+                        No anomalies found
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Invoice Issues -->
+            <div class="anomaly-card">
+                <div class="anomaly-header">
+                    <h3>📄 Invoice Issues (Exit/New Owner)</h3>
+                    <span class="anomaly-count" id="invoiceCount">0</span>
+                </div>
+                <div class="anomaly-body" id="invoiceIssuesList">
+                    <div class="no-anomaly">
+                        <div class="icon">✅</div>
+                        No anomalies found
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Anomalies (AI Generated) -->
+        <div class="section-title">
+            🤖 Additional Analysis
+            <span class="badge" id="additionalBadge" style="background: #9b59b6;">0 Issues</span>
+        </div>
+        
+        <div class="anomaly-grid">
+            <!-- Duplicate Detection -->
+            <div class="anomaly-card">
+                <div class="anomaly-header">
+                    <h3>👥 Potential Duplicates</h3>
+                    <span class="anomaly-count" id="duplicateCount" style="background: #9b59b6;">0</span>
+                </div>
+                <div class="anomaly-body" id="duplicatesList">
+                    <div class="no-anomaly">
+                        <div class="icon">✅</div>
+                        No duplicates found
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Inactive with Recent Payments -->
+            <div class="anomaly-card">
+                <div class="anomaly-header">
+                    <h3>🔄 Inactive with Recent Activity</h3>
+                    <span class="anomaly-count" id="inactiveActivityCount" style="background: #9b59b6;">0</span>
+                </div>
+                <div class="anomaly-body" id="inactiveActivityList">
+                    <div class="no-anomaly">
+                        <div class="icon">✅</div>
+                        No anomalies found
+                    </div>
+                </div>
+            </div>
+            
+            <!-- High Outstanding -->
+            <div class="anomaly-card">
+                <div class="anomaly-header">
+                    <h3>💰 High Outstanding (>Rs.10,000)</h3>
+                    <span class="anomaly-count" id="highOutstandingCount" style="background: #e74c3c;">0</span>
+                </div>
+                <div class="anomaly-body" id="highOutstandingList">
+                    <div class="no-anomaly">
+                        <div class="icon">✅</div>
+                        No high outstanding found
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lane/House Mismatch -->
+            <div class="anomaly-card">
+                <div class="anomaly-header">
+                    <h3>🗺️ Lane/House Data Issues</h3>
+                    <span class="anomaly-count warning" id="locationCount">0</span>
+                </div>
+                <div class="anomaly-body" id="locationIssuesList">
+                    <div class="no-anomaly">
+                        <div class="icon">✅</div>
+                        No issues found
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Insights -->
+        <div class="insights-section">
+            <div class="insights-title">🧠 AI Analysis & Recommendations</div>
+            <div id="insightsContainer">
+                <div class="insight-item">
+                    <div class="insight-icon">⏳</div>
+                    <div class="insight-text">Analyzing data patterns...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>🏘️ Senior Citizens Residential Welfare Association</strong></p>
+            <p>Anomaly Dashboard | Auto-scans from Google Sheets</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                Last Scan: <span id="lastScan">--</span>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <a href="Society_Dashboard.html" class="back-btn">⬅️ Back to Dashboard</a>
+    <button class="refresh-btn" onclick="refreshData()">🔄 Re-Scan</button>
+    
+    <script>
+        // ============================================================
+        // CONFIGURATION
+        // ============================================================
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+        
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            setCurrentDate();
+            loadData();
+        });
+        
+        function setCurrentDate() {
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-IN', options);
+            document.getElementById('lastScan').textContent = now.toLocaleString('en-IN');
+        }
+        
+        // ============================================================
+        // DATA LOADING
+        // ============================================================
+        async function loadData() {
+            const indicator = document.getElementById('scanIndicator');
+            indicator.textContent = '🔍 Scanning...';
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL);
+                if (!response.ok) throw new Error('Failed to fetch data');
+                
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+                
+                analyzeData(data);
+                
+                indicator.textContent = '✅ Scan Complete | ' + new Date().toLocaleTimeString();
+                document.getElementById('loadingOverlay').style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                indicator.textContent = '❌ Scan Failed: ' + error.message;
+                document.getElementById('loadingOverlay').innerHTML = `
+                    <div class="loading-content">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">❌</div>
+                        <h3>Scan Failed</h3>
+                        <p style="margin: 20px 0;">${error.message}</p>
+                        <button onclick="location.reload()" style="padding: 12px 30px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer;">🔄 Retry</button>
+                    </div>
+                `;
+            }
+        }
+        
+        function refreshData() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('loadingOverlay').innerHTML = `
+                <div class="loading-content">
+                    <div class="scanner"></div>
+                    <h3 class="loading-text">Re-scanning Data...</h3>
+                    <p class="loading-subtext">Checking for anomalies</p>
+                </div>
+            `;
+            loadData();
+        }
+        
+        // ============================================================
+        // DATA ANALYSIS
+        // ============================================================
+        function analyzeData(data) {
+            const anomalies = {
+                exitedNotPaid: [],
+                occupantNotPaid: [],
+                emailMissing: [],
+                phoneMissing: [],
+                occupancyMissing: [],
+                invoiceIssues: [],
+                duplicates: [],
+                inactiveActivity: [],
+                highOutstanding: [],
+                locationIssues: []
+            };
+            
+            let totalRecords = 0;
+            let cleanRecords = 0;
+            const nameMap = {};
+            const mobileMap = {};
+            
+            for (const [key, member] of Object.entries(data)) {
+                if (key.startsWith('_')) continue;
+                totalRecords++;
+                
+                let hasIssue = false;
+                const status = String(member.status || '').toLowerCase();
+                const occupancy = String(member.occupancyStatus || '').toLowerCase();
+                
+                // Calculate outstanding
+                let outstanding = 0;
+                (member.invoices || []).forEach(inv => {
+                    outstanding += (inv.balance || 0);
+                });
+                
+                // 1. Exited but not paid
+                if ((status.includes('exited') || status.includes('exit') || status.includes('sold')) && outstanding > 0) {
+                    anomalies.exitedNotPaid.push({
+                        plotNo: member.plotNo,
+                        name: member.name,
+                        outstanding: outstanding,
+                        status: member.status
+                    });
+                    hasIssue = true;
+                }
+                
+                // 2. Occupant/Tenant but not paid (Owner-Occupied with dues)
+                if ((occupancy.includes('tenant') || occupancy.includes('rented') || occupancy.includes('occupied')) && outstanding > 0) {
+                    anomalies.occupantNotPaid.push({
+                        plotNo: member.plotNo,
+                        name: member.name,
+                        outstanding: outstanding,
+                        occupancy: member.occupancyStatus
+                    });
+                    hasIssue = true;
+                }
+                
+                // 3. Email missing for owner and proxy
+                const ownerEmail = String(member.email || '').trim();
+                const proxyEmail = String(member.proxyEmail || '').trim();
+                const hasProxy = member.representedBy && String(member.representedBy).trim().length > 0;
+                
+                if (!ownerEmail || ownerEmail === '-' || ownerEmail.length < 5) {
+                    anomalies.emailMissing.push({
+                        plotNo: member.plotNo,
+                        name: member.name,
+                        type: 'Owner',
+                        email: ownerEmail || 'Not provided'
+                    });
+                    hasIssue = true;
+                }
+                
+                if (hasProxy && (!proxyEmail || proxyEmail === '-' || proxyEmail.length < 5)) {
+                    anomalies.emailMissing.push({
+                        plotNo: member.plotNo,
+                        name: member.representedBy,
+                        type: 'Proxy',
+                        email: proxyEmail || 'Not provided'
+                    });
+                    hasIssue = true;
+                }
+                
+                // 4. Phone missing for owner and proxy
+                const ownerPhone = String(member.mobile || '').replace(/[\s\-\+]/g, '');
+                const proxyPhone = String(member.proxyMobile || '').replace(/[\s\-\+]/g, '');
+                
+                if (!ownerPhone || ownerPhone.length < 10) {
+                    anomalies.phoneMissing.push({
+                        plotNo: member.plotNo,
+                        name: member.name,
+                        type: 'Owner',
+                        phone: member.mobile || 'Not provided'
+                    });
+                    hasIssue = true;
+                }
+                
+                if (hasProxy && (!proxyPhone || proxyPhone.length < 10)) {
+                    anomalies.phoneMissing.push({
+                        plotNo: member.plotNo,
+                        name: member.representedBy,
+                        type: 'Proxy',
+                        phone: member.proxyMobile || 'Not provided'
+                    });
+                    hasIssue = true;
+                }
+                
+                // 5. Occupancy status missing
+                if (!member.occupancyStatus || String(member.occupancyStatus).trim() === '' || String(member.occupancyStatus).trim() === '-') {
+                    anomalies.occupancyMissing.push({
+                        plotNo: member.plotNo,
+                        name: member.name,
+                        status: member.status
+                    });
+                    hasIssue = true;
+                }
+                
+                // 6. Invoice issues for exit/new owner
+                if (status.includes('exited') || status.includes('exit') || status.includes('sold') || status.includes('new')) {
+                    const invoices = member.invoices || [];
+                    const exitMonth = member.exitDate ? new Date(member.exitDate).getMonth() : null;
+                    
+                    // Check if there are pro-rated invoices or issues
+                    invoices.forEach(inv => {
+                        const invDate = new Date(inv.invoiceDate || inv.period);
+                        const invMonth = invDate.getMonth();
+                        
+                        // Flag if full invoice generated in exit month (should be pro-rated)
+                        if (exitMonth !== null && invMonth === exitMonth && inv.billAmount > 500) {
+                            anomalies.invoiceIssues.push({
+                                plotNo: member.plotNo,
+                                name: member.name,
+                                issue: 'Full invoice in exit month',
+                                amount: inv.billAmount,
+                                period: inv.period
+                            });
+                            hasIssue = true;
+                        }
+                    });
+                }
+                
+                // ADDITIONAL ANALYSIS
+                
+                // 7. Check for potential duplicates (same name or phone)
+                const cleanName = String(member.name || '').toLowerCase().replace(/\s+/g, '');
+                if (cleanName.length > 3) {
+                    if (nameMap[cleanName]) {
+                        anomalies.duplicates.push({
+                            plotNo: member.plotNo,
+                            name: member.name,
+                            matchWith: nameMap[cleanName].plotNo,
+                            type: 'Same Name'
+                        });
+                        hasIssue = true;
+                    } else {
+                        nameMap[cleanName] = member;
+                    }
+                }
+                
+                if (ownerPhone.length >= 10) {
+                    if (mobileMap[ownerPhone] && mobileMap[ownerPhone].plotNo !== member.plotNo) {
+                        anomalies.duplicates.push({
+                            plotNo: member.plotNo,
+                            name: member.name,
+                            matchWith: mobileMap[ownerPhone].plotNo,
+                            type: 'Same Phone'
+                        });
+                        hasIssue = true;
+                    } else {
+                        mobileMap[ownerPhone] = member;
+                    }
+                }
+                
+                // 8. Inactive with recent payments
+                if (status.includes('inactive') || status.includes('exited')) {
+                    const payments = member.payments || [];
+                    const sixMonthsAgo = new Date();
+                    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+                    
+                    payments.forEach(pay => {
+                        const payDate = new Date(pay.date || pay.paymentDate);
+                        if (payDate > sixMonthsAgo) {
+                            anomalies.inactiveActivity.push({
+                                plotNo: member.plotNo,
+                                name: member.name,
+                                status: member.status,
+                                lastPayment: pay.date || pay.paymentDate,
+                                amount: pay.amount
+                            });
+                            hasIssue = true;
+                        }
+                    });
+                }
+                
+                // 9. High outstanding (>10,000)
+                if (outstanding > 10000) {
+                    anomalies.highOutstanding.push({
+                        plotNo: member.plotNo,
+                        name: member.name,
+                        outstanding: outstanding,
+                        status: member.status
+                    });
+                    hasIssue = true;
+                }
+                
+                // 10. Lane/House data issues
+                const laneNo = String(member.laneNo || '').trim();
+                const houseNo = String(member.house || '').trim();
+                
+                if (!laneNo || laneNo === '-' || laneNo === '') {
+                    anomalies.locationIssues.push({
+                        plotNo: member.plotNo,
+                        name: member.name,
+                        issue: 'Lane number missing',
+                        value: laneNo || 'Empty'
+                    });
+                    hasIssue = true;
+                }
+                
+                if (!houseNo || houseNo === '-' || houseNo === '') {
+                    anomalies.locationIssues.push({
+                        plotNo: member.plotNo,
+                        name: member.name,
+                        issue: 'House number missing',
+                        value: houseNo || 'Empty'
+                    });
+                    hasIssue = true;
+                }
+                
+                if (!hasIssue) {
+                    cleanRecords++;
+                }
+            }
+            
+            // Update UI
+            updateUI(anomalies, totalRecords, cleanRecords);
+            generateInsights(anomalies, totalRecords, cleanRecords);
+        }
+        
+        // ============================================================
+        // UPDATE UI
+        // ============================================================
+        function updateUI(anomalies, totalRecords, cleanRecords) {
+            const totalAnomalies = 
+                anomalies.exitedNotPaid.length +
+                anomalies.occupantNotPaid.length +
+                anomalies.emailMissing.length +
+                anomalies.phoneMissing.length +
+                anomalies.occupancyMissing.length +
+                anomalies.invoiceIssues.length;
+            
+            // Summary cards
+            document.getElementById('totalAnomalies').textContent = totalAnomalies;
+            document.getElementById('exitedNotPaid').textContent = anomalies.exitedNotPaid.length;
+            document.getElementById('occupantNotPaid').textContent = anomalies.occupantNotPaid.length;
+            document.getElementById('emailMissing').textContent = anomalies.emailMissing.length;
+            document.getElementById('phoneMissing').textContent = anomalies.phoneMissing.length;
+            document.getElementById('occupancyMissing').textContent = anomalies.occupancyMissing.length;
+            document.getElementById('invoiceIssues').textContent = anomalies.invoiceIssues.length;
+            document.getElementById('cleanRecords').textContent = cleanRecords;
+            
+            // Badges
+            const criticalCount = anomalies.exitedNotPaid.length + anomalies.occupantNotPaid.length;
+            document.getElementById('criticalBadge').textContent = criticalCount + ' Issues';
+            
+            const contactCount = anomalies.emailMissing.length + anomalies.phoneMissing.length;
+            document.getElementById('contactBadge').textContent = contactCount + ' Issues';
+            
+            const qualityCount = anomalies.occupancyMissing.length + anomalies.invoiceIssues.length;
+            document.getElementById('qualityBadge').textContent = qualityCount + ' Issues';
+            
+            const additionalCount = anomalies.duplicates.length + anomalies.inactiveActivity.length + anomalies.highOutstanding.length + anomalies.locationIssues.length;
+            document.getElementById('additionalBadge').textContent = additionalCount + ' Issues';
+            
+            // Counts
+            document.getElementById('exitedCount').textContent = anomalies.exitedNotPaid.length;
+            document.getElementById('occupantCount').textContent = anomalies.occupantNotPaid.length;
+            document.getElementById('emailCount').textContent = anomalies.emailMissing.length;
+            document.getElementById('phoneCount').textContent = anomalies.phoneMissing.length;
+            document.getElementById('occupancyCount').textContent = anomalies.occupancyMissing.length;
+            document.getElementById('invoiceCount').textContent = anomalies.invoiceIssues.length;
+            document.getElementById('duplicateCount').textContent = anomalies.duplicates.length;
+            document.getElementById('inactiveActivityCount').textContent = anomalies.inactiveActivity.length;
+            document.getElementById('highOutstandingCount').textContent = anomalies.highOutstanding.length;
+            document.getElementById('locationCount').textContent = anomalies.locationIssues.length;
+            
+            // Data Quality Score
+            const score = totalRecords > 0 ? Math.round((cleanRecords / totalRecords) * 100) : 0;
+            document.getElementById('scoreCircle').style.setProperty('--score', score);
+            document.getElementById('scoreValue').textContent = score + '%';
+            
+            let scoreDesc = '';
+            if (score >= 90) scoreDesc = 'Excellent data quality! 🌟';
+            else if (score >= 75) scoreDesc = 'Good data quality, minor issues to fix';
+            else if (score >= 50) scoreDesc = 'Moderate quality, attention needed';
+            else scoreDesc = 'Poor data quality, immediate action required! ⚠️';
+            document.getElementById('scoreDescription').textContent = scoreDesc;
+            
+            // Render lists
+            renderAnomalyList('exitedNotPaidList', anomalies.exitedNotPaid, (item) => `
+                <div class="anomaly-item">
+                    <div class="plot-info">
+                        <span class="plot-no">Plot ${item.plotNo}</span>
+                        <span class="owner-name">${item.name}</span>
+                    </div>
+                    <div class="detail">
+                        <div class="value">${formatCurrency(item.outstanding)}</div>
+                        <div>Status: ${item.status}</div>
+                    </div>
+                </div>
+            `);
+            
+            renderAnomalyList('occupantNotPaidList', anomalies.occupantNotPaid, (item) => `
+                <div class="anomaly-item warning">
+                    <div class="plot-info">
+                        <span class="plot-no">Plot ${item.plotNo}</span>
+                        <span class="owner-name">${item.name}</span>
+                    </div>
+                    <div class="detail">
+                        <div class="value warning">${formatCurrency(item.outstanding)}</div>
+                        <div>${item.occupancy}</div>
+                    </div>
+                </div>
+            `);
+            
+            renderAnomalyList('emailMissingList', anomalies.emailMissing, (item) => `
+                <div class="anomaly-item info">
+                    <div class="plot-info">
+                        <span class="plot-no">Plot ${item.plotNo}</span>
+                        <span class="owner-name">${item.name} (${item.type})</span>
+                    </div>
+                    <div class="detail">
+                        <div class="value info">📧 Missing</div>
+                    </div>
+                </div>
+            `);
+            
+            renderAnomalyList('phoneMissingList', anomalies.phoneMissing, (item) => `
+                <div class="anomaly-item info">
+                    <div class="plot-info">
+                        <span class="plot-no">Plot ${item.plotNo}</span>
+                        <span class="owner-name">${item.name} (${item.type})</span>
+                    </div>
+                    <div class="detail">
+                        <div class="value info">📱 Missing</div>
+                    </div>
+                </div>
+            `);
+            
+            renderAnomalyList('occupancyMissingList', anomalies.occupancyMissing, (item) => `
+                <div class="anomaly-item warning">
+                    <div class="plot-info">
+                        <span class="plot-no">Plot ${item.plotNo}</span>
+                        <span class="owner-name">${item.name}</span>
+                    </div>
+                    <div class="detail">
+                        <div class="value warning">🏷️ Not Set</div>
+                        <div>${item.status}</div>
+                    </div>
+                </div>
+            `);
+            
+            renderAnomalyList('invoiceIssuesList', anomalies.invoiceIssues, (item) => `
+                <div class="anomaly-item">
+                    <div class="plot-info">
+                        <span class="plot-no">Plot ${item.plotNo}</span>
+                        <span class="owner-name">${item.name}</span>
+                    </div>
+                    <div class="detail">
+                        <div class="value">${item.issue}</div>
+                        <div>${formatCurrency(item.amount)} - ${item.period}</div>
+                    </div>
+                </div>
+            `);
+            
+            renderAnomalyList('duplicatesList', anomalies.duplicates, (item) => `
+                <div class="anomaly-item" style="border-left-color: #9b59b6;">
+                    <div class="plot-info">
+                        <span class="plot-no">Plot ${item.plotNo}</span>
+                        <span class="owner-name">${item.name}</span>
+                    </div>
+                    <div class="detail">
+                        <div class="value" style="color: #dda0dd;">${item.type}</div>
+                        <div>Matches: Plot ${item.matchWith}</div>
+                    </div>
+                </div>
+            `);
+            
+            renderAnomalyList('inactiveActivityList', anomalies.inactiveActivity, (item) => `
+                <div class="anomaly-item" style="border-left-color: #9b59b6;">
+                    <div class="plot-info">
+                        <span class="plot-no">Plot ${item.plotNo}</span>
+                        <span class="owner-name">${item.name}</span>
+                    </div>
+                    <div class="detail">
+                        <div class="value" style="color: #dda0dd;">${formatCurrency(item.amount)}</div>
+                        <div>Status: ${item.status}</div>
+                    </div>
+                </div>
+            `);
+            
+            renderAnomalyList('highOutstandingList', anomalies.highOutstanding, (item) => `
+                <div class="anomaly-item">
+                    <div class="plot-info">
+                        <span class="plot-no">Plot ${item.plotNo}</span>
+                        <span class="owner-name">${item.name}</span>
+                    </div>
+                    <div class="detail">
+                        <div class="value">${formatCurrency(item.outstanding)}</div>
+                        <div>${item.status}</div>
+                    </div>
+                </div>
+            `);
+            
+            renderAnomalyList('locationIssuesList', anomalies.locationIssues, (item) => `
+                <div class="anomaly-item warning">
+                    <div class="plot-info">
+                        <span class="plot-no">Plot ${item.plotNo}</span>
+                        <span class="owner-name">${item.name}</span>
+                    </div>
+                    <div class="detail">
+                        <div class="value warning">${item.issue}</div>
+                    </div>
+                </div>
+            `);
+        }
+        
+        function renderAnomalyList(containerId, items, renderFn) {
+            const container = document.getElementById(containerId);
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="no-anomaly">
+                        <div class="icon">✅</div>
+                        No anomalies found
+                    </div>
+                `;
+            } else {
+                container.innerHTML = items.map(renderFn).join('');
+            }
+        }
+        
+        // ============================================================
+        // GENERATE INSIGHTS
+        // ============================================================
+        function generateInsights(anomalies, totalRecords, cleanRecords) {
+            const insights = [];
+            
+            // Insight 1: Critical issues
+            if (anomalies.exitedNotPaid.length > 0) {
+                const totalExitDues = anomalies.exitedNotPaid.reduce((sum, item) => sum + item.outstanding, 0);
+                insights.push({
+                    icon: '🚨',
+                    text: `<strong>Critical:</strong> ${anomalies.exitedNotPaid.length} properties have exited but have <strong>${formatCurrency(totalExitDues)}</strong> outstanding. These should be prioritized for collection before handover.`
+                });
+            }
+            
+            // Insight 2: Contact info
+            const totalContactMissing = anomalies.emailMissing.length + anomalies.phoneMissing.length;
+            if (totalContactMissing > 10) {
+                insights.push({
+                    icon: '📇',
+                    text: `<strong>Communication Gap:</strong> ${totalContactMissing} contact details are missing. This may affect payment reminders and notices. Consider a contact update drive.`
+                });
+            }
+            
+            // Insight 3: High outstanding
+            if (anomalies.highOutstanding.length > 0) {
+                const totalHighDues = anomalies.highOutstanding.reduce((sum, item) => sum + item.outstanding, 0);
+                insights.push({
+                    icon: '💰',
+                    text: `<strong>Revenue at Risk:</strong> ${anomalies.highOutstanding.length} properties have outstanding over Rs.10,000 totaling <strong>${formatCurrency(totalHighDues)}</strong>. Personal follow-up recommended.`
+                });
+            }
+            
+            // Insight 4: Data quality
+            const qualityIssues = anomalies.occupancyMissing.length + anomalies.locationIssues.length;
+            if (qualityIssues > 5) {
+                insights.push({
+                    icon: '📊',
+                    text: `<strong>Data Quality:</strong> ${qualityIssues} records have missing occupancy or location data. Clean data enables better analysis and reporting.`
+                });
+            }
+            
+            // Insight 5: Duplicates
+            if (anomalies.duplicates.length > 0) {
+                insights.push({
+                    icon: '👥',
+                    text: `<strong>Potential Duplicates:</strong> ${anomalies.duplicates.length} potential duplicate entries detected. Review and merge if necessary to avoid confusion.`
+                });
+            }
+            
+            // Insight 6: Overall health
+            const healthScore = Math.round((cleanRecords / totalRecords) * 100);
+            if (healthScore >= 80) {
+                insights.push({
+                    icon: '🌟',
+                    text: `<strong>Great Job!</strong> Data quality score is ${healthScore}%. The database is well maintained. Keep up the good work!`
+                });
+            } else if (healthScore >= 60) {
+                insights.push({
+                    icon: '📈',
+                    text: `<strong>Room for Improvement:</strong> Data quality score is ${healthScore}%. Addressing the flagged issues will improve data reliability.`
+                });
+            } else {
+                insights.push({
+                    icon: '⚠️',
+                    text: `<strong>Action Required:</strong> Data quality score is only ${healthScore}%. A data cleanup exercise is recommended to improve accuracy.`
+                });
+            }
+            
+            // Render insights
+            const container = document.getElementById('insightsContainer');
+            container.innerHTML = insights.map(insight => `
+                <div class="insight-item">
+                    <div class="insight-icon">${insight.icon}</div>
+                    <div class="insight-text">${insight.text}</div>
+                </div>
+            `).join('');
+        }
+        
+        // ============================================================
+        // UTILITIES
+        // ============================================================
+        function formatCurrency(amount) {
+            if (amount === undefined || amount === null) return '--';
+            return 'Rs.' + Math.round(amount).toLocaleString('en-IN');
+        }
+    </script>
+</body>
+</html>

@@ -70,6 +70,39 @@
             50% { opacity: 0.7; }
         }
         
+        @keyframes starBlink {
+            0%, 100% { 
+                opacity: 1; 
+                box-shadow: 0 0 5px #007bff, 0 0 10px #007bff;
+            }
+            50% { 
+                opacity: 0.7; 
+                box-shadow: 0 0 15px #007bff, 0 0 25px #007bff, 0 0 35px #007bff;
+            }
+        }
+        
+        .blink-button {
+            animation: starBlink 1.5s ease-in-out infinite;
+        }
+        
+        .live-badge {
+            animation: livePulse 2s ease-in-out infinite;
+            display: inline-block;
+        }
+        
+        @keyframes livePulse {
+            0%, 100% { 
+                opacity: 1;
+                box-shadow: 0 0 5px #28a745, 0 0 10px #28a745;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.8;
+                box-shadow: 0 0 10px #28a745, 0 0 20px #28a745, 0 0 30px #28a745;
+                transform: scale(1.05);
+            }
+        }
+        
         /* Section Titles */
         .section-title {
             background: #003366;
@@ -306,6 +339,44 @@
             border-top: 2px solid #ddd;
         }
         
+        /* Aging Chart */
+        .aging-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .aging-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+        
+        .aging-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+        
+        .legend-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        
         /* Loading Overlay */
         .loading-overlay {
             position: fixed;
@@ -431,13 +502,58 @@
         .clickable-category {
             cursor: pointer;
             transition: all 0.3s;
+            position: relative;
         }
         
         .clickable-category:hover {
-            background: #f0f0f0;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
             border-radius: 8px;
             padding: 2px 5px;
             margin: -2px -5px;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.3);
+        }
+        
+        .clickable-category::after {
+            content: ' 🔍';
+            font-size: 0.9em;
+            display: inline-block;
+            animation: searchPulse 1.5s ease-in-out infinite, searchBounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 3px #ffd700);
+        }
+        
+        .clickable-category:hover::after {
+            animation: searchSpin 0.6s ease-in-out, searchGlow 1s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px #ffd700) drop-shadow(0 0 15px #ff6b00);
+            transform: scale(1.3);
+        }
+        
+        @keyframes searchPulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        
+        @keyframes searchBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            25% { transform: translateY(-2px) scale(1.05); }
+            50% { transform: translateY(0) scale(1.1); }
+            75% { transform: translateY(-1px) scale(1.05); }
+        }
+        
+        @keyframes searchSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-15deg) scale(1.2); }
+            50% { transform: rotate(15deg) scale(1.3); }
+            75% { transform: rotate(-10deg) scale(1.25); }
+            100% { transform: rotate(0deg) scale(1.3); }
+        }
+        
+        @keyframes searchGlow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 5px #ffd700) drop-shadow(0 0 10px #ff6b00);
+            }
+            50% { 
+                filter: drop-shadow(0 0 10px #ffd700) drop-shadow(0 0 20px #ff6b00) drop-shadow(0 0 30px #ff4500);
+            }
         }
         
         /* Refresh Button */
@@ -483,35 +599,35 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>&#127960;&#65039; Senior Citizens Residential Welfare Association</h1>
-            <p>Society Meeting Dashboard | <span id="currentDate">Loading...</span></p>
-            <div class="live-indicator loading" id="liveIndicator">&#9203; Loading Data...</div>
+            <h1>🏘️ Senior Citizens Residential Welfare Association</h1>
+            <p>Society Dashboard (Nov 2025 - <span id="currentPeriod">Loading...</span>) | <span id="currentDate">Loading...</span></p>
+            <div class="live-indicator loading" id="liveIndicator">⏳ Loading Data...</div>
         </div>
         
         <!-- Key Metrics -->
         <div class="metrics-grid">
             <div class="metric-card green">
-                <div class="icon">&#128176;</div>
+                <div class="icon">💰</div>
                 <div class="value" id="currentBalance">--</div>
                 <div class="label">Current Balance</div>
             </div>
             <div class="metric-card blue">
-                <div class="icon">&#128229;</div>
+                <div class="icon">📥</div>
                 <div class="value" id="totalInflow">--</div>
                 <div class="label">Total Inflow</div>
             </div>
             <div class="metric-card orange">
-                <div class="icon">&#128228;</div>
+                <div class="icon">📤</div>
                 <div class="value" id="totalOutflow">--</div>
                 <div class="label">Total Outflow</div>
             </div>
             <div class="metric-card red">
-                <div class="icon">&#9888;</div>
+                <div class="icon">⚠️</div>
                 <div class="value" id="totalOutstanding">--</div>
                 <div class="label">Outstanding Dues</div>
             </div>
             <div class="metric-card purple">
-                <div class="icon">&#127968;</div>
+                <div class="icon">🏠</div>
                 <div class="value" id="propertiesWithDues">--</div>
                 <div class="label">Properties with Dues</div>
             </div>
@@ -519,91 +635,91 @@
         
         <!-- Outstanding Alert -->
         <div class="alert-box">
-            <h2>&#9888; <span id="alertAmount">--</span></h2>
+            <h2>⚠️ <span id="alertAmount">--</span></h2>
             <p id="alertText">Loading outstanding dues information...</p>
         </div>
         
         <!-- Member Summary -->
-        <div class="section-title">&#128101; Member Summary</div>
+        <div class="section-title">👥 Member Summary</div>
         
         <div class="metrics-grid">
             <div class="metric-card blue">
-                <div class="icon">&#128101;</div>
+                <div class="icon">👥</div>
                 <div class="value" id="totalMembers">--</div>
                 <div class="label">Total Members</div>
             </div>
             <div class="metric-card green">
-                <div class="icon">&#9989;</div>
+                <div class="icon">✅</div>
                 <div class="value" id="activeMembers">--</div>
                 <div class="label">Active Members</div>
             </div>
             <div class="metric-card orange">
-                <div class="icon">&#9208;&#65039;</div>
+                <div class="icon">⏸️</div>
                 <div class="value" id="inactiveMembers">--</div>
                 <div class="label">Inactive Members</div>
             </div>
             <div class="metric-card green">
-                <div class="icon">&#128175;</div>
+                <div class="icon">💯</div>
                 <div class="value" id="fullyPaid">--</div>
                 <div class="label">Fully Paid</div>
             </div>
         </div>
         
         <!-- Achievements Section -->
-        <div class="section-title">&#127942; Key Achievements (Nov 2025 - May 2026)</div>
+        <div class="section-title">🏆 Key Achievements (Nov 2025 - <span id="achievementsPeriod">Loading...</span>)</div>
         
         <div class="two-col">
             <div class="card">
-                <h3>&#9989; Governance &amp; Registration</h3>
+                <h3>✅ Governance & Registration</h3>
                 <ul class="achievement-list">
-                    <li>&#9989; Elections completed, new committee formed</li>
-                    <li>&#9989; Society registration amended</li>
-                    <li>&#9989; MoA &amp; Bye-Laws finalized</li>
-                    <li>&#9989; PAN Card obtained</li>
-                    <li>&#9989; Bank A/C opened (HDFC)</li>
-                    <li>&#9989; NOC mandate for property transactions</li>
+                    <li>✅ Elections completed, new committee formed</li>
+                    <li>✅ Society registration amended</li>
+                    <li>✅ MoA & Bye-Laws finalized</li>
+                    <li>✅ PAN Card obtained</li>
+                    <li>✅ Bank A/C opened (HDFC)</li>
+                    <li>✅ NOC mandate for property transactions</li>
                 </ul>
             </div>
             
             <div class="card">
-                <h3>&#127959; Infrastructure Projects</h3>
+                <h3>🏗️ Infrastructure Projects</h3>
                 <ul class="achievement-list">
-                    <li>&#9989; Rs.42 Lakh - Drainage Project (Started) <span style="font-size: 0.85em; color: #856404; background: #fff3cd; padding: 2px 8px; border-radius: 4px; margin-left: 5px;">Phase I: 1-2 streets only</span></li>
-                    <li>&#9989; Rs.40 Lakh - CC Roads (Approved)</li>
-                    <li>&#9989; 5 New Street Lights installed</li>
-                    <li>&#9989; Road repairs completed (Rs.46,900)</li>
-                    <li>&#9989; MLA Foundation Stone - 31 May 2026</li>
+                    <li>✅ Rs.42 Lakh - Drainage Project (Started) <span style="font-size: 0.85em; color: #856404; background: #fff3cd; padding: 2px 8px; border-radius: 4px; margin-left: 5px;">Phase I: 1-2 Lane only</span></li>
+                    <li>✅ Rs.40 Lakh - CC Roads (Approved)</li>
+                    <li>✅ 5 New Street Lights installed</li>
+                    <li>✅ Road repairs completed (Rs.46,900)</li>
+                    <li>✅ MLA Foundation Stone - 31 May 2026</li>
                 </ul>
             </div>
             
             <div class="card">
-                <h3>&#128187; Digital Transformation</h3>
+                <h3>💻 Digital Transformation</h3>
                 <ul class="achievement-list">
-                    <li>&#9989; Zero-cost Governance App built</li>
-                    <li>&#9989; <span id="digitizedOwners">250+</span> owners digitized</li>
-                    <li>&#9989; Live financial dashboards</li>
-                    <li>&#9989; 20 years data gap - now digitized</li>
-                    <li>&#9989; Monthly reports automated</li>
+                    <li>✅ Zero-cost Governance App built</li>
+                    <li>✅ <span id="digitizedOwners">250+</span> owners digitized</li>
+                    <li>✅ Live financial dashboards</li>
+                    <li>✅ 20 years data gap - now digitized</li>
+                    <li>✅ Monthly reports automated</li>
                 </ul>
             </div>
             
             <div class="card">
-                <h3>&#129309; Community Issues Resolved</h3>
+                <h3>🤝 Community Issues Resolved</h3>
                 <ul class="achievement-list">
-                    <li>&#9989; Road blockage cleared</li>
-                    <li>&#128260; Dog menace reduced (Plot 143 tenant vacated) - monitoring</li>
-                    <li>&#9989; Route 43 bus resumed (Govt) - communicated to residents</li>
-                    <li class="pending">&#128260; Encroachment - Monitoring</li>
+                    <li>✅ Road blockage cleared</li>
+                    <li>🔄 Dog menace reduced (Plot 143 tenant vacated) - monitoring</li>
+                    <li>✅ Route 43 bus resumed (Govt) - communicated to residents</li>
+                    <li class="pending">🔄 Encroachment - Monitoring</li>
                 </ul>
             </div>
         </div>
         
         <!-- Outstanding Dues Section -->
-        <div class="section-title">&#9888;&#65039; Outstanding Dues Analysis <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">&#128308; LIVE</span> <a href="Society_Portal.html" style="font-size: 0.5em; background: #007bff; color: white; padding: 5px 15px; border-radius: 15px; margin-left: auto; text-decoration: none; cursor: pointer;">&#128274; View My Statement</a></div>
+        <div class="section-title">&#9888;&#65039; Outstanding Dues Analysis <span class="live-badge" style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">&#128308; LIVE</span> <a href="Society_Portal.html" class="blink-button" style="font-size: 0.5em; background: #007bff; color: white; padding: 5px 15px; border-radius: 15px; margin-left: auto; text-decoration: none; cursor: pointer;">&#128274; View My Statement</a></div>
         
         <div class="two-col">
             <div class="card">
-                <h3>&#127968; Lane-wise Breakdown</h3>
+                <h3>🏠 Lane-wise Breakdown</h3>
                 <table>
                     <thead>
                         <tr>
@@ -620,7 +736,7 @@
             </div>
             
             <div class="card">
-                <h3>&#128202; Payment Status Summary</h3>
+                <h3>📊 Payment Status Summary</h3>
                 <div id="paymentStatusSummary">
                     <div style="text-align: center; padding: 30px; color: #666;">Loading payment status...</div>
                 </div>
@@ -628,11 +744,11 @@
         </div>
         
         <!-- Financial Overview Section -->
-        <div class="section-title">&#128176; Financial Overview <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">&#128308; LIVE</span></div>
+        <div class="section-title">💰 Financial Overview <span class="live-badge" style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">🔴 LIVE</span></div>
         
         <div class="two-col">
             <div class="card">
-                <h3>&#128202; Year-wise Cash Flow</h3>
+                <h3>📊 Year-wise Cash Flow</h3>
                 <table>
                     <tr>
                         <th>Financial Year</th>
@@ -647,7 +763,7 @@
             </div>
             
             <div class="card">
-                <h3>&#128200; Income Sources</h3>
+                <h3>📈 Income Sources</h3>
                 <div id="incomeSourcesContainer">
                     <div style="text-align: center; padding: 30px; color: #666;">Loading income data...</div>
                 </div>
@@ -656,14 +772,14 @@
         
         <div class="two-col" style="margin-top: 20px;">
             <div class="card">
-                <h3>&#128184; Major Expense Categories</h3>
+                <h3>💸 Major Expense Categories</h3>
                 <div id="majorExpensesContainer">
                     <div style="text-align: center; padding: 30px; color: #666;">Loading expense data...</div>
                 </div>
             </div>
             
             <div class="card">
-                <h3>&#128184; Other Expenses</h3>
+                <h3>💸 Other Expenses</h3>
                 <div id="otherExpensesContainer">
                     <div style="text-align: center; padding: 30px; color: #666;">Loading expense data...</div>
                 </div>
@@ -674,11 +790,11 @@
         </div>
         
         <!-- Internal Order Analysis Section -->
-        <div class="section-title">&#128202; Internal Order Analysis <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">&#128308; LIVE</span></div>
+        <div class="section-title">📊 Internal Order Analysis <span class="live-badge" style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">🔴 LIVE</span></div>
         
         <div class="two-col">
             <div class="card">
-                <h3>&#127970; Society Related</h3>
+                <h3>🏢 Society Related</h3>
                 <table>
                     <thead>
                         <tr>
@@ -695,7 +811,7 @@
             </div>
             
             <div class="card">
-                <h3>&#127881; Festival Events</h3>
+                <h3>🎉 Festival Events</h3>
                 <table>
                     <thead>
                         <tr>
@@ -714,38 +830,38 @@
         
         <!-- Payment Details -->
         <div class="payment-box">
-            <h3>&#128179; Payment Details</h3>
+            <h3>💳 Payment Details</h3>
             <div class="payment-details">
                 <strong>Bank:</strong> HDFC Bank, Saket Road Branch<br>
                 <strong>Account Name:</strong> Senior Citizens Residential Welfare Association<br>
                 <strong>Account Number:</strong> 50200121383803<br>
                 <strong>IFSC Code:</strong> HDFC0005443<br><br>
-                <em>&#128591; Please clear your dues to support society maintenance - Roads, Street Lights, Drainage &amp; Security</em>
+                <em>🙏 Please clear your dues to support society maintenance - Roads, Street Lights, Drainage & Security</em>
             </div>
         </div>
         
         <!-- Infrastructure Projects -->
-        <div class="section-title">&#127959; Infrastructure Projects</div>
+        <div class="section-title">🏗️ Infrastructure Projects</div>
         
         <div class="metrics-grid">
             <div class="metric-card green">
-                <div class="icon">&#128688;</div>
+                <div class="icon">🚰</div>
                 <div class="value">Rs.42 Lakh</div>
                 <div class="label">Drainage Project<br><span class="badge badge-progress">In Progress</span></div>
-                <div style="font-size: 0.75em; color: #666; margin-top: 8px; padding: 6px; background: #fff3cd; border-radius: 6px;">&#9888; Phase I: Only 1-2 streets covered<br>(Not entire colony)</div>
+                <div style="font-size: 0.75em; color: #666; margin-top: 8px; padding: 6px; background: #fff3cd; border-radius: 6px;">⚠️ Phase I: Only 1-2 lane covered<br>(Not entire colony)</div>
             </div>
             <div class="metric-card blue">
-                <div class="icon">&#128739;</div>
+                <div class="icon">🛣️</div>
                 <div class="value">Rs.40 Lakh</div>
                 <div class="label">CC Roads<br><span class="badge badge-done">Approved</span></div>
             </div>
             <div class="metric-card purple">
-                <div class="icon">&#127963;</div>
+                <div class="icon">🏛️</div>
                 <div class="value">Rs.82 Lakh</div>
                 <div class="label">Total Sanctioned</div>
             </div>
             <div class="metric-card orange">
-                <div class="icon">&#127881;</div>
+                <div class="icon">🎉</div>
                 <div class="value">31 May</div>
                 <div class="label">MLA Foundation Stone</div>
             </div>
@@ -753,11 +869,24 @@
         
         <!-- Footer -->
         <div class="footer">
-            <p><strong>&#127960;&#65039; Senior Citizens Residential Welfare Association</strong></p>
+            <p><strong>🏘️ Senior Citizens Residential Welfare Association</strong></p>
             <p>Together for a Better Community | <span id="footerDate">--</span></p>
             <p style="margin-top: 10px; font-size: 0.9em;">
-                &#128202; Live Data Dashboard | Auto-refreshes from Google Sheets
+                📊 Live Data Dashboard | Auto-refreshes from Google Sheets
             </p>
+        </div>
+    </div>
+    
+    <!-- Modal for Others Lane Breakdown -->
+    <div class="modal-overlay" id="othersLaneModal" onclick="closeOthersLaneModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>🏠 Others Lane Breakdown</h3>
+                <button class="modal-close" onclick="closeOthersLaneModal()">&times;</button>
+            </div>
+            <div id="othersLaneBreakdownContent">
+                Loading...
+            </div>
         </div>
     </div>
     
@@ -765,7 +894,7 @@
     <div class="modal-overlay" id="miscModal" onclick="closeMiscModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h3>&#128203; Other Miscellaneous Breakdown</h3>
+                <h3>📋 Other Miscellaneous Breakdown</h3>
                 <button class="modal-close" onclick="closeMiscModal()">&times;</button>
             </div>
             <div id="miscBreakdownContent">
@@ -775,7 +904,7 @@
     </div>
     
     <!-- Refresh Button -->
-    <button class="refresh-btn" onclick="refreshData()">&#128260; Refresh Data</button>
+    <button class="refresh-btn" onclick="refreshData()">🔄 Refresh Data</button>
     
     <script>
         // ============================================================
@@ -785,6 +914,7 @@
         
         // Store miscellaneous breakdown globally
         let miscBreakdownData = [];
+        let othersLaneData = [];
         
         // ============================================================
         // INITIALIZATION
@@ -800,6 +930,12 @@
             const dateStr = now.toLocaleDateString('en-IN', options);
             document.getElementById('currentDate').textContent = dateStr;
             document.getElementById('footerDate').textContent = 'Last Updated: ' + now.toLocaleString('en-IN');
+            
+            // Set current period (e.g., "Jun 2026")
+            const periodOptions = { month: 'short', year: 'numeric' };
+            const periodStr = now.toLocaleDateString('en-IN', periodOptions);
+            document.getElementById('currentPeriod').textContent = periodStr;
+            document.getElementById('achievementsPeriod').textContent = periodStr;
         }
         
         // ============================================================
@@ -808,7 +944,7 @@
         async function loadData() {
             const indicator = document.getElementById('liveIndicator');
             indicator.className = 'live-indicator loading';
-            indicator.innerHTML = '&#9203; Loading Data...';
+            indicator.textContent = '⏳ Loading Data...';
             
             try {
                 const response = await fetch(APPS_SCRIPT_URL);
@@ -820,32 +956,34 @@
                 processData(data);
                 
                 indicator.className = 'live-indicator';
-                indicator.innerHTML = '&#128308; LIVE DATA | ' + new Date().toLocaleTimeString();
+                indicator.textContent = '🔴 LIVE DATA | ' + new Date().toLocaleTimeString();
                 
                 document.getElementById('loadingOverlay').style.display = 'none';
                 
             } catch (error) {
                 console.error('Error loading data:', error);
                 indicator.className = 'live-indicator error';
-                indicator.innerHTML = '&#10060; Error: ' + error.message;
-                document.getElementById('loadingOverlay').innerHTML = 
-                    '<div class="loading-content">' +
-                    '<div style="font-size: 4rem; margin-bottom: 20px;">&#10060;</div>' +
-                    '<h3>Failed to Load Data</h3>' +
-                    '<p style="color: #666; margin: 20px 0;">' + error.message + '</p>' +
-                    '<button onclick="location.reload()" style="padding: 12px 30px; background: #003366; color: white; border: none; border-radius: 8px; cursor: pointer;">&#128260; Retry</button>' +
-                    '</div>';
+                indicator.textContent = '❌ Error: ' + error.message;
+                document.getElementById('loadingOverlay').innerHTML = `
+                    <div class="loading-content">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">❌</div>
+                        <h3>Failed to Load Data</h3>
+                        <p style="color: #666; margin: 20px 0;">${error.message}</p>
+                        <button onclick="location.reload()" style="padding: 12px 30px; background: #003366; color: white; border: none; border-radius: 8px; cursor: pointer;">🔄 Retry</button>
+                    </div>
+                `;
             }
         }
         
         function refreshData() {
             document.getElementById('loadingOverlay').style.display = 'flex';
-            document.getElementById('loadingOverlay').innerHTML = 
-                '<div class="loading-content">' +
-                '<div class="spinner"></div>' +
-                '<h3>Refreshing Live Data...</h3>' +
-                '<p style="color: #666; margin-top: 10px;">Fetching latest from Google Sheets</p>' +
-                '</div>';
+            document.getElementById('loadingOverlay').innerHTML = `
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <h3>Refreshing Live Data...</h3>
+                    <p style="color: #666; margin-top: 10px;">Fetching latest from Google Sheets</p>
+                </div>
+            `;
             loadData();
         }
         
@@ -934,7 +1072,7 @@
             
             // Alert box
             document.getElementById('alertAmount').textContent = formatCurrency(totalOutstanding);
-            document.getElementById('alertText').textContent = 'Outstanding across ' + propertiesWithDues + ' properties | ' + fullyPaid + ' properties fully paid';
+            document.getElementById('alertText').textContent = `Outstanding across ${propertiesWithDues} properties | ${fullyPaid} properties fully paid`;
             
             // Lane breakdown table
             updateLaneBreakdown(laneData, totalOutstanding);
@@ -972,7 +1110,14 @@
             
             sortedLanes.slice(0, 7).forEach(([lane, data]) => {
                 const pct = totalOutstanding > 0 ? ((data.outstanding / totalOutstanding) * 100).toFixed(1) : 0;
-                tableHTML += '<tr><td>' + lane + '</td><td>' + data.properties + '</td><td>' + formatCurrency(data.outstanding) + '</td><td>' + pct + '%</td></tr>';
+                tableHTML += `
+                    <tr>
+                        <td>${lane}</td>
+                        <td>${data.properties}</td>
+                        <td>${formatCurrency(data.outstanding)}</td>
+                        <td>${pct}%</td>
+                    </tr>
+                `;
                 totalProperties += data.properties;
             });
             
@@ -980,17 +1125,33 @@
             if (sortedLanes.length > 7) {
                 let othersOutstanding = 0;
                 let othersProperties = 0;
+                othersLaneData = [];
                 sortedLanes.slice(7).forEach(([lane, data]) => {
                     othersOutstanding += data.outstanding;
                     othersProperties += data.properties;
+                    othersLaneData.push({ lane: lane, properties: data.properties, outstanding: data.outstanding });
                 });
                 const othersPct = totalOutstanding > 0 ? ((othersOutstanding / totalOutstanding) * 100).toFixed(1) : 0;
-                tableHTML += '<tr><td>Others</td><td>' + othersProperties + '</td><td>' + formatCurrency(othersOutstanding) + '</td><td>' + othersPct + '%</td></tr>';
+                tableHTML += `
+                    <tr>
+                        <td class="clickable-category" onclick="openOthersLaneModal()">Others</td>
+                        <td>${othersProperties}</td>
+                        <td>${formatCurrency(othersOutstanding)}</td>
+                        <td>${othersPct}%</td>
+                    </tr>
+                `;
                 totalProperties += othersProperties;
             }
             
             // Total row
-            tableHTML += '<tr class="total-row"><td>TOTAL</td><td>' + totalProperties + '</td><td>' + formatCurrency(totalOutstanding) + '</td><td>100%</td></tr>';
+            tableHTML += `
+                <tr class="total-row">
+                    <td>TOTAL</td>
+                    <td>${totalProperties}</td>
+                    <td>${formatCurrency(totalOutstanding)}</td>
+                    <td>100%</td>
+                </tr>
+            `;
             
             document.getElementById('laneBreakdownTable').innerHTML = tableHTML;
         }
@@ -1001,11 +1162,38 @@
             const partialPct = total > 0 ? Math.round((status.partialPaid / total) * 100) : 0;
             const notPaidPct = total > 0 ? Math.round((status.notPaid / total) * 100) : 0;
             
-            document.getElementById('paymentStatusSummary').innerHTML = 
-                '<div class="progress-container"><div class="progress-label"><span>&#9989; Fully Paid</span><span>' + status.fullyPaid + ' properties (' + fullyPaidPct + '%)</span></div><div class="progress-bar"><div class="progress-fill" style="width: ' + fullyPaidPct + '%; background: #28a745;">' + fullyPaidPct + '%</div></div></div>' +
-                '<div class="progress-container"><div class="progress-label"><span>&#128260; Partial Paid</span><span>' + status.partialPaid + ' properties (' + partialPct + '%)</span></div><div class="progress-bar"><div class="progress-fill" style="width: ' + partialPct + '%; background: #ffc107;">' + partialPct + '%</div></div></div>' +
-                '<div class="progress-container"><div class="progress-label"><span>&#10060; Not Paid</span><span>' + status.notPaid + ' properties (' + notPaidPct + '%)</span></div><div class="progress-bar"><div class="progress-fill" style="width: ' + notPaidPct + '%; background: #dc3545;">' + notPaidPct + '%</div></div></div>' +
-                '<div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px;"><strong>&#9989; Fully Paid:</strong> ' + fullyPaid + ' properties - Thank you! &#128591;</div>';
+            document.getElementById('paymentStatusSummary').innerHTML = `
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>✅ Fully Paid</span>
+                        <span>${status.fullyPaid} properties (${fullyPaidPct}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${fullyPaidPct}%; background: #28a745;">${fullyPaidPct}%</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>🔄 Partial Paid</span>
+                        <span>${status.partialPaid} properties (${partialPct}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${partialPct}%; background: #ffc107;">${partialPct}%</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>❌ Not Paid</span>
+                        <span>${status.notPaid} properties (${notPaidPct}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${notPaidPct}%; background: #dc3545;">${notPaidPct}%</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px;">
+                    <strong>✅ Fully Paid:</strong> ${fullyPaid} properties - Thank you! 🙏
+                </div>
+            `;
         }
         
         // ============================================================
@@ -1025,7 +1213,14 @@
                 const data = fyData[fy] || { inflow: 0, outflow: 0, closing: 0 };
                 const isLast = index === fyYears.length - 1;
                 const label = isLast ? fy + ' (YTD)' : fy;
-                fyHTML += '<tr class="' + (isLast ? 'total-row' : '') + '"><td>' + label + '</td><td>' + formatCurrency(data.inflow) + '</td><td>' + formatCurrency(data.outflow) + '</td><td>' + formatCurrency(data.closing) + '</td></tr>';
+                fyHTML += `
+                    <tr class="${isLast ? 'total-row' : ''}">
+                        <td>${label}</td>
+                        <td>${formatCurrency(data.inflow)}</td>
+                        <td>${formatCurrency(data.outflow)}</td>
+                        <td>${formatCurrency(data.closing)}</td>
+                    </tr>
+                `;
             });
             document.getElementById('yearWiseCashFlow').innerHTML = fyHTML;
             
@@ -1040,9 +1235,19 @@
             let incomeHTML = '';
             for (const [category, data] of Object.entries(financial.income)) {
                 const color = incomeColors[category] || '#6c757d';
-                const barWidth = Math.max(data.pct, 5);
+                const barWidth = Math.max(data.pct, 5); // Minimum 5% width for visibility
                 const displayWidth = data.pct < 5 ? 'min-width: 35px;' : '';
-                incomeHTML += '<div class="progress-container"><div class="progress-label"><span>' + category + '</span><span>' + formatCurrency(data.amount) + ' (' + data.pct + '%)</span></div><div class="progress-bar"><div class="progress-fill" style="width: ' + barWidth + '%; ' + displayWidth + ' background: ' + color + ';">' + data.pct + '%</div></div></div>';
+                incomeHTML += `
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>${category}</span>
+                            <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
+                        </div>
+                    </div>
+                `;
             }
             document.getElementById('incomeSourcesContainer').innerHTML = incomeHTML;
             
@@ -1067,7 +1272,17 @@
                 const color = expenseColors[category] || '#6c757d';
                 const barWidth = Math.max(data.pct, 5);
                 const displayWidth = data.pct < 5 ? 'min-width: 35px;' : '';
-                majorHTML += '<div class="progress-container"><div class="progress-label"><span>' + category + '</span><span>' + formatCurrency(data.amount) + ' (' + data.pct + '%)</span></div><div class="progress-bar"><div class="progress-fill" style="width: ' + barWidth + '%; ' + displayWidth + ' background: ' + color + ';">' + data.pct + '%</div></div></div>';
+                majorHTML += `
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>${category}</span>
+                            <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
+                        </div>
+                    </div>
+                `;
             });
             document.getElementById('majorExpensesContainer').innerHTML = majorHTML;
             
@@ -1085,15 +1300,25 @@
                 
                 // Make "Other Miscellaneous" clickable
                 const isClickable = category === 'Other Miscellaneous';
-                const clickHandler = isClickable ? ' onclick="openMiscModal()"' : '';
-                const clickableClass = isClickable ? ' clickable-category' : '';
+                const clickHandler = isClickable ? 'onclick="openMiscModal()"' : '';
+                const clickableClass = isClickable ? 'clickable-category' : '';
                 
-                otherHTML += '<div class="progress-container"><div class="progress-label"><span class="' + clickableClass + '"' + clickHandler + '>' + category + '</span><span>' + formatCurrency(data.amount) + ' (' + data.pct + '%)</span></div><div class="progress-bar"><div class="progress-fill" style="width: ' + barWidth + '%; ' + displayWidth + ' background: ' + color + ';">' + data.pct + '%</div></div></div>';
+                otherHTML += `
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span class="${clickableClass}" ${clickHandler}>${category}</span>
+                            <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
+                        </div>
+                    </div>
+                `;
             });
             document.getElementById('otherExpensesContainer').innerHTML = otherHTML;
             
             // Total Outflow
-            document.getElementById('totalOutflowBox').innerHTML = '<strong>Total Outflow: ' + formatCurrency(financial.totalExpense) + '</strong>';
+            document.getElementById('totalOutflowBox').innerHTML = `<strong>Total Outflow: ${formatCurrency(financial.totalExpense)}</strong>`;
         }
         
         // ============================================================
@@ -1104,13 +1329,13 @@
             let societyHTML = '';
             if (orderData.society && orderData.society.items.length > 0) {
                 // Merge Republic Day into Society Expense
-                var mergedItems = [];
-                var societyExpenseItem = null;
-                var republicDayItem = null;
+                let mergedItems = [];
+                let societyExpenseItem = null;
+                let republicDayItem = null;
                 
-                orderData.society.items.forEach(function(item) {
+                orderData.society.items.forEach(item => {
                     if (item.name === 'Society Expense') {
-                        societyExpenseItem = {name: item.name, income: item.income, expense: item.expense, net: item.net};
+                        societyExpenseItem = {...item};
                     } else if (item.name === 'Republic Day') {
                         republicDayItem = item;
                     } else {
@@ -1128,37 +1353,64 @@
                     mergedItems.push(societyExpenseItem);
                 }
                 
-                mergedItems.forEach(function(item) {
-                    var netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
-                    var netPrefix = item.net >= 0 ? '+' : '';
-                    societyHTML += '<tr><td>' + item.name + '</td><td style="color: #28a745;">' + formatCurrency(item.income) + '</td><td style="color: #dc3545;">' + formatCurrency(item.expense) + '</td><td style="' + netClass + ' font-weight: bold;">' + netPrefix + formatCurrency(item.net) + '</td></tr>';
+                mergedItems.forEach(item => {
+                    const netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                    const netPrefix = item.net >= 0 ? '+' : '';
+                    societyHTML += `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td style="color: #28a745;">${formatCurrency(item.income)}</td>
+                            <td style="color: #dc3545;">${formatCurrency(item.expense)}</td>
+                            <td style="${netClass} font-weight: bold;">${netPrefix}${formatCurrency(item.net)}</td>
+                        </tr>
+                    `;
                 });
                 
                 // Totals row
-                var totals = orderData.society.totals;
-                var totalNetClass = totals.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
-                var totalNetPrefix = totals.net >= 0 ? '+' : '';
-                societyHTML += '<tr class="total-row"><td><strong>TOTAL</strong></td><td style="color: #28a745;"><strong>' + formatCurrency(totals.income) + '</strong></td><td style="color: #dc3545;"><strong>' + formatCurrency(totals.expense) + '</strong></td><td style="' + totalNetClass + '"><strong>' + totalNetPrefix + formatCurrency(totals.net) + '</strong></td></tr>';
+                const totals = orderData.society.totals;
+                const totalNetClass = totals.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                const totalNetPrefix = totals.net >= 0 ? '+' : '';
+                societyHTML += `
+                    <tr class="total-row">
+                        <td><strong>TOTAL</strong></td>
+                        <td style="color: #28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
+                        <td style="color: #dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
+                        <td style="${totalNetClass}"><strong>${totalNetPrefix}${formatCurrency(totals.net)}</strong></td>
+                    </tr>
+                `;
             } else {
                 societyHTML = '<tr><td colspan="4" style="text-align: center;">No data available</td></tr>';
             }
             document.getElementById('societyOrdersTable').innerHTML = societyHTML;
-            document.getElementById('societyOrdersTable').innerHTML = societyHTML;
-            
             // Festival Events Table
             let festivalHTML = '';
             if (orderData.festival && orderData.festival.items.length > 0) {
                 orderData.festival.items.forEach(item => {
                     const netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
                     const netPrefix = item.net >= 0 ? '+' : '';
-                    festivalHTML += '<tr><td>' + item.name + '</td><td style="color: #28a745;">' + formatCurrency(item.income) + '</td><td style="color: #dc3545;">' + formatCurrency(item.expense) + '</td><td style="' + netClass + ' font-weight: bold;">' + netPrefix + formatCurrency(item.net) + '</td></tr>';
+                    const netLabel = item.net >= 0 ? '✅ Surplus' : '❌ Deficit';
+                    festivalHTML += `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td style="color: #28a745;">${formatCurrency(item.income)}</td>
+                            <td style="color: #dc3545;">${formatCurrency(item.expense)}</td>
+                            <td style="${netClass} font-weight: bold;">${netPrefix}${formatCurrency(item.net)}</td>
+                        </tr>
+                    `;
                 });
                 
                 // Totals row
                 const totals = orderData.festival.totals;
                 const totalNetClass = totals.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
                 const totalNetPrefix = totals.net >= 0 ? '+' : '';
-                festivalHTML += '<tr class="total-row"><td><strong>TOTAL</strong></td><td style="color: #28a745;"><strong>' + formatCurrency(totals.income) + '</strong></td><td style="color: #dc3545;"><strong>' + formatCurrency(totals.expense) + '</strong></td><td style="' + totalNetClass + '"><strong>' + totalNetPrefix + formatCurrency(totals.net) + '</strong></td></tr>';
+                festivalHTML += `
+                    <tr class="total-row">
+                        <td><strong>TOTAL</strong></td>
+                        <td style="color: #28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
+                        <td style="color: #dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
+                        <td style="${totalNetClass}"><strong>${totalNetPrefix}${formatCurrency(totals.net)}</strong></td>
+                    </tr>
+                `;
             } else {
                 festivalHTML = '<tr><td colspan="4" style="text-align: center;">No data available</td></tr>';
             }
@@ -1179,9 +1431,19 @@
                 let total = 0;
                 miscBreakdownData.forEach(item => {
                     total += item.amount;
-                    html += '<div class="breakdown-item"><span class="breakdown-name">' + item.name + '</span><span class="breakdown-amount">' + formatCurrency(item.amount) + '</span></div>';
+                    html += `
+                        <div class="breakdown-item">
+                            <span class="breakdown-name">${item.name}</span>
+                            <span class="breakdown-amount">${formatCurrency(item.amount)}</span>
+                        </div>
+                    `;
                 });
-                html += '<div style="margin-top: 15px; padding: 15px; background: #e3f2fd; border-radius: 8px; display: flex; justify-content: space-between;"><strong>Total Miscellaneous</strong><strong style="color: #003366;">' + formatCurrency(total) + '</strong></div>';
+                html += `
+                    <div style="margin-top: 15px; padding: 15px; background: #e3f2fd; border-radius: 8px; display: flex; justify-content: space-between;">
+                        <strong>Total Miscellaneous</strong>
+                        <strong style="color: #003366;">${formatCurrency(total)}</strong>
+                    </div>
+                `;
                 content.innerHTML = html;
             }
             
@@ -1193,9 +1455,40 @@
             document.getElementById('miscModal').classList.remove('active');
         }
         
+        function openOthersLaneModal() {
+            const modal = document.getElementById('othersLaneModal');
+            const content = document.getElementById('othersLaneBreakdownContent');
+            
+            if (othersLaneData.length === 0) {
+                content.innerHTML = '<p style="text-align: center; color: #666;">No breakdown data available</p>';
+            } else {
+                let html = '<table style="width: 100%; margin-top: 10px;"><thead><tr><th>Lane</th><th>Properties</th><th>Outstanding</th></tr></thead><tbody>';
+                let totalProps = 0;
+                let totalOutstanding = 0;
+                othersLaneData.forEach(item => {
+                    totalProps += item.properties;
+                    totalOutstanding += item.outstanding;
+                    html += `<tr><td>${item.lane}</td><td>${item.properties}</td><td>${formatCurrency(item.outstanding)}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                html += `<div style="margin-top: 15px; padding: 15px; background: #e3f2fd; border-radius: 8px; display: flex; justify-content: space-between;"><strong>Total (${totalProps} properties)</strong><strong style="color: #003366;">${formatCurrency(totalOutstanding)}</strong></div>`;
+                content.innerHTML = html;
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function closeOthersLaneModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('othersLaneModal').classList.remove('active');
+        }
+        
         // Close modal on Escape key
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeMiscModal();
+            if (e.key === 'Escape') {
+                closeMiscModal();
+                closeOthersLaneModal();
+            }
         });
         
         // ============================================================
