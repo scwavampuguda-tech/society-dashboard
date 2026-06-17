@@ -471,7 +471,13 @@
             const savedUser = sessionStorage.getItem('societyPortalUser');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
-                initializePortal();
+                // Force re-login if old session missing allMembers (handles multi-plot fix)
+                if (!currentUser.isAdmin && (!currentUser.allMembers || currentUser.allMembers.length === 0)) {
+                    sessionStorage.removeItem('societyPortalUser');
+                    showLoginForm();
+                } else {
+                    initializePortal();
+                }
             } else {
                 showLoginForm();
             }
