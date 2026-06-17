@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Member Statement</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1.1rem; opacity: 0.9; }
+        .live-badge {
+            display: inline-block;
+            background: #38ef7d;
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 10px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .search-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+        .search-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: #f0f0f0;
+            color: #666;
+        }
+        .tab-btn:hover { background: #e0e0e0; }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .search-input-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .search-input:focus { outline: none; border-color: #667eea; }
+        .search-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        .search-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .refresh-btn {
+            padding: 15px 20px;
+            background: #38ef7d;
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .refresh-btn:hover { background: #2ed573; }
+        .results-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: none;
+        }
+        .results-card.show { display: block; }
+        .property-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+        .property-tab {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: white;
+            color: #667eea;
+        }
+        .property-tab:hover { background: #f0f0ff; }
+        .property-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        .property-content { display: none; }
+        .property-content.active { display: block; }
+        .member-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+        .info-item { display: flex; flex-direction: column; }
+        .info-label { font-size: 0.8rem; color: #888; margin-bottom: 3px; }
+        .info-value { font-size: 1rem; font-weight: 600; color: #333; }
+        .info-value.masked { color: #666; letter-spacing: 1px; }
+        .proxy-info {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .proxy-info h4 { color: #856404; margin-bottom: 10px; }
+        .proxy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .summary-card { padding: 15px; border-radius: 15px; text-align: center; }
+        .summary-card.total { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .summary-card.paid { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+        .summary-card.outstanding { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: white; }
+        .summary-card.advance { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .summary-amount { font-size: 1.8rem; font-weight: 700; margin-bottom: 5px; }
+        .summary-label { font-size: 0.85rem; opacity: 0.9; }
+        .payment-comment {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .comment-excellent { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+        .comment-improve { background: linear-gradient(135deg, #f5af19 0%, #f12711 100%); color: white; }
+        .comment-pay { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); color: white; }
+        .section-title {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .table-container { overflow-x: auto; margin-bottom: 25px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f8f9fa; }
+        .status-paid { color: #11998e; font-weight: 600; }
+        .status-unpaid { color: #eb3349; font-weight: 600; }
+        .status-partial { color: #f5a623; font-weight: 600; }
+        .amount-positive { color: #11998e; }
+        .amount-negative { color: #eb3349; }
+        .bill-period { 
+            background: #e8f4fd; 
+            color: #1976d2; 
+            padding: 3px 8px; 
+            border-radius: 5px; 
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .no-results { text-align: center; padding: 50px; color: #888; background: white; border-radius: 20px; }
+        .print-btn {
+            padding: 12px 30px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            margin-top: 20px;
+        }
+        .print-btn:hover { background: #555; }
+        .pii-notice { font-size: 0.75rem; color: #999; margin-top: 10px; font-style: italic; }
+        .search-scope { font-size: 0.85rem; color: #666; margin-top: 8px; }
+        .data-status {
+            font-size: 0.85rem;
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: inline-block;
+        }
+        .data-status.loading { background: #fff3cd; color: #856404; }
+        .data-status.success { background: #d4edda; color: #155724; }
+        .data-status.error { background: #f8d7da; color: #721c24; }
+        @media print {
+            body { background: white; padding: 0; }
+            .search-card, .tab-btn, .search-btn, .print-btn, .property-tabs, .refresh-btn { display: none; }
+            .results-card { box-shadow: none; display: block !important; }
+            .property-content { display: block !important; page-break-after: always; }
+        }
+        .loading { display: none; text-align: center; padding: 30px; background: white; border-radius: 20px; }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .initial-loading {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏘️ Society Member Statement</h1>
+            <p>View your payment history and outstanding balance</p>
+            <span class="live-badge">🔴 LIVE DATA from Google Sheets</span>
+        </div>
+        <div class="initial-loading" id="initialLoading">
+            <div class="spinner"></div>
+            <h3>Loading data from Google Sheets...</h3>
+            <p style="color: #888; margin-top: 10px;">Please wait while we fetch the latest data</p>
+        </div>
+        <div class="search-card" id="searchCard" style="display: none;">
+            <div class="search-tabs">
+                <button class="tab-btn active" data-search="plot">🏠 Plot No</button>
+                <button class="tab-btn" data-search="name">👤 Name</button>
+                <button class="tab-btn" data-search="mobile">📱 Mobile No</button>
+                <button class="tab-btn" data-search="email">📧 Email ID</button>
+            </div>
+            <div class="search-input-group">
+                <input type="text" class="search-input" id="searchInput" placeholder="Enter Plot Number (e.g., 101, 102)">
+                <button class="search-btn" id="searchBtn" onclick="searchMember()">🔍 Search</button>
+                <button class="refresh-btn" onclick="refreshData()" title="Refresh data from Google Sheets">🔄 Refresh</button>
+            </div>
+            <p class="search-scope">🔎 Searches both Owner and Proxy (Representative) details</p>
+            <p class="pii-notice">🔒 Mobile numbers and email addresses are masked for privacy protection</p>
+            <div class="data-status success" id="dataStatus">✅ Data loaded: <span id="memberCount">0</span> members</div>
+        </div>
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Searching...</p>
+        </div>
+        <div class="results-card" id="resultsCard">
+            <div class="property-tabs" id="propertyTabs"></div>
+            <div id="propertyContents"></div>
+            <button class="print-btn" onclick="window.print()">🖨️ Print Statement</button>
+        </div>
+        <div class="no-results" id="noResults" style="display: none;">
+            <span style="font-size: 4rem;">😕</span>
+            <h3>No member found</h3>
+            <p>Please check your search criteria and try again</p>
+        </div>
+    </div>
+    <script>
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+        
+        let memberData = {};
+        let dataLoaded = false;
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const searchInput = document.getElementById('searchInput');
+        const placeholders = {
+            'plot': 'Enter Plot Number (e.g., 101, 102)',
+            'name': 'Enter Owner or Proxy Name',
+            'mobile': 'Enter Mobile Number (Owner or Proxy)',
+            'email': 'Enter Email ID (Owner or Proxy)'
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDataFromGoogleSheets();
+        });
+        
+async function loadDataFromGoogleSheets() {
+    document.getElementById('initialLoading').style.display = 'block';
+    document.getElementById('searchCard').style.display = 'none';
+    try {
+        const response = await fetch(APPS_SCRIPT_URL);
+        if (!response.ok) {
+            throw new Error('Failed to fetch data: ' + response.status);
+        }
+        memberData = await response.json();
+        if (memberData.error) {
+            throw new Error(memberData.error);
+        }
+        dataLoaded = true;
+        const count = Object.keys(memberData).length;
+        document.getElementById('dataStatus').className = 'data-status success';
+        document.getElementById('dataStatus').innerHTML = '✅ Data loaded: ' + count + ' members | Last refreshed: ' + new Date().toLocaleTimeString();
+        document.getElementById('initialLoading').style.display = 'none';
+        document.getElementById('searchCard').style.display = 'block';
+        document.getElementById('searchBtn').disabled = false;
+    } catch (error) {
+        console.error('Error loading data:', error);
+        document.getElementById('initialLoading').innerHTML = '<div style="color: #dc3545;"><span style="font-size: 4rem;">❌</span><h3>Failed to load data</h3><p style="margin-top: 10px;">' + error.message + '</p><button onclick="loadDataFromGoogleSheets()" style="margin-top: 20px; padding: 10px 30px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">🔄 Retry</button></div>';
+    }
+}
+
+        
+        async function refreshData() {
+            document.getElementById('dataStatus').className = 'data-status loading';
+            document.getElementById('dataStatus').innerHTML = '🔄 Refreshing data...';
+            await loadDataFromGoogleSheets();
+        }
+        
+        function maskMobile(mobile) {
+            if (!mobile || mobile === '-') return '-';
+            const clean = String(mobile).replace(/[\s\-\+]/g, '');
+            if (clean.length < 6) return mobile;
+            return '******' + clean.slice(-4);
+        }
+        
+        function maskEmail(email) {
+            if (!email || email === '-') return '-';
+            const atIndex = String(email).indexOf('@');
+            if (atIndex < 0) return email;
+            const localPart = email.substring(0, atIndex);
+            const domain = email.substring(atIndex);
+            if (localPart.length <= 3) return localPart[0] + '***' + domain;
+            return localPart.substring(0, 3) + '*****' + domain;
+        }
+        
+        function getPaymentComment(totalBilled, totalPaid, totalOutstanding) {
+            if (totalBilled === 0) return { text: '', class: '' };
+            const paidPercent = (totalPaid / totalBilled) * 100;
+            if (totalOutstanding === 0 && totalPaid >= totalBilled) {
+                return { text: '🌟 Excellent! Thank you for being a responsible member. Your payments are fully up to date! 🎉', class: 'comment-excellent' };
+            } else if (paidPercent >= 50) {
+                return { text: '⚠️ Partially paid. Please clear the outstanding balance of ₹' + totalOutstanding.toLocaleString('en-IN') + ' to stay current.', class: 'comment-improve' };
+            } else {
+                return { text: '❗ Payment Required! Please pay your outstanding dues of ₹' + totalOutstanding.toLocaleString('en-IN') + ' at the earliest.', class: 'comment-pay' };
+            }
+        }
+        
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                searchInput.placeholder = placeholders[btn.dataset.search];
+                searchInput.value = '';
+            });
+        });
+        
+        function searchMember() {
+            if (!dataLoaded) { alert('Data is still loading. Please wait...'); return; }
+            const searchType = document.querySelector('.tab-btn.active').dataset.search;
+            const searchValue = searchInput.value.trim().toLowerCase();
+            if (!searchValue) { alert('Please enter a search value'); return; }
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultsCard').classList.remove('show');
+            document.getElementById('noResults').style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                let foundMembers = [];
+                for (const [key, member] of Object.entries(memberData)) {
+                    let match = false;
+                    let matchType = 'owner';
+                    switch(searchType) {
+                        case 'plot':
+                            const plotNo = String(member.plotNo || '').toLowerCase();
+                            match = plotNo === searchValue || plotNo.includes(searchValue);
+                            break;
+                        case 'name':
+                            if (String(member.name || '').toLowerCase().includes(searchValue)) { match = true; matchType = 'owner'; }
+                            if (!match && member.representedBy && String(member.representedBy).toLowerCase().includes(searchValue)) { match = true; matchType = 'proxy'; }
+                            break;
+                        case 'mobile':
+                            const cleanSearch = searchValue.replace(/[\s\-\+]/g, '');
+                            const cleanOwnerMobile = String(member.mobile || '').replace(/[\s\-\+]/g, '').toLowerCase();
+                            if (cleanOwnerMobile.includes(cleanSearch)) { match = true; matchType = 'owner'; }
+                            const cleanProxyMobile = String(member.proxyMobile || '').replace(/[\s\-\+]/g, '').toLowerCase();
+                            if (!match && cleanProxyMobile.includes(cleanSearch)) { match = true; matchType = 'proxy'; }
+                            break;
+                        case 'email':
+                            if (String(member.email || '').toLowerCase().includes(searchValue)) { match = true; matchType = 'owner'; }
+                            if (!match && String(member.proxyEmail || '').toLowerCase().includes(searchValue)) { match = true; matchType = 'proxy'; }
+                            break;
+                    }
+                    if (match) { foundMembers.push({ ...member, matchType }); }
+                }
+                if (foundMembers.length > 0) { displayResults(foundMembers); } else { document.getElementById('noResults').style.display = 'block'; }
+            }, 300);
+        }
+        
+        function displayResults(members) {
+            const tabsContainer = document.getElementById('propertyTabs');
+            const contentsContainer = document.getElementById('propertyContents');
+            tabsContainer.innerHTML = '';
+            contentsContainer.innerHTML = '';
+            if (members.length > 1) {
+                tabsContainer.style.display = 'flex';
+                members.forEach((member, index) => {
+                    const tab = document.createElement('button');
+                    tab.className = 'property-tab' + (index === 0 ? ' active' : '');
+                    tab.textContent = '🏠 Plot ' + member.plotNo + (member.matchType === 'proxy' ? ' (via Proxy)' : '');
+                    tab.onclick = () => switchPropertyTab(index);
+                    tabsContainer.appendChild(tab);
+                });
+            } else { tabsContainer.style.display = 'none'; }
+            members.forEach((member, index) => {
+                const content = document.createElement('div');
+                content.className = 'property-content' + (index === 0 ? ' active' : '');
+                content.id = 'property-' + index;
+                content.innerHTML = generatePropertyContent(member);
+                contentsContainer.appendChild(content);
+            });
+            document.getElementById('resultsCard').classList.add('show');
+        }
+        
+        function switchPropertyTab(index) {
+            document.querySelectorAll('.property-tab').forEach((tab, i) => { tab.classList.toggle('active', i === index); });
+            document.querySelectorAll('.property-content').forEach((content, i) => { content.classList.toggle('active', i === index); });
+        }
+        
+function generatePropertyContent(member) {
+    let totalBilled = 0, totalPaid = 0, totalOutstanding = 0;
+    (member.invoices || []).forEach(inv => {
+        totalBilled += inv.billAmount || 0;
+        totalPaid += inv.paidAmount || 0;
+        if ((inv.balance || 0) > 0) totalOutstanding += inv.balance;
+    });
+    const advance = totalPaid > totalBilled ? totalPaid - totalBilled : 0;
+    const paymentComment = getPaymentComment(totalBilled, totalPaid, totalOutstanding);
+    
+    let html = '<div class="member-info">';
+html += '<div class="info-item"><span class="info-label">Property ID</span><span class="info-value">' + (member.propertyID || '-') + '</span></div>';
+html += '<div class="info-item"><span class="info-label">Plot No</span><span class="info-value">' + (member.plotNo || '-') + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">Owner Name</span><span class="info-value">' + (member.name || '-') + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">House No</span><span class="info-value">' + (member.house || '-') + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">Lane No</span><span class="info-value">' + (member.laneNo || '-') + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">Occupancy</span><span class="info-value">' + (member.occupancyStatus || '-') + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">Facing</span><span class="info-value">' + (member.facing || '-') + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">Mobile 🔒</span><span class="info-value masked">' + maskMobile(member.mobile) + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">Email 🔒</span><span class="info-value masked">' + maskEmail(member.email) + '</span></div>';
+    html += '<div class="info-item"><span class="info-label">Status</span><span class="info-value">' + (member.status || '-') + '</span></div>';
+    html += '</div>';
+    
+    // Show notice for inactive members
+    if (String(member.status || '').includes('Inactive')) {
+        html += '<div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: center; box-shadow: 0 5px 20px rgba(238, 90, 36, 0.3);">';
+        html += '<h4 style="margin-bottom: 10px; font-size: 1.2rem;">⚠️ Membership Inactive</h4>';
+        html += '<p style="margin-bottom: 15px;">Your membership is currently inactive. To receive updates and access society services:</p>';
+        html += '<ul style="text-align: left; max-width: 450px; margin: 0 auto 15px; line-height: 2;">';
+        html += '<li>📝 Please provide your updated owner details</li>';
+        html += '<li>🏠 Contact the society office to activate your membership</li>';
+        html += '<li>💰 Clear any pending dues to restore active status</li>';
+        html += '</ul>';
+        html += '<p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.9;">📞 Contact: Society Office | 📧 scwa.vampuguda@gmail.com</p>';
+        html += '</div>';
+    }
+    
+    if (member.representedBy) {
+        html += '<div class="proxy-info"><h4>👤 Represented By (Proxy)</h4><div class="proxy-grid">';
+        html += '<div class="info-item"><span class="info-label">Name</span><span class="info-value">' + member.representedBy + '</span></div>';
+        html += '<div class="info-item"><span class="info-label">Relation</span><span class="info-value">' + (member.proxyRelation || '-') + '</span></div>';
+        html += '<div class="info-item"><span class="info-label">Mobile 🔒</span><span class="info-value masked">' + maskMobile(member.proxyMobile) + '</span></div>';
+        html += '<div class="info-item"><span class="info-label">Email 🔒</span><span class="info-value masked">' + maskEmail(member.proxyEmail) + '</span></div>';
+        html += '</div></div>';
+    }
+    
+    html += '<div class="summary-cards">';
+    html += '<div class="summary-card total"><div class="summary-amount">₹' + totalBilled.toLocaleString('en-IN') + '</div><div class="summary-label">Total Billed</div></div>';
+    html += '<div class="summary-card paid"><div class="summary-amount">₹' + totalPaid.toLocaleString('en-IN') + '</div><div class="summary-label">Total Paid</div></div>';
+    html += '<div class="summary-card outstanding"><div class="summary-amount">₹' + totalOutstanding.toLocaleString('en-IN') + '</div><div class="summary-label">Outstanding</div></div>';
+    html += '<div class="summary-card advance"><div class="summary-amount">₹' + advance.toLocaleString('en-IN') + '</div><div class="summary-label">Advance</div></div>';
+    html += '</div>';
+    
+    if (paymentComment.text) { html += '<div class="payment-comment ' + paymentComment.class + '">' + paymentComment.text + '</div>'; }
+    
+    html += '<h3 class="section-title">📋 Invoice Details</h3>';
+    html += '<div class="table-container"><table><thead><tr><th>Bill ID</th><th>Period</th><th>Bill Date</th><th>Bill Amount</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead><tbody>';
+    (member.invoices || []).forEach(inv => {
+        const statusClass = String(inv.status || '').includes('Paid') ? 'status-paid' : String(inv.status || '').includes('Partial') ? 'status-partial' : 'status-unpaid';
+        html += '<tr><td>' + (inv.billId || '') + '</td><td>' + (inv.period || '') + '</td><td>' + (inv.billDate || '') + '</td>';
+        html += '<td>₹' + (inv.billAmount || 0).toLocaleString('en-IN') + '</td>';
+        html += '<td class="amount-positive">₹' + (inv.paidAmount || 0).toLocaleString('en-IN') + '</td>';
+        html += '<td class="' + ((inv.balance || 0) > 0 ? 'amount-negative' : '') + '">₹' + (inv.balance || 0).toLocaleString('en-IN') + '</td>';
+        html += '<td class="' + statusClass + '">' + (inv.status || '') + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    
+    html += '<h3 class="section-title">💰 Payment History</h3>';
+    html += '<div class="table-container"><table><thead><tr><th>Date</th><th>Receipt No</th><th>Category</th><th>Bill Period</th><th>Description</th><th>Amount</th><th>Mode</th></tr></thead><tbody>';
+    (member.payments || []).forEach(pay => {
+        const category = String(pay.category || '');
+        const isRegular = category.includes('Regular') || category.includes('Maintenance');
+        const periodDisplay = isRegular && pay.billPeriod ? '<span class="bill-period">📅 ' + pay.billPeriod + '</span>' : '-';
+        html += '<tr><td>' + (pay.date || '') + '</td><td>' + (pay.receiptNo || '') + '</td><td>' + (pay.category || '') + '</td>';
+        html += '<td>' + periodDisplay + '</td><td>' + (pay.description || '') + '</td>';
+        html += '<td class="amount-positive">₹' + (pay.amount || 0).toLocaleString('en-IN') + '</td><td>' + (pay.mode || '') + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    
+    return html;
+}
+
+        
+        searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchMember(); });
+    </script>
+</body>
+</html>

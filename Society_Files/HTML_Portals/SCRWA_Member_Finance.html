@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCRWA — My Finance Statement</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#eef2f7 0%,#dde8f5 100%);min-height:100vh}
+
+.header{background:linear-gradient(135deg,#003366,#1a5276);color:white;padding:20px 24px;text-align:center}
+.header h1{font-size:1.25rem;font-weight:700}
+.header p{font-size:.78rem;opacity:.8;margin-top:4px}
+
+/* SEARCH CARD */
+.search-card{background:white;border-radius:14px;box-shadow:0 4px 24px rgba(0,51,102,.12);padding:28px;max-width:520px;margin:28px auto;text-align:center}
+.search-card h2{font-size:1.05rem;color:#003366;font-weight:700;margin-bottom:6px}
+.search-card p{font-size:.82rem;color:#777;margin-bottom:20px}
+.search-tabs{display:flex;gap:6px;margin-bottom:16px;justify-content:center;flex-wrap:wrap}
+.stab{padding:7px 14px;border-radius:20px;border:1px solid #dde3ed;font-size:.78rem;cursor:pointer;color:#555;background:white;transition:.2s}
+.stab.active{background:#003366;color:white;border-color:#003366;font-weight:600}
+.search-input-wrap{display:flex;gap:10px}
+.search-input-wrap input{flex:1;padding:11px 16px;border:1.5px solid #dde3ed;border-radius:10px;font-size:.9rem;outline:none;transition:.2s}
+.search-input-wrap input:focus{border-color:#003366}
+.search-btn{padding:11px 22px;background:#003366;color:white;border:none;border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:600;transition:.2s}
+.search-btn:hover{background:#004080}
+.privacy-note{font-size:.72rem;color:#bbb;margin-top:12px}
+
+/* MEMBER CARD */
+.member-card{background:white;border-radius:14px;box-shadow:0 4px 24px rgba(0,51,102,.1);padding:22px 24px;max-width:780px;margin:0 auto 20px;display:none}
+.member-card.show{display:block}
+.member-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.member-name{font-size:1.1rem;font-weight:800;color:#003366}
+.member-meta{font-size:.78rem;color:#777;margin-top:3px}
+.member-badge{display:inline-block;padding:3px 12px;border-radius:12px;font-size:.72rem;font-weight:700}
+.member-badge.active{background:#e8f4fd;color:#1a5276}
+.member-badge.proxy{background:#f9f0ff;color:#6c3483}
+
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.kpi-mini{background:#f8faff;border-radius:10px;padding:14px 16px;border-left:4px solid #ccc}
+.kpi-mini.green{border-left-color:#27ae60}
+.kpi-mini.red{border-left-color:#e74c3c}
+.kpi-mini.orange{border-left-color:#e67e22}
+.kpi-mini label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#888;display:block;margin-bottom:5px}
+.kpi-mini .val{font-size:1.25rem;font-weight:800;color:#1a1a2e}
+.kpi-mini .sub{font-size:.7rem;color:#aaa;margin-top:2px}
+
+/* PROGRESS BAR */
+.progress-wrap{margin-bottom:20px}
+.progress-label{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:6px;color:#555;font-weight:600}
+.progress-bg{background:#f0f4f8;border-radius:10px;height:14px;overflow:hidden}
+.progress-fill{height:100%;border-radius:10px;transition:.5s;background:linear-gradient(90deg,#27ae60,#2ecc71)}
+.progress-msg{font-size:.78rem;margin-top:8px;padding:8px 12px;border-radius:8px;border-left:3px solid}
+.progress-msg.excellent{background:#e8f9ee;color:#1e8449;border-color:#27ae60}
+.progress-msg.partial{background:#fef9e7;color:#b7950b;border-color:#f1c40f}
+.progress-msg.pending{background:#fde8e8;color:#c0392b;border-color:#e74c3c}
+
+/* SECTION */
+.section{margin-bottom:20px}
+.section-head{font-size:.85rem;font-weight:700;color:#003366;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.section-head span{background:#003366;color:white;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:.65rem}
+
+/* TABLE */
+.tbl-wrap{border-radius:10px;overflow:hidden;border:1px solid #eef0f6}
+table{width:100%;border-collapse:collapse}
+thead tr{background:#003366;color:white}
+thead th{padding:9px 12px;font-size:.75rem;font-weight:600;text-align:left;white-space:nowrap}
+thead th.r{text-align:right}
+tbody tr{border-bottom:1px solid #f0f4f8}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f8faff}
+tbody td{padding:9px 12px;font-size:.8rem;color:#333}
+tbody td.r{text-align:right;font-family:'Courier New',monospace;font-size:.78rem}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:700}
+.badge.paid{background:#d5f5e3;color:#1e8449}
+.badge.partial{background:#fef9e7;color:#b7950b}
+.badge.unpaid{background:#fde8e8;color:#c0392b}
+.badge.in{background:#d5f5e3;color:#1e8449}
+.positive{color:#27ae60;font-weight:700}
+.negative{color:#e74c3c;font-weight:700}
+.empty-row td{text-align:center;padding:20px;color:#bbb;font-size:.82rem}
+
+/* LOADING / ERROR */
+.loading-state{text-align:center;padding:40px}
+.spinner{width:36px;height:36px;border:3px solid #e0e8f4;border-top-color:#003366;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.no-result{text-align:center;padding:30px;color:#888;font-size:.88rem}
+
+/* BACK BTN */
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:#003366;cursor:pointer;font-size:.82rem;font-weight:600;margin-bottom:14px;background:none;border:none;padding:0}
+.back-btn:hover{text-decoration:underline}
+
+/* PRINT */
+@media print{.search-card,.back-btn,.header{display:none!important}.member-card.show{display:block!important}}
+@media(max-width:500px){.kpi-row{grid-template-columns:1fr 1fr}.search-card{margin:14px;padding:20px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏛️ SCRWA — My Finance Statement</h1>
+  <p>Senior Citizens Residential Welfare Association, Vampuguda</p>
+</div>
+
+<!-- SEARCH CARD -->
+<div class="search-card" id="searchCard">
+  <h2>🔍 Find Your Account</h2>
+  <p>Search by your plot number, name, mobile or email to view your statement</p>
+  <div class="search-tabs">
+    <button class="stab active" data-type="plot" onclick="setSearchType(this,'plot')">Plot No.</button>
+    <button class="stab" data-type="name" onclick="setSearchType(this,'name')">Name</button>
+    <button class="stab" data-type="mobile" onclick="setSearchType(this,'mobile')">Mobile</button>
+    <button class="stab" data-type="email" onclick="setSearchType(this,'email')">Email</button>
+  </div>
+  <div class="search-input-wrap">
+    <input type="text" id="searchInput" placeholder="Enter Plot Number (e.g., 101)"
+      onkeydown="if(event.key==='Enter')doSearch()">
+    <button class="search-btn" onclick="doSearch()">Search</button>
+  </div>
+  <p class="privacy-note">🔒 Your contact details are partially masked for privacy</p>
+
+  <!-- Initial loading -->
+  <div id="initLoad" style="margin-top:20px">
+    <div class="spinner"></div>
+    <p style="font-size:.8rem;color:#aaa">Loading member data...</p>
+  </div>
+  <div id="initError" style="display:none;margin-top:12px;color:#c0392b;font-size:.82rem"></div>
+</div>
+
+<!-- RESULTS AREA -->
+<div style="max-width:780px;margin:0 auto;padding:0 16px 40px">
+
+  <!-- NO RESULT -->
+  <div class="no-result" id="noResult" style="display:none">
+    <div style="font-size:3rem">🔍</div>
+    <h3 style="margin:10px 0">No member found</h3>
+    <p style="font-size:.82rem">Please check your search and try again</p>
+    <button onclick="resetSearch()" style="margin-top:16px;padding:9px 22px;background:#003366;color:white;border:none;border-radius:8px;cursor:pointer;font-size:.84rem">← Try Again</button>
+  </div>
+
+  <!-- MULTIPLE RESULTS (e.g. proxy + owner same plot) -->
+  <div id="multiResult" style="display:none;background:white;border-radius:12px;padding:20px;box-shadow:0 2px 16px rgba(0,0,0,.08);margin-bottom:16px">
+    <p style="font-size:.88rem;color:#555;margin-bottom:12px;font-weight:600">Multiple accounts found — select yours:</p>
+    <div id="multiList"></div>
+  </div>
+
+  <!-- MEMBER STATEMENT CARD -->
+  <div class="member-card" id="memberCard">
+    <button class="back-btn" onclick="resetSearch()">← Search Again</button>
+
+    <!-- Member Header -->
+    <div class="member-header">
+      <div>
+        <div class="member-name" id="mName"></div>
+        <div class="member-meta" id="mMeta"></div>
+      </div>
+      <div id="mBadge"></div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-row">
+      <div class="kpi-mini green">
+        <label>Total Billed</label>
+        <div class="val" id="kTotalBilled">—</div>
+        <div class="sub" id="kBillCount"></div>
+      </div>
+      <div class="kpi-mini green">
+        <label>Total Paid</label>
+        <div class="val" id="kTotalPaid">—</div>
+        <div class="sub" id="kPayCount"></div>
+      </div>
+      <div class="kpi-mini orange">
+        <label>Outstanding</label>
+        <div class="val" id="kOutstanding">—</div>
+        <div class="sub" id="kOutSub"></div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>Payment Progress</span>
+        <span id="kPct">0%</span>
+      </div>
+      <div class="progress-bg">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="progress-msg" id="progressMsg"></div>
+    </div>
+
+    <!-- Invoice / Bills Table -->
+    <div class="section">
+      <div class="section-head"><span>1</span> Bill-wise Statement</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>Bill ID</th><th>Period</th><th>Bill Date</th>
+            <th class="r">Billed (₹)</th><th class="r">Paid (₹)</th>
+            <th class="r">Balance (₹)</th><th>Status</th>
+          </tr></thead>
+          <tbody id="invoiceBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Payments Received Table -->
+    <div class="section">
+      <div class="section-head"><span>2</span> Payments Received</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>Date</th><th>Receipt No</th><th>Category</th>
+            <th>Mode</th><th>Description</th><th class="r">Amount (₹)</th>
+          </tr></thead>
+          <tbody id="paymentsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Print Button -->
+    <div style="text-align:center;margin-top:20px">
+      <button onclick="window.print()" style="padding:10px 28px;background:#003366;color:white;border:none;border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:600">🖨️ Print / Save as PDF</button>
+      <button onclick="resetSearch()" style="padding:10px 22px;background:#f0f4f8;color:#333;border:1px solid #dde3ed;border-radius:10px;cursor:pointer;font-size:.88rem;margin-left:10px">← Back</button>
+    </div>
+
+    <p style="text-align:center;font-size:.7rem;color:#ccc;margin-top:14px">
+      Generated on <span id="genTime"></span> · SCRWA Vampuguda
+    </p>
+  </div>
+
+</div><!-- end results area -->
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+
+let allData = {};
+let dataLoaded = false;
+let searchType = 'plot';
+
+// ── LOAD ──────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    allData = await res.json();
+    if (allData.error) throw new Error(allData.error);
+    dataLoaded = true;
+    document.getElementById('initLoad').style.display = 'none';
+    document.getElementById('searchInput').disabled = false;
+    document.querySelector('.search-btn').disabled = false;
+  } catch(e) {
+    document.getElementById('initLoad').style.display = 'none';
+    document.getElementById('initError').style.display = 'block';
+    document.getElementById('initError').textContent = '❌ ' + e.message + ' — Refresh to retry.';
+  }
+}
+
+// ── SEARCH TYPE ───────────────────────────────────────────
+function setSearchType(btn, type) {
+  searchType = type;
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const hints = {plot:'Enter Plot Number (e.g., 101)',name:'Enter your name',mobile:'Enter your mobile number',email:'Enter your email address'};
+  document.getElementById('searchInput').placeholder = hints[type];
+  document.getElementById('searchInput').value = '';
+}
+
+// ── SEARCH ────────────────────────────────────────────────
+function doSearch() {
+  if (!dataLoaded) { alert('Data still loading, please wait...'); return; }
+  const val = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!val) { alert('Please enter a search value'); return; }
+
+  resetResults();
+  const matches = [];
+
+  for (const [pid, m] of Object.entries(allData)) {
+    let match = false;
+    switch(searchType) {
+      case 'plot':
+        match = String(m.plotNo||pid).toLowerCase() === val ||
+                String(m.plotNo||pid).toLowerCase().includes(val);
+        break;
+      case 'name':
+        match = (m.name||'').toLowerCase().includes(val) ||
+                (m.representedBy||'').toLowerCase().includes(val);
+        break;
+      case 'mobile':
+        const cleanV = val.replace(/\D/g,'');
+        const cleanM = String(m.mobile||'').replace(/\D/g,'');
+        const cleanP = String(m.proxyMobile||'').replace(/\D/g,'');
+        match = cleanM.endsWith(cleanV) || cleanP.endsWith(cleanV);
+        break;
+      case 'email':
+        match = (m.email||'').toLowerCase().includes(val) ||
+                (m.proxyEmail||'').toLowerCase().includes(val);
+        break;
+    }
+    if (match) matches.push({pid, ...m});
+  }
+
+  if (matches.length === 0) {
+    document.getElementById('noResult').style.display = 'block';
+  } else if (matches.length === 1) {
+    showMember(matches[0]);
+  } else {
+    showMultiple(matches);
+  }
+}
+
+// ── MULTIPLE RESULTS ──────────────────────────────────────
+function showMultiple(matches) {
+  const el = document.getElementById('multiResult');
+  el.style.display = 'block';
+  document.getElementById('multiList').innerHTML = matches.map((m,i) =>
+    `<button onclick="showMember(window._matches[${i}])"
+      style="display:block;width:100%;text-align:left;padding:12px 16px;margin-bottom:8px;
+      background:#f8faff;border:1px solid #dde3ed;border-radius:8px;cursor:pointer;font-size:.84rem">
+      <b>Plot ${m.plotNo}</b> — ${m.name} &nbsp;
+      <span style="color:#888;font-size:.75rem">${m.house} · ${m.laneNo||''}</span>
+    </button>`
+  ).join('');
+  window._matches = matches;
+}
+
+// ── SHOW MEMBER ───────────────────────────────────────────
+function showMember(m) {
+  document.getElementById('multiResult').style.display = 'none';
+  document.getElementById('noResult').style.display = 'none';
+  document.getElementById('searchCard').style.display = 'none';
+
+  // Compute totals
+  const invoices = m.invoices || [];
+  const payments = m.payments || [];
+  let totalBilled=0, totalPaid=0;
+  invoices.forEach(inv => {
+    totalBilled += inv.billAmount||0;
+    totalPaid   += inv.paidAmount||0;
+  });
+  const outstanding = Math.max(0, totalBilled - totalPaid);
+  const pct = totalBilled > 0 ? Math.round(totalPaid/totalBilled*100) : 0;
+
+  // Header
+  document.getElementById('mName').textContent = m.name || 'Member';
+  document.getElementById('mMeta').textContent =
+    `Plot: ${m.plotNo||m.pid}  ·  House: ${m.house||'—'}  ·  ${m.laneNo||''}  ·  📞 ${maskMobile(m.mobile)}`;
+  const isProxy = String(m.isProxy||'').toLowerCase()==='true';
+  document.getElementById('mBadge').innerHTML =
+    `<span class="member-badge ${isProxy?'proxy':'active'}">${isProxy?'🔁 Proxy':'🏠 Owner'}</span>`;
+
+  // KPIs
+  document.getElementById('kTotalBilled').textContent = fmt(totalBilled);
+  document.getElementById('kBillCount').textContent   = invoices.length + ' invoice(s)';
+  document.getElementById('kTotalPaid').textContent   = fmt(totalPaid);
+  document.getElementById('kPayCount').textContent    = payments.length + ' payment(s)';
+  document.getElementById('kOutstanding').textContent = fmt(outstanding);
+  document.getElementById('kOutSub').textContent      = outstanding>0 ? 'Please pay' : 'All clear ✅';
+  document.getElementById('kPct').textContent         = pct + '%';
+
+  // KPI color
+  document.querySelector('.kpi-mini.orange').style.borderLeftColor = outstanding===0?'#27ae60':'#e67e22';
+
+  // Progress bar
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressFill').style.background =
+    pct===100 ? 'linear-gradient(90deg,#27ae60,#2ecc71)' :
+    pct>50   ? 'linear-gradient(90deg,#f39c12,#f1c40f)' :
+               'linear-gradient(90deg,#e74c3c,#e67e22)';
+
+  const msgEl = document.getElementById('progressMsg');
+  if (pct===100) {
+    msgEl.className='progress-msg excellent';
+    msgEl.textContent='🏆 Excellent! All payments are up to date. Thank you for being a responsible member!';
+  } else if (pct>0) {
+    msgEl.className='progress-msg partial';
+    msgEl.textContent=`⚡ Partially paid (${pct}%). Please clear the outstanding balance of ${fmt(outstanding)} at the earliest.`;
+  } else {
+    msgEl.className='progress-msg pending';
+    msgEl.textContent=`❗ Payment pending. Please pay ${fmt(outstanding)} to clear your dues.`;
+  }
+
+  // Invoices table
+  document.getElementById('invoiceBody').innerHTML = invoices.length ? invoices.map(inv => {
+    const bal = inv.balance||Math.max(0,(inv.billAmount||0)-(inv.paidAmount||0));
+    const paid = Math.abs(inv.paidAmount||0);
+    const badge = bal<=0 ? '<span class="badge paid">✅ Paid</span>'
+      : paid>0 ? '<span class="badge partial">⚡ Partial</span>'
+      : '<span class="badge unpaid">❌ Unpaid</span>';
+    return `<tr>
+      <td style="font-size:.75rem;color:#888">${inv.billId}</td>
+      <td>${inv.period||'—'}</td>
+      <td>${fmtDate(inv.billDate)}</td>
+      <td class="r">${fmt(inv.billAmount)}</td>
+      <td class="r positive">${fmt(paid)}</td>
+      <td class="r ${bal>0?'negative':''}">${bal>0?fmt(bal):'—'}</td>
+      <td>${badge}</td></tr>`;
+  }).join('') + `<tr style="background:#f8faff;font-weight:700">
+    <td colspan="3" style="font-size:.8rem;text-align:right">TOTAL</td>
+    <td class="r">${fmt(totalBilled)}</td>
+    <td class="r positive">${fmt(totalPaid)}</td>
+    <td class="r ${outstanding>0?'negative':''}">${outstanding>0?fmt(outstanding):'—'}</td>
+    <td></td></tr>` :
+    '<tr class="empty-row"><td colspan="7">No invoice records found</td></tr>';
+
+  // Payments table
+  document.getElementById('paymentsBody').innerHTML = payments.length ? payments.map(tx =>
+    `<tr>
+      <td>${fmtDate(tx.date)}</td>
+      <td style="font-size:.72rem;color:#888">${tx.receiptNo||'—'}</td>
+      <td><span class="badge in">${tx.category||'—'}</span></td>
+      <td style="font-size:.75rem">${tx.mode||'—'}</td>
+      <td style="font-size:.75rem;color:#666">${tx.description||'—'}</td>
+      <td class="r positive">${fmt(tx.amount)}</td></tr>`
+  ).join('') + `<tr style="background:#f8faff;font-weight:700">
+    <td colspan="5" style="font-size:.8rem;text-align:right">TOTAL RECEIVED</td>
+    <td class="r positive">${fmt(payments.reduce((s,t)=>s+(t.amount||0),0))}</td></tr>` :
+    '<tr class="empty-row"><td colspan="6">No payment records found</td></tr>';
+
+  document.getElementById('genTime').textContent = new Date().toLocaleString('en-IN');
+  document.getElementById('memberCard').classList.add('show');
+  document.getElementById('memberCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── HELPERS ───────────────────────────────────────────────
+const fmt = n => '₹' + Math.round(n||0).toLocaleString('en-IN');
+const fmtDate = d => {
+  if(!d) return '—';
+  try{ return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+  catch(e){ return d; }
+};
+function maskMobile(m) {
+  if(!m) return '—';
+  const c = String(m).replace(/\D/g,'');
+  return c.length>=4 ? '******'+c.slice(-4) : m;
+}
+
+function resetResults() {
+  document.getElementById('noResult').style.display='none';
+  document.getElementById('multiResult').style.display='none';
+  document.getElementById('memberCard').classList.remove('show');
+}
+
+function resetSearch() {
+  resetResults();
+  document.getElementById('searchCard').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── INIT ──────────────────────────────────────────────────
+document.getElementById('searchInput').disabled = true;
+document.querySelector('.search-btn').disabled = true;
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
+</body>
+</html>

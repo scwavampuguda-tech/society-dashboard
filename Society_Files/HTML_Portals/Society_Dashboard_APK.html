@@ -1,0 +1,1354 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Dashboard | Live Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #003366 0%, #004080 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,51,102,0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .live-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #28a745;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        .live-indicator.loading {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .live-indicator.error {
+            background: #dc3545;
+            animation: none;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Section Titles */
+        .section-title {
+            background: #003366;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Metric Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .metric-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .metric-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #003366;
+        }
+        
+        .metric-card .label {
+            color: #666;
+            font-size: 0.95em;
+            margin-top: 5px;
+        }
+        
+        .metric-card.green { border-top: 4px solid #28a745; }
+        .metric-card.blue { border-top: 4px solid #007bff; }
+        .metric-card.orange { border-top: 4px solid #fd7e14; }
+        .metric-card.red { border-top: 4px solid #dc3545; }
+        .metric-card.purple { border-top: 4px solid #6f42c1; }
+        
+        /* Two Column Layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 900px) {
+            .two-col { grid-template-columns: 1fr; }
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h3 {
+            color: #003366;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #003366;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:nth-child(even):hover {
+            background: #e9ecef;
+        }
+        
+        .total-row {
+            background: #e3f2fd !important;
+            font-weight: bold;
+        }
+        
+        /* Progress Bars */
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .progress-bar {
+            height: 25px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85em;
+            transition: width 1s ease;
+        }
+        
+        /* Achievement List */
+        .achievement-list {
+            list-style: none;
+        }
+        
+        .achievement-list li {
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .achievement-list li.pending {
+            border-left-color: #fd7e14;
+        }
+        
+        /* Status Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .badge-done { background: #d4edda; color: #155724; }
+        .badge-progress { background: #fff3cd; color: #856404; }
+        .badge-critical { background: #f8d7da; color: #721c24; }
+        
+        /* Outstanding Alert */
+        .alert-box {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .alert-box h2 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .alert-box p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        /* Payment Box */
+        .payment-box {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .payment-box h3 {
+            color: white;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .payment-details {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1em;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            margin-top: 30px;
+            color: #666;
+            border-top: 2px solid #ddd;
+        }
+        
+        /* Aging Chart */
+        .aging-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .aging-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+        
+        .aging-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+        
+        .legend-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #003366;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlide 0.3s ease;
+        }
+        
+        @keyframes modalSlide {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .modal-header h3 {
+            color: #003366;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: #f0f0f0;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .modal-close:hover {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #95a5a6;
+        }
+        
+        .breakdown-item:nth-child(odd) {
+            border-left-color: #6c757d;
+        }
+        
+        .breakdown-name {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .breakdown-amount {
+            font-weight: bold;
+            color: #003366;
+        }
+        
+        .clickable-category {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .clickable-category:hover {
+            background: #f0f0f0;
+            border-radius: 8px;
+            padding: 2px 5px;
+            margin: -2px -5px;
+        }
+        
+        .clickable-category::after {
+            content: ' 🔍';
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+        
+        /* Refresh Button */
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #003366 0%, #004080 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,51,102,0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 100;
+        }
+        
+        .refresh-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,51,102,0.5);
+        }
+        
+        @media print {
+            .refresh-btn, .loading-overlay { display: none !important; }
+            body { background: white; }
+            .card, .metric-card { box-shadow: none; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h3>Loading Live Data...</h3>
+            <p style="color: #666; margin-top: 10px;">Fetching from Google Sheets</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏘️ Senior Citizens Residential Welfare Association</h1>
+            <p>Society Meeting Dashboard | <span id="currentDate">Loading...</span></p>
+            <div class="live-indicator loading" id="liveIndicator">⏳ Loading Data...</div>
+        </div>
+        
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card green">
+                <div class="icon">💰</div>
+                <div class="value" id="currentBalance">--</div>
+                <div class="label">Current Balance</div>
+            </div>
+            <div class="metric-card blue">
+                <div class="icon">📥</div>
+                <div class="value" id="totalInflow">--</div>
+                <div class="label">Total Inflow</div>
+            </div>
+            <div class="metric-card orange">
+                <div class="icon">📤</div>
+                <div class="value" id="totalOutflow">--</div>
+                <div class="label">Total Outflow</div>
+            </div>
+            <div class="metric-card red">
+                <div class="icon">⚠️</div>
+                <div class="value" id="totalOutstanding">--</div>
+                <div class="label">Outstanding Dues</div>
+            </div>
+            <div class="metric-card purple">
+                <div class="icon">🏠</div>
+                <div class="value" id="propertiesWithDues">--</div>
+                <div class="label">Properties with Dues</div>
+            </div>
+        </div>
+        
+        <!-- Outstanding Alert -->
+        <div class="alert-box">
+            <h2>⚠️ <span id="alertAmount">--</span></h2>
+            <p id="alertText">Loading outstanding dues information...</p>
+        </div>
+        
+        <!-- Member Summary -->
+        <div class="section-title">👥 Member Summary</div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card blue">
+                <div class="icon">👥</div>
+                <div class="value" id="totalMembers">--</div>
+                <div class="label">Total Members</div>
+            </div>
+            <div class="metric-card green">
+                <div class="icon">✅</div>
+                <div class="value" id="activeMembers">--</div>
+                <div class="label">Active Members</div>
+            </div>
+            <div class="metric-card orange">
+                <div class="icon">⏸️</div>
+                <div class="value" id="inactiveMembers">--</div>
+                <div class="label">Inactive Members</div>
+            </div>
+            <div class="metric-card green">
+                <div class="icon">💯</div>
+                <div class="value" id="fullyPaid">--</div>
+                <div class="label">Fully Paid</div>
+            </div>
+        </div>
+        
+        <!-- Achievements Section -->
+        <div class="section-title">🏆 Key Achievements (Nov 2025 - May 2026)</div>
+        
+        <div class="two-col">
+            <div class="card">
+                <h3>✅ Governance & Registration</h3>
+                <ul class="achievement-list">
+                    <li>✅ Elections completed, new committee formed</li>
+                    <li>✅ Society registration amended</li>
+                    <li>✅ MoA & Bye-Laws finalized</li>
+                    <li>✅ PAN Card obtained</li>
+                    <li>✅ Bank A/C opened (HDFC)</li>
+                    <li>✅ NOC mandate for property transactions</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>🏗️ Infrastructure Projects</h3>
+                <ul class="achievement-list">
+                    <li>✅ Rs.42 Lakh - Drainage Project (Started) <span style="font-size: 0.85em; color: #856404; background: #fff3cd; padding: 2px 8px; border-radius: 4px; margin-left: 5px;">Phase I: 1-2 streets only</span></li>
+                    <li>✅ Rs.40 Lakh - CC Roads (Approved)</li>
+                    <li>✅ 5 New Street Lights installed</li>
+                    <li>✅ Road repairs completed (Rs.46,900)</li>
+                    <li>✅ MLA Foundation Stone - 31 May 2026</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>💻 Digital Transformation</h3>
+                <ul class="achievement-list">
+                    <li>✅ Zero-cost Governance App built</li>
+                    <li>✅ <span id="digitizedOwners">250+</span> owners digitized</li>
+                    <li>✅ Live financial dashboards</li>
+                    <li>✅ 20 years data gap - now digitized</li>
+                    <li>✅ Monthly reports automated</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>🤝 Community Issues Resolved</h3>
+                <ul class="achievement-list">
+                    <li>✅ Road blockage cleared</li>
+                    <li>🔄 Dog menace reduced (Plot 143 tenant vacated) - monitoring</li>
+                    <li>✅ Route 43 bus resumed (Govt) - communicated to residents</li>
+                    <li class="pending">🔄 Encroachment - Monitoring</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Outstanding Dues Section -->
+        <div class="section-title">⚠️ Outstanding Dues Analysis <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">🔴 LIVE</span></div>
+        
+        <div class="two-col">
+            <div class="card">
+                <h3>🏠 Lane-wise Breakdown</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Lane</th>
+                            <th>Properties</th>
+                            <th>Outstanding</th>
+                            <th>%</th>
+                        </tr>
+                    </thead>
+                    <tbody id="laneBreakdownTable">
+                        <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <h3>📊 Payment Status Summary</h3>
+                <div id="paymentStatusSummary">
+                    <div style="text-align: center; padding: 30px; color: #666;">Loading payment status...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Financial Overview Section -->
+        <div class="section-title">💰 Financial Overview <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">🔴 LIVE</span></div>
+        
+        <div class="two-col">
+            <div class="card">
+                <h3>📊 Year-wise Cash Flow</h3>
+                <table>
+                    <tr>
+                        <th>Financial Year</th>
+                        <th>Inflow</th>
+                        <th>Outflow</th>
+                        <th>Closing</th>
+                    </tr>
+                    <tbody id="yearWiseCashFlow">
+                        <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <h3>📈 Income Sources</h3>
+                <div id="incomeSourcesContainer">
+                    <div style="text-align: center; padding: 30px; color: #666;">Loading income data...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="two-col" style="margin-top: 20px;">
+            <div class="card">
+                <h3>💸 Major Expense Categories</h3>
+                <div id="majorExpensesContainer">
+                    <div style="text-align: center; padding: 30px; color: #666;">Loading expense data...</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>💸 Other Expenses</h3>
+                <div id="otherExpensesContainer">
+                    <div style="text-align: center; padding: 30px; color: #666;">Loading expense data...</div>
+                </div>
+                <div id="totalOutflowBox" style="margin-top: 15px; padding: 12px; background: #fff3cd; border-radius: 8px; text-align: center;">
+                    <strong>Total Outflow: Loading...</strong>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Internal Order Analysis Section -->
+        <div class="section-title">📊 Internal Order Analysis <span style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">🔴 LIVE</span></div>
+        
+        <div class="two-col">
+            <div class="card">
+                <h3>🏢 Society Related</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Internal Order</th>
+                            <th>Income</th>
+                            <th>Expense</th>
+                            <th>Net</th>
+                        </tr>
+                    </thead>
+                    <tbody id="societyOrdersTable">
+                        <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <h3>🎉 Festival Events</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Collection</th>
+                            <th>Expense</th>
+                            <th>Net</th>
+                        </tr>
+                    </thead>
+                    <tbody id="festivalOrdersTable">
+                        <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Payment Details -->
+        <div class="payment-box">
+            <h3>💳 Payment Details</h3>
+            <div class="payment-details">
+                <strong>Bank:</strong> HDFC Bank, Saket Road Branch<br>
+                <strong>Account Name:</strong> Senior Citizens Residential Welfare Association<br>
+                <strong>Account Number:</strong> 50200121383803<br>
+                <strong>IFSC Code:</strong> HDFC0005443<br><br>
+                <em>🙏 Please clear your dues to support society maintenance - Roads, Street Lights, Drainage & Security</em>
+            </div>
+        </div>
+        
+        <!-- Infrastructure Projects -->
+        <div class="section-title">🏗️ Infrastructure Projects</div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card green">
+                <div class="icon">🚰</div>
+                <div class="value">Rs.42 Lakh</div>
+                <div class="label">Drainage Project<br><span class="badge badge-progress">In Progress</span></div>
+                <div style="font-size: 0.75em; color: #666; margin-top: 8px; padding: 6px; background: #fff3cd; border-radius: 6px;">⚠️ Phase I: Only 1-2 streets covered<br>(Not entire colony)</div>
+            </div>
+            <div class="metric-card blue">
+                <div class="icon">🛣️</div>
+                <div class="value">Rs.40 Lakh</div>
+                <div class="label">CC Roads<br><span class="badge badge-done">Approved</span></div>
+            </div>
+            <div class="metric-card purple">
+                <div class="icon">🏛️</div>
+                <div class="value">Rs.82 Lakh</div>
+                <div class="label">Total Sanctioned</div>
+            </div>
+            <div class="metric-card orange">
+                <div class="icon">🎉</div>
+                <div class="value">31 May</div>
+                <div class="label">MLA Foundation Stone</div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>🏘️ Senior Citizens Residential Welfare Association</strong></p>
+            <p>Together for a Better Community | <span id="footerDate">--</span></p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                📊 Live Data Dashboard | Auto-refreshes from Google Sheets
+            </p>
+        </div>
+    </div>
+    
+    <!-- Modal for Miscellaneous Breakdown -->
+    <div class="modal-overlay" id="miscModal" onclick="closeMiscModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>📋 Other Miscellaneous Breakdown</h3>
+                <button class="modal-close" onclick="closeMiscModal()">&times;</button>
+            </div>
+            <div id="miscBreakdownContent">
+                Loading...
+            </div>
+        </div>
+    </div>
+    
+    <!-- Refresh Button -->
+    <button class="refresh-btn" onclick="refreshData()">🔄 Refresh Data</button>
+    
+    <script>
+        // ============================================================
+        // CONFIGURATION
+        // ============================================================
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+        
+        // Store miscellaneous breakdown globally
+        let miscBreakdownData = [];
+        
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            setCurrentDate();
+            loadData();
+        });
+        
+        function setCurrentDate() {
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const dateStr = now.toLocaleDateString('en-IN', options);
+            document.getElementById('currentDate').textContent = dateStr;
+            document.getElementById('footerDate').textContent = 'Last Updated: ' + now.toLocaleString('en-IN');
+        }
+        
+        // ============================================================
+        // DATA LOADING
+        // ============================================================
+        async function loadData() {
+            const indicator = document.getElementById('liveIndicator');
+            indicator.className = 'live-indicator loading';
+            indicator.textContent = '⏳ Loading Data...';
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL);
+                if (!response.ok) throw new Error('Failed to fetch data');
+                
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+                
+                processData(data);
+                
+                indicator.className = 'live-indicator';
+                indicator.textContent = '🔴 LIVE DATA | ' + new Date().toLocaleTimeString();
+                
+                document.getElementById('loadingOverlay').style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                indicator.className = 'live-indicator error';
+                indicator.textContent = '❌ Error: ' + error.message;
+                document.getElementById('loadingOverlay').innerHTML = `
+                    <div class="loading-content">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">❌</div>
+                        <h3>Failed to Load Data</h3>
+                        <p style="color: #666; margin: 20px 0;">${error.message}</p>
+                        <button onclick="location.reload()" style="padding: 12px 30px; background: #003366; color: white; border: none; border-radius: 8px; cursor: pointer;">🔄 Retry</button>
+                    </div>
+                `;
+            }
+        }
+        
+        function refreshData() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('loadingOverlay').innerHTML = `
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <h3>Refreshing Live Data...</h3>
+                    <p style="color: #666; margin-top: 10px;">Fetching latest from Google Sheets</p>
+                </div>
+            `;
+            loadData();
+        }
+        
+        // ============================================================
+        // DATA PROCESSING
+        // ============================================================
+        function processData(data) {
+            let totalMembers = 0;
+            let activeMembers = 0;
+            let inactiveMembers = 0;
+            let totalOutstanding = 0;
+            let totalBilled = 0;
+            let totalPaid = 0;
+            let propertiesWithDues = 0;
+            let fullyPaid = 0;
+            
+            const laneData = {};
+            const paymentStatus = {
+                fullyPaid: 0,
+                partialPaid: 0,
+                notPaid: 0
+            };
+            
+            for (const [key, member] of Object.entries(data)) {
+                if (key.startsWith('_')) continue;
+                
+                totalMembers++;
+                
+                // Status
+                const status = String(member.status || '').toLowerCase();
+                if (status.includes('active') && !status.includes('inactive')) {
+                    activeMembers++;
+                } else if (status.includes('inactive')) {
+                    inactiveMembers++;
+                }
+                
+                // Calculate financials from invoices
+                let memberBilled = 0;
+                let memberPaid = 0;
+                let memberOutstanding = 0;
+                
+                (member.invoices || []).forEach(inv => {
+                    memberBilled += inv.billAmount || 0;
+                    memberPaid += inv.paidAmount || 0;
+                    if ((inv.balance || 0) > 0) {
+                        memberOutstanding += inv.balance;
+                    }
+                });
+                
+                totalBilled += memberBilled;
+                totalPaid += memberPaid;
+                totalOutstanding += memberOutstanding;
+                
+                if (memberOutstanding > 0) {
+                    propertiesWithDues++;
+                    
+                    // Lane breakdown
+                    const lane = String(member.laneNo || 'Unknown').trim();
+                    if (!laneData[lane]) {
+                        laneData[lane] = { properties: 0, outstanding: 0 };
+                    }
+                    laneData[lane].properties++;
+                    laneData[lane].outstanding += memberOutstanding;
+                    
+                    // Payment status
+                    if (memberPaid === 0) {
+                        paymentStatus.notPaid++;
+                    } else {
+                        paymentStatus.partialPaid++;
+                    }
+                } else if (memberBilled > 0) {
+                    fullyPaid++;
+                    paymentStatus.fullyPaid++;
+                }
+            }
+            
+            // Update UI - Member stats only (financial comes from _financial)
+            document.getElementById('totalMembers').textContent = totalMembers;
+            document.getElementById('activeMembers').textContent = activeMembers;
+            document.getElementById('inactiveMembers').textContent = inactiveMembers;
+            document.getElementById('fullyPaid').textContent = fullyPaid;
+            document.getElementById('digitizedOwners').textContent = totalMembers + '+';
+            
+            document.getElementById('totalOutstanding').textContent = formatCurrency(totalOutstanding);
+            document.getElementById('propertiesWithDues').textContent = propertiesWithDues;
+            
+            // Alert box
+            document.getElementById('alertAmount').textContent = formatCurrency(totalOutstanding);
+            document.getElementById('alertText').textContent = `Outstanding across ${propertiesWithDues} properties | ${fullyPaid} properties fully paid`;
+            
+            // Lane breakdown table
+            updateLaneBreakdown(laneData, totalOutstanding);
+            
+            // Payment status summary
+            updatePaymentStatus(paymentStatus, propertiesWithDues, fullyPaid);
+            
+            // ============================================================
+            // FINANCIAL OVERVIEW (from _financial data)
+            // ============================================================
+            if (data._financial && !data._financial.error) {
+                updateFinancialOverview(data._financial);
+            } else {
+                // Fallback if no financial data
+                document.getElementById('currentBalance').textContent = '--';
+                document.getElementById('totalInflow').textContent = '--';
+                document.getElementById('totalOutflow').textContent = '--';
+            }
+            
+            // ============================================================
+            // INTERNAL ORDER ANALYSIS
+            // ============================================================
+            if (data._internalOrders && !data._internalOrders.error) {
+                updateInternalOrderAnalysis(data._internalOrders);
+            }
+        }
+        
+        function updateLaneBreakdown(laneData, totalOutstanding) {
+            // Sort lanes by outstanding amount
+            const sortedLanes = Object.entries(laneData)
+                .sort((a, b) => b[1].outstanding - a[1].outstanding);
+            
+            let tableHTML = '';
+            let totalProperties = 0;
+            
+            sortedLanes.slice(0, 7).forEach(([lane, data]) => {
+                const pct = totalOutstanding > 0 ? ((data.outstanding / totalOutstanding) * 100).toFixed(1) : 0;
+                tableHTML += `
+                    <tr>
+                        <td>${lane}</td>
+                        <td>${data.properties}</td>
+                        <td>${formatCurrency(data.outstanding)}</td>
+                        <td>${pct}%</td>
+                    </tr>
+                `;
+                totalProperties += data.properties;
+            });
+            
+            // Others row if more than 7 lanes
+            if (sortedLanes.length > 7) {
+                let othersOutstanding = 0;
+                let othersProperties = 0;
+                sortedLanes.slice(7).forEach(([lane, data]) => {
+                    othersOutstanding += data.outstanding;
+                    othersProperties += data.properties;
+                });
+                const othersPct = totalOutstanding > 0 ? ((othersOutstanding / totalOutstanding) * 100).toFixed(1) : 0;
+                tableHTML += `
+                    <tr>
+                        <td>Others</td>
+                        <td>${othersProperties}</td>
+                        <td>${formatCurrency(othersOutstanding)}</td>
+                        <td>${othersPct}%</td>
+                    </tr>
+                `;
+                totalProperties += othersProperties;
+            }
+            
+            // Total row
+            tableHTML += `
+                <tr class="total-row">
+                    <td>TOTAL</td>
+                    <td>${totalProperties}</td>
+                    <td>${formatCurrency(totalOutstanding)}</td>
+                    <td>100%</td>
+                </tr>
+            `;
+            
+            document.getElementById('laneBreakdownTable').innerHTML = tableHTML;
+        }
+        
+        function updatePaymentStatus(status, withDues, fullyPaid) {
+            const total = status.fullyPaid + status.partialPaid + status.notPaid;
+            const fullyPaidPct = total > 0 ? Math.round((status.fullyPaid / total) * 100) : 0;
+            const partialPct = total > 0 ? Math.round((status.partialPaid / total) * 100) : 0;
+            const notPaidPct = total > 0 ? Math.round((status.notPaid / total) * 100) : 0;
+            
+            document.getElementById('paymentStatusSummary').innerHTML = `
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>✅ Fully Paid</span>
+                        <span>${status.fullyPaid} properties (${fullyPaidPct}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${fullyPaidPct}%; background: #28a745;">${fullyPaidPct}%</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>🔄 Partial Paid</span>
+                        <span>${status.partialPaid} properties (${partialPct}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${partialPct}%; background: #ffc107;">${partialPct}%</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>❌ Not Paid</span>
+                        <span>${status.notPaid} properties (${notPaidPct}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${notPaidPct}%; background: #dc3545;">${notPaidPct}%</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px;">
+                    <strong>✅ Fully Paid:</strong> ${fullyPaid} properties - Thank you! 🙏
+                </div>
+            `;
+        }
+        
+        // ============================================================
+        // FINANCIAL OVERVIEW UPDATE
+        // ============================================================
+        function updateFinancialOverview(financial) {
+            // Update Key Metrics with actual financial data
+            document.getElementById('currentBalance').textContent = formatCurrency(financial.currentBalance);
+            document.getElementById('totalInflow').textContent = formatCurrency(financial.totalIncome);
+            document.getElementById('totalOutflow').textContent = formatCurrency(financial.totalExpense);
+            
+            // Year-wise Cash Flow Table
+            const fyData = financial.fyWise;
+            let fyHTML = '';
+            const fyYears = ['2024-25', '2025-26', '2026-27'];
+            fyYears.forEach((fy, index) => {
+                const data = fyData[fy] || { inflow: 0, outflow: 0, closing: 0 };
+                const isLast = index === fyYears.length - 1;
+                const label = isLast ? fy + ' (YTD)' : fy;
+                fyHTML += `
+                    <tr class="${isLast ? 'total-row' : ''}">
+                        <td>${label}</td>
+                        <td>${formatCurrency(data.inflow)}</td>
+                        <td>${formatCurrency(data.outflow)}</td>
+                        <td>${formatCurrency(data.closing)}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('yearWiseCashFlow').innerHTML = fyHTML;
+            
+            // Income Sources
+            const incomeColors = {
+                'Maintenance Charges': '#28a745',
+                'Festival Donations': '#007bff',
+                'Initial Deposits': '#6f42c1',
+                'Construction Deposits': '#fd7e14'
+            };
+            
+            let incomeHTML = '';
+            for (const [category, data] of Object.entries(financial.income)) {
+                const color = incomeColors[category] || '#6c757d';
+                const barWidth = Math.max(data.pct, 5); // Minimum 5% width for visibility
+                const displayWidth = data.pct < 5 ? 'min-width: 35px;' : '';
+                incomeHTML += `
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>${category}</span>
+                            <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById('incomeSourcesContainer').innerHTML = incomeHTML;
+            
+            // Expense Categories
+            const expenseColors = {
+                'Music & Entertainment': '#e74c3c',
+                'Road Repairs': '#3498db',
+                'Venue Setup (Events)': '#9b59b6',
+                'Society Registration': '#1abc9c',
+                'Refreshments (Events)': '#e67e22',
+                'GHMC Charges': '#34495e',
+                'Other Miscellaneous': '#95a5a6'
+            };
+            
+            // Split into Major (first 4) and Other (last 3)
+            const majorExpenses = ['Music & Entertainment', 'Road Repairs', 'Venue Setup (Events)', 'Society Registration'];
+            const otherExpenses = ['Refreshments (Events)', 'GHMC Charges', 'Other Miscellaneous'];
+            
+            let majorHTML = '';
+            majorExpenses.forEach(category => {
+                const data = financial.expense[category] || { amount: 0, pct: 0 };
+                const color = expenseColors[category] || '#6c757d';
+                const barWidth = Math.max(data.pct, 5);
+                const displayWidth = data.pct < 5 ? 'min-width: 35px;' : '';
+                majorHTML += `
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>${category}</span>
+                            <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('majorExpensesContainer').innerHTML = majorHTML;
+            
+            // Store miscellaneous breakdown for modal
+            if (financial.miscBreakdown) {
+                miscBreakdownData = financial.miscBreakdown;
+            }
+            
+            let otherHTML = '';
+            otherExpenses.forEach(category => {
+                const data = financial.expense[category] || { amount: 0, pct: 0 };
+                const color = expenseColors[category] || '#6c757d';
+                const barWidth = Math.max(data.pct, 5);
+                const displayWidth = data.pct < 5 ? 'min-width: 35px;' : '';
+                
+                // Make "Other Miscellaneous" clickable
+                const isClickable = category === 'Other Miscellaneous';
+                const clickHandler = isClickable ? 'onclick="openMiscModal()"' : '';
+                const clickableClass = isClickable ? 'clickable-category' : '';
+                
+                otherHTML += `
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span class="${clickableClass}" ${clickHandler}>${category}</span>
+                            <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('otherExpensesContainer').innerHTML = otherHTML;
+            
+            // Total Outflow
+            document.getElementById('totalOutflowBox').innerHTML = `<strong>Total Outflow: ${formatCurrency(financial.totalExpense)}</strong>`;
+        }
+        
+        // ============================================================
+        // INTERNAL ORDER ANALYSIS
+        // ============================================================
+        function updateInternalOrderAnalysis(orderData) {
+            // Society Related Table
+            let societyHTML = '';
+            if (orderData.society && orderData.society.items.length > 0) {
+                orderData.society.items.forEach(item => {
+                    const netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                    const netPrefix = item.net >= 0 ? '+' : '';
+                    societyHTML += `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td style="color: #28a745;">${formatCurrency(item.income)}</td>
+                            <td style="color: #dc3545;">${formatCurrency(item.expense)}</td>
+                            <td style="${netClass} font-weight: bold;">${netPrefix}${formatCurrency(item.net)}</td>
+                        </tr>
+                    `;
+                });
+                
+                // Totals row
+                const totals = orderData.society.totals;
+                const totalNetClass = totals.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                const totalNetPrefix = totals.net >= 0 ? '+' : '';
+                societyHTML += `
+                    <tr class="total-row">
+                        <td><strong>TOTAL</strong></td>
+                        <td style="color: #28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
+                        <td style="color: #dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
+                        <td style="${totalNetClass}"><strong>${totalNetPrefix}${formatCurrency(totals.net)}</strong></td>
+                    </tr>
+                `;
+            } else {
+                societyHTML = '<tr><td colspan="4" style="text-align: center;">No data available</td></tr>';
+            }
+            document.getElementById('societyOrdersTable').innerHTML = societyHTML;
+            
+            // Festival Events Table
+            let festivalHTML = '';
+            if (orderData.festival && orderData.festival.items.length > 0) {
+                orderData.festival.items.forEach(item => {
+                    const netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                    const netPrefix = item.net >= 0 ? '+' : '';
+                    const netLabel = item.net >= 0 ? '✅ Surplus' : '❌ Deficit';
+                    festivalHTML += `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td style="color: #28a745;">${formatCurrency(item.income)}</td>
+                            <td style="color: #dc3545;">${formatCurrency(item.expense)}</td>
+                            <td style="${netClass} font-weight: bold;">${netPrefix}${formatCurrency(item.net)}</td>
+                        </tr>
+                    `;
+                });
+                
+                // Totals row
+                const totals = orderData.festival.totals;
+                const totalNetClass = totals.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                const totalNetPrefix = totals.net >= 0 ? '+' : '';
+                festivalHTML += `
+                    <tr class="total-row">
+                        <td><strong>TOTAL</strong></td>
+                        <td style="color: #28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
+                        <td style="color: #dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
+                        <td style="${totalNetClass}"><strong>${totalNetPrefix}${formatCurrency(totals.net)}</strong></td>
+                    </tr>
+                `;
+            } else {
+                festivalHTML = '<tr><td colspan="4" style="text-align: center;">No data available</td></tr>';
+            }
+            document.getElementById('festivalOrdersTable').innerHTML = festivalHTML;
+        }
+        
+        // ============================================================
+        // MODAL FUNCTIONS
+        // ============================================================
+        function openMiscModal() {
+            const modal = document.getElementById('miscModal');
+            const content = document.getElementById('miscBreakdownContent');
+            
+            if (miscBreakdownData.length === 0) {
+                content.innerHTML = '<p style="text-align: center; color: #666;">No breakdown data available</p>';
+            } else {
+                let html = '';
+                let total = 0;
+                miscBreakdownData.forEach(item => {
+                    total += item.amount;
+                    html += `
+                        <div class="breakdown-item">
+                            <span class="breakdown-name">${item.name}</span>
+                            <span class="breakdown-amount">${formatCurrency(item.amount)}</span>
+                        </div>
+                    `;
+                });
+                html += `
+                    <div style="margin-top: 15px; padding: 15px; background: #e3f2fd; border-radius: 8px; display: flex; justify-content: space-between;">
+                        <strong>Total Miscellaneous</strong>
+                        <strong style="color: #003366;">${formatCurrency(total)}</strong>
+                    </div>
+                `;
+                content.innerHTML = html;
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function closeMiscModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('miscModal').classList.remove('active');
+        }
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeMiscModal();
+        });
+        
+        // ============================================================
+        // UTILITIES
+        // ============================================================
+        function formatCurrency(amount) {
+            if (amount === undefined || amount === null) return '--';
+            return 'Rs.' + Math.round(amount).toLocaleString('en-IN');
+        }
+    </script>
+</body>
+</html>

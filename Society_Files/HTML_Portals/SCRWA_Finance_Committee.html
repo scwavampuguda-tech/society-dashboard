@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCRWA — Finance Report | Committee View</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;min-height:100vh}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#003366,#004080);color:white;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(0,51,102,.4)}
+.header h1{font-size:1.3rem;font-weight:700}
+.header p{font-size:.78rem;opacity:.8;margin-top:3px}
+.header-right{display:flex;align-items:center;gap:12px}
+.refresh-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;padding:7px 16px;border-radius:20px;cursor:pointer;font-size:.8rem;transition:.2s}
+.refresh-btn:hover{background:rgba(255,255,255,.25)}
+.status-dot{width:9px;height:9px;border-radius:50%;background:#aaa;display:inline-block;margin-right:5px}
+.status-dot.green{background:#2ecc71;animation:pulse 2s infinite}
+.status-dot.red{background:#e74c3c}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+#statusText{font-size:.75rem;opacity:.85}
+
+/* TABS */
+.tabs{background:white;padding:0 28px;display:flex;gap:4px;border-bottom:1px solid #dde3ed;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.tab{padding:14px 20px;cursor:pointer;font-size:.88rem;font-weight:500;color:#666;border-bottom:3px solid transparent;transition:.2s;white-space:nowrap}
+.tab:hover{color:#003366}
+.tab.active{color:#003366;border-bottom-color:#003366;font-weight:700}
+
+/* CONTENT */
+.content{padding:24px 28px;max-width:1400px;margin:0 auto}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.kpi-card{background:white;border-radius:12px;padding:18px 20px;box-shadow:0 2px 12px rgba(0,0,0,.07);border-top:4px solid #ccc;position:relative;overflow:hidden}
+.kpi-card.green{border-top-color:#27ae60}
+.kpi-card.red{border-top-color:#e74c3c}
+.kpi-card.blue{border-top-color:#2980b9}
+.kpi-card.orange{border-top-color:#e67e22}
+.kpi-card.purple{border-top-color:#8e44ad}
+.kpi-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:8px}
+.kpi-value{font-size:1.6rem;font-weight:800;color:#1a1a2e}
+.kpi-sub{font-size:.72rem;color:#888;margin-top:4px}
+.kpi-icon{position:absolute;right:14px;top:14px;font-size:1.6rem;opacity:.15}
+
+/* SECTION HEADERS */
+.section-title{font-size:1rem;font-weight:700;color:#003366;margin:24px 0 12px;display:flex;align-items:center;gap:8px}
+.section-title span{background:#003366;color:white;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem}
+
+/* FILTERS */
+.filter-bar{background:white;border-radius:10px;padding:14px 18px;margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.filter-bar input,.filter-bar select{padding:8px 12px;border:1px solid #dde3ed;border-radius:8px;font-size:.83rem;outline:none;min-width:160px}
+.filter-bar input:focus,.filter-bar select:focus{border-color:#003366}
+.filter-label{font-size:.8rem;color:#666;font-weight:600;white-space:nowrap}
+.btn-clear{background:#f0f4f8;border:1px solid #dde3ed;color:#555;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.82rem}
+.btn-clear:hover{background:#e0e8f0}
+
+/* TABLE */
+.table-wrap{background:white;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);overflow:hidden;margin-bottom:24px}
+.table-meta{padding:12px 18px;background:#f8faff;border-bottom:1px solid #eef0f6;display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:#666}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:700px}
+thead tr{background:#003366;color:white}
+thead th{padding:11px 14px;font-size:.78rem;font-weight:600;text-align:left;white-space:nowrap;letter-spacing:.3px}
+thead th.num{text-align:right}
+tbody tr{border-bottom:1px solid #f0f2f7;transition:.15s}
+tbody tr:hover{background:#f5f8ff}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:10px 14px;font-size:.82rem;color:#333}
+tbody td.num{text-align:right;font-family:'Courier New',monospace;font-size:.8rem}
+tbody td.positive{color:#27ae60;font-weight:600}
+tbody td.negative{color:#e74c3c;font-weight:600}
+tbody td.neutral{color:#2980b9;font-weight:600}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:700}
+.badge.in{background:#d5f5e3;color:#1e8449}
+.badge.out{background:#fde8e8;color:#c0392b}
+.badge.paid{background:#d5f5e3;color:#1e8449}
+.badge.partial{background:#fef9e7;color:#b7950b}
+.badge.unpaid{background:#fde8e8;color:#c0392b}
+.badge.active{background:#e8f4fd;color:#1a5276}
+
+/* OUTSTANDING TABLE */
+.outstanding-row-alert td{background:#fff5f5}
+.pagination{display:flex;gap:6px;padding:12px 18px;justify-content:flex-end;flex-wrap:wrap}
+.page-btn{padding:5px 12px;border:1px solid #dde3ed;border-radius:6px;cursor:pointer;font-size:.78rem;background:white;color:#444}
+.page-btn:hover,.page-btn.active{background:#003366;color:white;border-color:#003366}
+
+/* TABS CONTENT */
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* LOADING */
+.loading-overlay{text-align:center;padding:60px 20px}
+.spinner{width:44px;height:44px;border:4px solid #e0e8f4;border-top-color:#003366;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-box{background:#fff0f0;border:1px solid #f5c6cb;border-radius:10px;padding:20px;text-align:center;color:#721c24}
+
+/* CHART MINI */
+.chart-bar-wrap{display:flex;align-items:center;gap:8px}
+.chart-bar-bg{flex:1;background:#f0f4f8;border-radius:4px;height:8px;overflow:hidden;min-width:60px}
+.chart-bar-fill{height:100%;border-radius:4px;background:#27ae60;transition:.3s}
+.chart-bar-pct{font-size:.72rem;color:#666;white-space:nowrap;min-width:32px;text-align:right}
+
+/* PRINT */
+@media print{.header{-webkit-print-color-adjust:exact;print-color-adjust:exact}.tabs,.filter-bar,.pagination,.refresh-btn,.print-btn{display:none!important}.tab-content{display:block!important}}
+@media(max-width:600px){.header{flex-direction:column;gap:8px;text-align:center}.kpi-grid{grid-template-columns:1fr 1fr}.content{padding:16px}.tabs{overflow-x:auto}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <h1>🏛️ SCRWA — Finance Report</h1>
+    <p>Senior Citizens Residential Welfare Association, Vampuguda</p>
+  </div>
+  <div class="header-right">
+    <span id="statusText"><span class="status-dot" id="statusDot"></span>Loading...</span>
+    <button class="refresh-btn" onclick="loadData()">🔄 Refresh</button>
+    <button class="refresh-btn print-btn" onclick="window.print()">🖨️ Print</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('summary')">📊 Summary</div>
+  <div class="tab" onclick="switchTab('cashin')">💚 Cash In</div>
+  <div class="tab" onclick="switchTab('cashout')">🔴 Cash Out</div>
+  <div class="tab" onclick="switchTab('outstanding')">⚠️ Outstanding</div>
+  <div class="tab" onclick="switchTab('allpayments')">📋 All Payments</div>
+</div>
+
+<div class="content">
+
+  <!-- LOADING STATE -->
+  <div id="loadingState" class="loading-overlay">
+    <div class="spinner"></div>
+    <p style="color:#666;font-size:.9rem">Loading financial data from Google Sheet...</p>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div id="errorState" class="error-box" style="display:none">
+    <p style="font-size:2rem">⚠️</p>
+    <h3 style="margin:10px 0">Failed to load data</h3>
+    <p id="errorMsg" style="font-size:.85rem;margin-bottom:12px"></p>
+    <button onclick="loadData()" style="padding:8px 24px;background:#003366;color:white;border:none;border-radius:8px;cursor:pointer">Retry</button>
+  </div>
+
+  <!-- MAIN CONTENT (hidden until loaded) -->
+  <div id="mainContent" style="display:none">
+
+    <!-- ══ TAB: SUMMARY ══ -->
+    <div id="tab-summary" class="tab-content active">
+      <div class="kpi-grid" id="kpiGrid"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+        <div>
+          <div class="section-title"><span>1</span> Cash In — Top Categories</div>
+          <div class="table-wrap"><div class="table-scroll">
+            <table><thead><tr><th>Category</th><th class="num">Amount (₹)</th><th class="num">%</th></tr></thead>
+            <tbody id="cashInSummaryBody"></tbody></table>
+          </div></div>
+        </div>
+        <div>
+          <div class="section-title"><span>2</span> Cash Out — Top Categories</div>
+          <div class="table-wrap"><div class="table-scroll">
+            <table><thead><tr><th>Category</th><th class="num">Amount (₹)</th><th class="num">%</th></tr></thead>
+            <tbody id="cashOutSummaryBody"></tbody></table>
+          </div></div>
+        </div>
+      </div>
+      <div class="section-title"><span>3</span> Collection Status by Member</div>
+      <div class="table-wrap"><div class="table-scroll">
+        <table><thead><tr>
+          <th>Plot</th><th>Name</th><th>House</th>
+          <th class="num">Billed (₹)</th><th class="num">Paid (₹)</th><th class="num">Outstanding (₹)</th>
+          <th>Status</th><th>Collection %</th>
+        </tr></thead>
+        <tbody id="collectionStatusBody"></tbody></table>
+      </div>
+      <div class="pagination" id="collectionPagination"></div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: CASH IN ══ -->
+    <div id="tab-cashin" class="tab-content">
+      <div class="filter-bar">
+        <span class="filter-label">🔍 Filter:</span>
+        <input type="text" id="ciSearch" placeholder="Name / Plot / Category" oninput="renderCashIn()">
+        <select id="ciMode" onchange="renderCashIn()"><option value="">All Modes</option></select>
+        <select id="ciCategory" onchange="renderCashIn()"><option value="">All Categories</option></select>
+        <button class="btn-clear" onclick="clearFilters('ci')">✖ Clear</button>
+        <span style="margin-left:auto;font-size:.8rem;color:#666" id="ciCount"></span>
+      </div>
+      <div class="table-wrap">
+        <div class="table-meta">
+          <span>💚 Cash In Transactions</span>
+          <span id="ciTotal" style="font-weight:700;color:#27ae60"></span>
+        </div>
+        <div class="table-scroll">
+          <table><thead><tr>
+            <th>#</th><th>Date</th><th>Receipt No</th><th>Plot</th><th>Member Name</th>
+            <th>Category</th><th>Mode</th><th>Description</th><th class="num">Amount (₹)</th>
+          </tr></thead>
+          <tbody id="cashInBody"></tbody></table>
+        </div>
+        <div class="pagination" id="cashInPagination"></div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: CASH OUT ══ -->
+    <div id="tab-cashout" class="tab-content">
+      <div class="filter-bar">
+        <span class="filter-label">🔍 Filter:</span>
+        <input type="text" id="coSearch" placeholder="Description / Category" oninput="renderCashOut()">
+        <select id="coCategory" onchange="renderCashOut()"><option value="">All Categories</option></select>
+        <button class="btn-clear" onclick="clearFilters('co')">✖ Clear</button>
+        <span style="margin-left:auto;font-size:.8rem;color:#666" id="coCount"></span>
+      </div>
+      <div class="table-wrap">
+        <div class="table-meta">
+          <span>🔴 Cash Out Transactions (Expenses)</span>
+          <span id="coTotal" style="font-weight:700;color:#e74c3c"></span>
+        </div>
+        <div class="table-scroll">
+          <table><thead><tr>
+            <th>#</th><th>Date</th><th>Receipt/Ref</th><th>Category</th><th>Description</th>
+            <th>Mode</th><th class="num">Amount (₹)</th>
+          </tr></thead>
+          <tbody id="cashOutBody"></tbody></table>
+        </div>
+        <div class="pagination" id="cashOutPagination"></div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: OUTSTANDING ══ -->
+    <div id="tab-outstanding" class="tab-content">
+      <div class="filter-bar">
+        <span class="filter-label">🔍 Filter:</span>
+        <input type="text" id="osSearch" placeholder="Name / Plot" oninput="renderOutstanding()">
+        <select id="osStatus" onchange="renderOutstanding()">
+          <option value="">All Statuses</option>
+          <option value="unpaid">Unpaid</option>
+          <option value="partial">Partially Paid</option>
+          <option value="paid">Fully Paid</option>
+        </select>
+        <button class="btn-clear" onclick="clearFilters('os')">✖ Clear</button>
+        <span style="margin-left:auto;font-size:.8rem;color:#666" id="osCount"></span>
+      </div>
+      <div class="table-wrap">
+        <div class="table-meta">
+          <span>⚠️ Outstanding Dues by Member</span>
+          <span id="osTotal" style="font-weight:700;color:#e67e22"></span>
+        </div>
+        <div class="table-scroll">
+          <table><thead><tr>
+            <th>Plot</th><th>Name</th><th>House</th><th>Lane</th>
+            <th class="num">Total Billed (₹)</th><th class="num">Total Paid (₹)</th>
+            <th class="num">Outstanding (₹)</th><th>Status</th>
+          </tr></thead>
+          <tbody id="outstandingBody"></tbody></table>
+        </div>
+        <div class="pagination" id="outstandingPagination"></div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: ALL PAYMENTS ══ -->
+    <div id="tab-allpayments" class="tab-content">
+      <div class="filter-bar">
+        <span class="filter-label">🔍 Filter:</span>
+        <input type="text" id="apSearch" placeholder="Name / Plot" oninput="renderAllPayments()">
+        <select id="apType" onchange="renderAllPayments()">
+          <option value="">Cash In + Out</option>
+          <option value="in">Cash In Only</option>
+          <option value="out">Cash Out Only</option>
+        </select>
+        <button class="btn-clear" onclick="clearFilters('ap')">✖ Clear</button>
+        <span style="margin-left:auto;font-size:.8rem;color:#666" id="apCount"></span>
+      </div>
+      <div class="table-wrap">
+        <div class="table-meta">
+          <span>📋 All Transactions (Combined)</span>
+          <span id="apBalance" style="font-weight:700;color:#2980b9"></span>
+        </div>
+        <div class="table-scroll">
+          <table><thead><tr>
+            <th>#</th><th>Date</th><th>Type</th><th>Plot/Ref</th><th>Name/Description</th>
+            <th>Category</th><th>Mode</th><th class="num">Cash In (₹)</th><th class="num">Cash Out (₹)</th><th class="num">Balance (₹)</th>
+          </tr></thead>
+          <tbody id="allPaymentsBody"></tbody></table>
+        </div>
+        <div class="pagination" id="allPaymentsPagination"></div>
+      </div>
+    </div>
+
+  </div><!-- end mainContent -->
+</div><!-- end content -->
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+const ROWS_PER_PAGE = 50;
+
+let rawData = {};
+let cashInTx   = [];
+let cashOutTx  = [];
+let memberList = [];
+let currentTab = 'summary';
+const pages = {cashin:1,cashout:1,outstanding:1,allpayments:1,collection:1};
+
+// ── LOAD DATA ──────────────────────────────────────────────
+async function loadData() {
+  document.getElementById('loadingState').style.display='block';
+  document.getElementById('mainContent').style.display='none';
+  document.getElementById('errorState').style.display='none';
+  setStatus('loading','Loading...');
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    rawData = await res.json();
+    // v2: new Apps Script returns { members, cashOut, bankDebits, summary }
+    if (rawData.members) {
+      window._cashOutData  = rawData.cashOut    || [];
+      window._bankDebits   = rawData.bankDebits || [];
+      window._summary      = rawData.summary    || {};
+      rawData = rawData.members;
+    } else {
+      // v1 fallback: flat member object (old format)
+      window._cashOutData  = [];
+      window._bankDebits   = [];
+      window._summary      = {};
+    }
+    if (rawData.error) throw new Error(rawData.error);
+    processData();
+    renderAll();
+    document.getElementById('loadingState').style.display='none';
+    document.getElementById('mainContent').style.display='block';
+    setStatus('ok','Live data · ' + new Date().toLocaleTimeString('en-IN'));
+  } catch(e) {
+    document.getElementById('loadingState').style.display='none';
+    document.getElementById('errorState').style.display='block';
+    document.getElementById('errorMsg').textContent = e.message;
+    setStatus('err','Load failed');
+  }
+}
+
+function setStatus(state,text) {
+  const dot = document.getElementById('statusDot');
+  document.getElementById('statusText').innerHTML =
+    `<span class="status-dot ${state==='ok'?'green':state==='err'?'red':''}" id="statusDot"></span>${text}`;
+}
+
+// ── PROCESS RAW DATA ───────────────────────────────────────
+function processData() {
+  cashInTx  = [];
+  cashOutTx = [];
+  memberList = [];
+
+  for (const [pid, m] of Object.entries(rawData)) {
+    if (!m || typeof m !== 'object') continue;
+
+    // Member summary
+    let totalBilled = 0, totalPaid = 0;
+    (m.invoices||[]).forEach(inv => {
+      totalBilled += inv.billAmount || 0;
+      totalPaid   += inv.paidAmount || 0;
+    });
+    const outstanding = Math.max(0, totalBilled - totalPaid);
+
+    memberList.push({
+      pid, name: m.name||'', house: m.house||'', lane: m.laneNo||'',
+      plotNo: m.plotNo||pid, status: m.status||'',
+      totalBilled, totalPaid, outstanding
+    });
+
+    // Cash In from payments array
+    (m.payments||[]).forEach(tx => {
+      cashInTx.push({
+        date: tx.date||'', receiptNo: tx.receiptNo||'',
+        pid, plotNo: m.plotNo||pid, name: m.name||'',
+        category: tx.category||'', mode: tx.mode||'',
+        description: tx.description||'', amount: tx.amount||0
+      });
+    });
+  }
+
+  // Sort cash in by date desc
+  cashInTx.sort((a,b) => b.date.localeCompare(a.date));
+
+  // Populate filter dropdowns
+  const ciModes = [...new Set(cashInTx.map(t=>t.mode).filter(Boolean))].sort();
+  const ciCats  = [...new Set(cashInTx.map(t=>t.category).filter(Boolean))].sort();
+  fillSelect('ciMode',  ciModes, 'All Modes');
+  fillSelect('ciCategory', ciCats, 'All Categories');
+
+  // NOTE: Cash Out comes from BankDetails (debit) sheet, not member payments
+  // Since current Apps Script returns only Cash In per member,
+  // we derive Cash Out from BankDetails if available, else show note
+  buildCashOutFromBank();
+}
+
+function buildCashOutFromBank() {
+  // v2: combine Cash Out from TransactionDetails + BankDetails debits
+  const txOut   = (window._cashOutData || []).map(t => ({
+    date: t.date||'', receiptNo: t.receiptNo||'', category: t.category||'Expense',
+    description: t.description||'', mode: t.mode||'', amount: t.amount||0,
+    source: 'expense', txType: t.txType||'Cash Out'
+  }));
+  const bankOut = (window._bankDebits || []).map(t => ({
+    date: t.date||'', receiptNo: t.refNo||'', category: 'Bank Debit',
+    description: t.narration||'', mode: 'Bank', amount: t.amount||0,
+    source: 'bank', txType: 'Bank Debit'
+  }));
+  cashOutTx = [...txOut, ...bankOut].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const coCats = [...new Set(cashOutTx.map(t=>t.category).filter(Boolean))].sort();
+  fillSelect('coCategory', coCats, 'All Categories');
+}
+
+function fillSelect(id, options, defaultLabel) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = `<option value="">${defaultLabel}</option>`;
+  options.forEach(o => sel.innerHTML += `<option value="${o}">${o}</option>`);
+}
+
+// ── fmt helpers ────────────────────────────────────────────
+const fmt = n => '₹' + Math.round(n||0).toLocaleString('en-IN');
+const fmtDate = d => { if(!d) return '-'; try{ const dt=new Date(d); return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }catch(e){ return d; } };
+
+// ── RENDER ALL ─────────────────────────────────────────────
+function renderAll() {
+  renderKPIs();
+  renderSummaryTables();
+  renderCollectionStatus(1);
+  renderCashIn();
+  renderCashOut();
+  renderOutstanding();
+  renderAllPayments();
+}
+
+// ── KPIs ──────────────────────────────────────────────────
+function renderKPIs() {
+  const totalIn  = cashInTx.reduce((s,t)=>s+t.amount,0);
+  const totalOut = cashOutTx.reduce((s,t)=>s+t.amount,0);
+  const balance  = totalIn - totalOut;
+  const totalBilled = memberList.reduce((s,m)=>s+m.totalBilled,0);
+  const totalOutstanding = memberList.reduce((s,m)=>s+m.outstanding,0);
+  const fullyPaid = memberList.filter(m=>m.outstanding===0 && m.totalBilled>0).length;
+  const withDues  = memberList.filter(m=>m.outstanding>0).length;
+  const activeMembers = memberList.filter(m=>m.status.includes('Active')).length;
+
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi-card green"><div class="kpi-label">Total Cash In</div>
+      <div class="kpi-value">${fmt(totalIn)}</div>
+      <div class="kpi-sub">${cashInTx.length} transactions</div>
+      <div class="kpi-icon">💚</div></div>
+    <div class="kpi-card red"><div class="kpi-label">Total Cash Out</div>
+      <div class="kpi-value">${fmt(totalOut)}</div>
+      <div class="kpi-sub">${cashOutTx.length} transactions</div>
+      <div class="kpi-icon">🔴</div></div>
+    <div class="kpi-card blue"><div class="kpi-label">Net Balance</div>
+      <div class="kpi-value" style="color:${balance>=0?'#27ae60':'#e74c3c'}">${fmt(balance)}</div>
+      <div class="kpi-sub">Cash In minus Cash Out</div>
+      <div class="kpi-icon">🏦</div></div>
+    <div class="kpi-card orange"><div class="kpi-label">Total Outstanding</div>
+      <div class="kpi-value">${fmt(totalOutstanding)}</div>
+      <div class="kpi-sub">${withDues} members with dues</div>
+      <div class="kpi-icon">⚠️</div></div>
+    <div class="kpi-card purple"><div class="kpi-label">Collection Rate</div>
+      <div class="kpi-value">${totalBilled>0?Math.round((totalBilled-totalOutstanding)/totalBilled*100):0}%</div>
+      <div class="kpi-sub">${fullyPaid} of ${activeMembers} fully paid</div>
+      <div class="kpi-icon">📊</div></div>`;
+}
+
+// ── SUMMARY TABLES ─────────────────────────────────────────
+function renderSummaryTables() {
+  // Cash In by category
+  const ciCat = {};
+  cashInTx.forEach(t => { ciCat[t.category||'Other'] = (ciCat[t.category||'Other']||0) + t.amount; });
+  const ciTotal = Object.values(ciCat).reduce((s,v)=>s+v,0);
+  const ciSorted = Object.entries(ciCat).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('cashInSummaryBody').innerHTML =
+    ciSorted.map(([cat,amt]) => `<tr>
+      <td>${cat}</td><td class="num">${fmt(amt)}</td>
+      <td class="num"><div class="chart-bar-wrap">
+        <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${ciTotal>0?Math.round(amt/ciTotal*100):0}%;background:#27ae60"></div></div>
+        <span class="chart-bar-pct">${ciTotal>0?Math.round(amt/ciTotal*100):0}%</span>
+      </div></td></tr>`).join('') ||
+    '<tr><td colspan="3" style="text-align:center;color:#aaa;padding:20px">No data</td></tr>';
+
+  // Cash Out by category
+  const coCat = {};
+  cashOutTx.forEach(t => { coCat[t.category||'Other'] = (coCat[t.category||'Other']||0) + t.amount; });
+  const coTotal = Object.values(coCat).reduce((s,v)=>s+v,0);
+  const coSorted = Object.entries(coCat).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('cashOutSummaryBody').innerHTML =
+    coSorted.map(([cat,amt]) => `<tr>
+      <td>${cat}</td><td class="num">${fmt(amt)}</td>
+      <td class="num"><div class="chart-bar-wrap">
+        <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${coTotal>0?Math.round(amt/coTotal*100):0}%;background:#e74c3c"></div></div>
+        <span class="chart-bar-pct">${coTotal>0?Math.round(amt/coTotal*100):0}%</span>
+      </div></td></tr>`).join('') ||
+    '<tr><td colspan="3" style="text-align:center;color:#888;padding:20px;font-size:.83rem">⚠️ Cash Out data needs Apps Script extension.<br>See note at bottom of page.</td></tr>';
+}
+
+// ── COLLECTION STATUS ─────────────────────────────────────
+function renderCollectionStatus(page) {
+  pages.collection = page;
+  const sorted = [...memberList].sort((a,b) => b.outstanding - a.outstanding);
+  const start=(page-1)*ROWS_PER_PAGE, end=start+ROWS_PER_PAGE;
+  const paged = sorted.slice(start,end);
+  document.getElementById('collectionStatusBody').innerHTML = paged.map(m => {
+    const pct = m.totalBilled>0 ? Math.round(m.totalPaid/m.totalBilled*100) : 0;
+    const badge = m.outstanding===0 && m.totalBilled>0 ? '<span class="badge paid">✅ Paid</span>'
+      : m.totalPaid>0 ? '<span class="badge partial">⚡ Partial</span>'
+      : m.totalBilled>0 ? '<span class="badge unpaid">❌ Unpaid</span>'
+      : '<span class="badge active">—</span>';
+    return `<tr class="${m.outstanding>0?'outstanding-row-alert':''}">
+      <td><b>${m.plotNo}</b></td><td>${m.name}</td><td>${m.house}</td>
+      <td class="num">${fmt(m.totalBilled)}</td>
+      <td class="num positive">${fmt(m.totalPaid)}</td>
+      <td class="num ${m.outstanding>0?'negative':''}">${fmt(m.outstanding)}</td>
+      <td>${badge}</td>
+      <td><div class="chart-bar-wrap">
+        <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${pct}%;background:${pct===100?'#27ae60':pct>50?'#f39c12':'#e74c3c'}"></div></div>
+        <span class="chart-bar-pct">${pct}%</span>
+      </div></td></tr>`;
+  }).join('') || '<tr><td colspan="8" style="text-align:center;padding:20px;color:#aaa">No data</td></tr>';
+  renderPagination('collectionPagination', sorted.length, page, renderCollectionStatus);
+}
+
+// ── CASH IN ───────────────────────────────────────────────
+function renderCashIn(page) {
+  page = page||1; pages.cashin=page;
+  const q=(document.getElementById('ciSearch').value||'').toLowerCase();
+  const mode=document.getElementById('ciMode').value;
+  const cat=document.getElementById('ciCategory').value;
+  let data = cashInTx.filter(t =>
+    (!q || t.name.toLowerCase().includes(q)||t.plotNo.toLowerCase().includes(q)||t.category.toLowerCase().includes(q)||t.description.toLowerCase().includes(q)) &&
+    (!mode || t.mode===mode) && (!cat || t.category===cat)
+  );
+  const total = data.reduce((s,t)=>s+t.amount,0);
+  document.getElementById('ciCount').textContent = data.length + ' records';
+  document.getElementById('ciTotal').textContent = 'Total: ' + fmt(total);
+  const paged = data.slice((page-1)*ROWS_PER_PAGE, page*ROWS_PER_PAGE);
+  document.getElementById('cashInBody').innerHTML = paged.map((t,i) => `<tr>
+    <td style="color:#aaa">${(page-1)*ROWS_PER_PAGE+i+1}</td>
+    <td>${fmtDate(t.date)}</td><td style="font-size:.75rem;color:#888">${t.receiptNo}</td>
+    <td><b>${t.plotNo}</b></td><td>${t.name}</td>
+    <td><span class="badge in">${t.category}</span></td>
+    <td style="font-size:.75rem">${t.mode}</td>
+    <td style="font-size:.75rem;color:#666">${t.description}</td>
+    <td class="num positive">${fmt(t.amount)}</td></tr>`).join('') ||
+    '<tr><td colspan="9" style="text-align:center;padding:24px;color:#aaa">No matching records</td></tr>';
+  renderPagination('cashInPagination', data.length, page, renderCashIn);
+}
+
+// ── CASH OUT ──────────────────────────────────────────────
+function renderCashOut(page) {
+  page = page||1; pages.cashout=page;
+  const q=(document.getElementById('coSearch').value||'').toLowerCase();
+  const cat=document.getElementById('coCategory').value;
+  let data = cashOutTx.filter(t =>
+    (!q || (t.description||'').toLowerCase().includes(q)||(t.category||'').toLowerCase().includes(q)) &&
+    (!cat || t.category===cat)
+  );
+  const total = data.reduce((s,t)=>s+t.amount,0);
+  document.getElementById('coCount').textContent = data.length + ' records';
+  document.getElementById('coTotal').textContent = 'Total: ' + fmt(total);
+  const paged = data.slice((page-1)*ROWS_PER_PAGE, page*ROWS_PER_PAGE);
+  document.getElementById('cashOutBody').innerHTML = paged.length ? paged.map((t,i) => `<tr>
+    <td style="color:#aaa">${(page-1)*ROWS_PER_PAGE+i+1}</td>
+    <td>${fmtDate(t.date)}</td><td style="font-size:.75rem;color:#888">${t.receiptNo||''}</td>
+    <td><span class="badge out">${t.category}</span></td>
+    <td style="font-size:.75rem;color:#555">${t.description}</td>
+    <td style="font-size:.75rem">${t.mode||''}</td>
+    <td class="num negative">${fmt(t.amount)}</td></tr>`).join('') :
+    `<tr><td colspan="7"><div style="text-align:center;padding:40px 20px;color:#888">
+      <div style="font-size:2rem;margin-bottom:8px">🔧</div>
+      <b>Cash Out data not yet available</b>
+      <p style="font-size:.8rem;margin-top:8px;max-width:440px;margin-left:auto;margin-right:auto">
+      To enable Cash Out reporting, the Google Apps Script needs to be extended to return 
+      <b>BankDetails debit entries</b> and/or <b>expense transactions</b> from the 
+      <b>TransactionDetails</b> sheet (non–Cash In rows).</p>
+      <p style="font-size:.78rem;margin-top:6px;color:#aaa">Contact your Apps Script developer to add Cash Out support.</p>
+    </div></td></tr>`;
+  renderPagination('cashOutPagination', data.length, page, renderCashOut);
+}
+
+// ── OUTSTANDING ───────────────────────────────────────────
+function renderOutstanding(page) {
+  page = page||1; pages.outstanding=page;
+  const q=(document.getElementById('osSearch').value||'').toLowerCase();
+  const st=document.getElementById('osStatus').value;
+  let data = memberList.filter(m => m.totalBilled > 0).filter(m => {
+    const nameMatch = !q || m.name.toLowerCase().includes(q) || m.plotNo.toLowerCase().includes(q);
+    let statusMatch = true;
+    if (st==='unpaid') statusMatch = m.totalPaid===0;
+    else if (st==='partial') statusMatch = m.totalPaid>0 && m.outstanding>0;
+    else if (st==='paid') statusMatch = m.outstanding===0;
+    return nameMatch && statusMatch;
+  }).sort((a,b)=>b.outstanding-a.outstanding);
+  const totalOut = data.reduce((s,m)=>s+m.outstanding,0);
+  document.getElementById('osCount').textContent = data.length + ' members';
+  document.getElementById('osTotal').textContent = 'Total Outstanding: ' + fmt(totalOut);
+  const paged = data.slice((page-1)*ROWS_PER_PAGE, page*ROWS_PER_PAGE);
+  document.getElementById('outstandingBody').innerHTML = paged.map(m => {
+    const badge = m.outstanding===0 ? '<span class="badge paid">✅ Fully Paid</span>'
+      : m.totalPaid>0 ? '<span class="badge partial">⚡ Partial</span>'
+      : '<span class="badge unpaid">❌ Unpaid</span>';
+    return `<tr class="${m.outstanding>0?'outstanding-row-alert':''}">
+      <td><b>${m.plotNo}</b></td><td>${m.name}</td>
+      <td>${m.house}</td><td style="font-size:.75rem;color:#666">${m.lane}</td>
+      <td class="num">${fmt(m.totalBilled)}</td>
+      <td class="num positive">${fmt(m.totalPaid)}</td>
+      <td class="num ${m.outstanding>0?'negative':''}">${m.outstanding>0?fmt(m.outstanding):'<span style="color:#27ae60">—</span>'}</td>
+      <td>${badge}</td></tr>`;
+  }).join('') || '<tr><td colspan="8" style="text-align:center;padding:24px;color:#aaa">No matching records</td></tr>';
+  renderPagination('outstandingPagination', data.length, page, renderOutstanding);
+}
+
+// ── ALL PAYMENTS ──────────────────────────────────────────
+function renderAllPayments(page) {
+  page = page||1; pages.allpayments=page;
+  const q=(document.getElementById('apSearch').value||'').toLowerCase();
+  const type=document.getElementById('apType').value;
+  const inRows = cashInTx.map(t=>({...t,txType:'in'}));
+  const outRows = cashOutTx.map(t=>({...t,txType:'out'}));
+  let combined = [];
+  if (!type||type==='in') combined.push(...inRows);
+  if (!type||type==='out') combined.push(...outRows);
+  combined.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  if (q) combined = combined.filter(t =>
+    (t.name||'').toLowerCase().includes(q)||(t.plotNo||'').toLowerCase().includes(q)||
+    (t.description||'').toLowerCase().includes(q)||(t.category||'').toLowerCase().includes(q)
+  );
+  // Running balance
+  let runBal = 0;
+  const withBal = combined.map(t => {
+    if (t.txType==='in') runBal += t.amount;
+    else runBal -= t.amount;
+    return {...t, runBal};
+  });
+  const totalIn  = combined.filter(t=>t.txType==='in').reduce((s,t)=>s+t.amount,0);
+  const totalOut = combined.filter(t=>t.txType==='out').reduce((s,t)=>s+t.amount,0);
+  document.getElementById('apCount').textContent = combined.length + ' records';
+  document.getElementById('apBalance').textContent = `In: ${fmt(totalIn)} | Out: ${fmt(totalOut)} | Balance: ${fmt(totalIn-totalOut)}`;
+  const paged = withBal.slice((page-1)*ROWS_PER_PAGE, page*ROWS_PER_PAGE);
+  document.getElementById('allPaymentsBody').innerHTML = paged.map((t,i) => `<tr>
+    <td style="color:#aaa">${(page-1)*ROWS_PER_PAGE+i+1}</td>
+    <td>${fmtDate(t.date)}</td>
+    <td><span class="badge ${t.txType}">${t.txType==='in'?'💚 In':'🔴 Out'}</span></td>
+    <td style="font-size:.78rem"><b>${t.plotNo||t.receiptNo||'-'}</b></td>
+    <td style="font-size:.8rem">${t.name||t.description||'-'}</td>
+    <td style="font-size:.75rem">${t.category||'-'}</td>
+    <td style="font-size:.75rem">${t.mode||'-'}</td>
+    <td class="num positive">${t.txType==='in'?fmt(t.amount):'—'}</td>
+    <td class="num negative">${t.txType==='out'?fmt(t.amount):'—'}</td>
+    <td class="num neutral">${fmt(t.runBal)}</td></tr>`).join('') ||
+    '<tr><td colspan="10" style="text-align:center;padding:24px;color:#aaa">No matching records</td></tr>';
+  renderPagination('allPaymentsPagination', combined.length, page, renderAllPayments);
+}
+
+// ── PAGINATION ────────────────────────────────────────────
+function renderPagination(containerId, total, current, fn) {
+  const totalPages = Math.ceil(total/ROWS_PER_PAGE);
+  if (totalPages<=1) { document.getElementById(containerId).innerHTML=''; return; }
+  let html='';
+  if (current>1) html+=`<button class="page-btn" onclick="${fn.name}(${current-1})">‹ Prev</button>`;
+  for (let p=Math.max(1,current-2);p<=Math.min(totalPages,current+2);p++)
+    html+=`<button class="page-btn ${p===current?'active':''}" onclick="${fn.name}(${p})">${p}</button>`;
+  if (current<totalPages) html+=`<button class="page-btn" onclick="${fn.name}(${current+1})">Next ›</button>`;
+  html+=`<span style="font-size:.75rem;color:#aaa;margin-left:8px">${total} records · Page ${current}/${totalPages}</span>`;
+  document.getElementById(containerId).innerHTML=html;
+}
+
+// ── TAB SWITCH ────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    const tabs=['summary','cashin','cashout','outstanding','allpayments'];
+    el.classList.toggle('active', tabs[i]===tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+// ── CLEAR FILTERS ─────────────────────────────────────────
+function clearFilters(prefix) {
+  ['Search','Mode','Category','Status','Type'].forEach(f => {
+    const el = document.getElementById(prefix+f);
+    if (el) el.value='';
+  });
+  if (prefix==='ci') renderCashIn();
+  else if (prefix==='co') renderCashOut();
+  else if (prefix==='os') renderOutstanding();
+  else if (prefix==='ap') renderAllPayments();
+}
+
+// ── INIT ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
+</body>
+</html>
