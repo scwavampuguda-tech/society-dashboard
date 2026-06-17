@@ -675,30 +675,60 @@ function getInvoices(ss) {
   return invoices;
 }
 
-// getTransactions — Cash In per member (unchanged — member payment statements)
+
+// getTransactions — Cash In per member (billPeriod looked up from Invoice sheet via BillID)
 function getTransactions(ss) {
   const sheet = ss.getSheetByName('TransactionDetails');
   if (!sheet) return {};
+
+  // ── Build BillID → BillPeriod lookup from Invoice sheet ──────────────
+  const billPeriodMap = {};
+  const invoiceSheet  = ss.getSheetByName('Invoice');
+  if (invoiceSheet) {
+    const invData = invoiceSheet.getDataRange().getValues();
+    for (var ii = 2; ii < invData.length; ii++) {
+      var billId = String(invData[ii][0] || '').trim();   // Col A = BillID
+      var period = '';
+      if (invData[ii][4] instanceof Date) {               // Col E = BillPeriod
+        period = Utilities.formatDate(invData[ii][4], Session.getScriptTimeZone(), 'MMM yyyy');
+      } else if (invData[ii][4]) {
+        period = String(invData[ii][4]).trim();
+      }
+      if (billId && period) billPeriodMap[billId] = period;
+    }
+    Logger.log('BillPeriodMap: ' + Object.keys(billPeriodMap).length + ' entries loaded');
+  }
+
+  // ── Read TransactionDetails ───────────────────────────────────────────
   const data = sheet.getDataRange().getValues();
   const transactions = {};
+
   for (let i = 2; i < data.length; i++) {
     const row    = data[i];
     const propId = String(row[8] || '').trim();
     const txType = String(row[3] || '');
     if (!propId || !txType.includes('Cash In')) continue;
-    let dateStr    = '';
-    let billPeriod = '';
+
+    let dateStr = '';
     if (row[2] instanceof Date) {
       dateStr = Utilities.formatDate(row[2], Session.getScriptTimeZone(), 'yyyy-MM-dd');
-      const category = String(row[6] || row[5] || '');
-      if (category.includes('Regular') || category.includes('Maintenance')) {
-        billPeriod = Utilities.formatDate(row[2], Session.getScriptTimeZone(), 'MMM yyyy');
-      }
     } else if (row[2]) {
       dateStr = String(row[2]).substring(0, 10);
     }
+
     let amount = parseFloat(row[7]) || 0;
     if (amount < 0) amount = Math.abs(amount);
+
+    // ── BillPeriod: lookup from Invoice sheet via BillID (Col K = row[10]) ──
+    var billId     = String(row[10] || '').trim();
+    var billPeriod = billPeriodMap[billId] || '';
+
+    // Fallback: parse month/year from BillID string e.g. "009Oct2025MOMEN01"
+    if (!billPeriod && billId) {
+      var m = billId.match(/([A-Za-z]{3})(\d{4})/);
+      if (m) billPeriod = m[1] + ' ' + m[2];
+    }
+
     if (!transactions[propId]) transactions[propId] = [];
     transactions[propId].push({
       date:           dateStr,
@@ -713,15 +743,12 @@ function getTransactions(ss) {
       fyYear:         String(row[14] || '')
     });
   }
+
   for (const propId in transactions) {
     transactions[propId].sort((a, b) => b.date.localeCompare(a.date));
   }
   return transactions;
 }
-
-// ═══════════════════════════════════════════════════════════════════════════
-// TEST FUNCTIONS — run in Apps Script editor to verify
-// ═══════════════════════════════════════════════════════════════════════════
 
 function testV3() {
   const ss     = SpreadsheetApp.openById(SPREADSHEET_ID);
