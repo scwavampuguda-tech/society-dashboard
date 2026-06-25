@@ -5,6 +5,9 @@
 //
 // RULE: Only UNREAD emails are imported. After import → marked as read.
 //       Read email = already imported = never touched again.
+//
+// NARRATION FORMAT: VPA first, then NAME
+//   e.g.  9246308480-4@ybl PARTHO KUNDU
 // ================================================================
 
 const SHEET_ID            = "1oXmvMIfQDm51KoHHtkhg8KgK1Qi5mwFYSBdrwir85CA";
@@ -41,18 +44,14 @@ function parseHDFCAlertsToBankDetails() {
     const sheet = ss.getSheetByName("BankDetails");
     if (!sheet) return { ok: false, message: "BankDetails sheet not found" };
 
-    // ── UNREAD only — this is the dedup mechanism ──────────────────────
-    // Once imported and marked read, same email is never processed again
+    // UNREAD only — once imported and marked read, never processed again
     const query   = `label:"${LABEL_NAME}" is:unread`;
     const threads = GmailApp.search(query, 0, THREAD_SEARCH_LIMIT);
 
     if (DEBUG) Logger.log(`🔍 Query: ${query}`);
     if (DEBUG) Logger.log(`📧 Unread threads found: ${threads.length}`);
 
-    const stats = {
-      threadsFound: threads.length,
-      imported: 0, skipped: 0, errors: []
-    };
+    const stats = { threadsFound: threads.length, imported: 0, skipped: 0, errors: [] };
 
     if (threads.length === 0) {
       if (DEBUG) Logger.log("✅ No unread alerts. Nothing to import.");
@@ -61,20 +60,17 @@ function parseHDFCAlertsToBankDetails() {
 
     threads.forEach(thread => {
       try {
-        // Only process unread messages in this thread
         const unreadMsgs = thread.getMessages().filter(m => m.isUnread());
         if (!unreadMsgs.length) return;
 
         unreadMsgs.forEach(msg => {
           try {
-            // ── Get body ─────────────────────────────────────────────
+            // Get body — HTML email so try plain first, fall back to stripped HTML
             let rawBody = msg.getPlainBody();
-            if (!rawBody || rawBody.trim().length < 20) {
-              rawBody = _stripHtml(msg.getBody());
-            }
+            if (!rawBody || rawBody.trim().length < 20) rawBody = _stripHtml(msg.getBody());
             if (!rawBody || rawBody.trim().length < 10) {
               if (DEBUG) Logger.log("Skipped: empty body — " + msg.getSubject());
-              msg.markRead();   // mark read so we don't retry forever
+              msg.markRead();
               stats.skipped++;
               return;
             }
@@ -83,29 +79,13 @@ function parseHDFCAlertsToBankDetails() {
             if (DEBUG) Logger.log("📨 Subject: " + msg.getSubject());
             if (DEBUG) Logger.log("   Body(300): " + cleanBody.substring(0, 300));
 
-            // ── Parse transaction ─────────────────────────────────────
             const txn = extractHDFCTransaction(cleanBody);
 
-            if (!txn) {
-              if (DEBUG) Logger.log("⚠️ Skipped: could not parse transaction");
-              msg.markRead();
-              stats.skipped++;
-              return;
-            }
-            if (!txn.refNo) {
-              if (DEBUG) Logger.log("⚠️ Skipped: no UPI reference number found");
-              msg.markRead();
-              stats.skipped++;
-              return;
-            }
-            if (!txn.amount) {
-              if (DEBUG) Logger.log("⚠️ Skipped: zero amount");
-              msg.markRead();
-              stats.skipped++;
-              return;
-            }
+            if (!txn)        { if (DEBUG) Logger.log("⚠️ Could not parse"); msg.markRead(); stats.skipped++; return; }
+            if (!txn.refNo)  { if (DEBUG) Logger.log("⚠️ No RefNo");        msg.markRead(); stats.skipped++; return; }
+            if (!txn.amount) { if (DEBUG) Logger.log("⚠️ Zero amount");     msg.markRead(); stats.skipped++; return; }
 
-            // ── Append to BankDetails ─────────────────────────────────
+            // Append to BankDetails (cols A–H only, no col I)
             const lastRow        = sheet.getLastRow();
             const closingCell    = sheet.getRange(lastRow, 7);
             const closingBalance = Number(closingCell.getValue()) || 0;
@@ -120,8 +100,7 @@ function parseHDFCAlertsToBankDetails() {
             sheet.appendRow([
               txnDate, txn.narration, txn.refNo, txnDate,
               withdrawalAmt, depositAmt, newBalance,
-              "",       // col H — reconciliation formula (set below)
-              "ALERT"   // col I — source tag
+              ""    // col H — reconciliation formula set below
             ]);
 
             const newRow = sheet.getLastRow();
@@ -143,28 +122,21 @@ function parseHDFCAlertsToBankDetails() {
 ),TRUE,FALSE),"")`;
             try { sheet.getRange(newRow, 8).setFormula(formula); } catch(e) {}
 
-            // ── Mark as read — prevents re-import on next run ─────────
+            // Mark as read — this is the dedup: same email never imported again
             msg.markRead();
-            if (DEBUG) Logger.log(`✅ IMPORTED | ${txn.isDebit?"DR":"CR"} | ₹${txn.amount} | RefNo: ${txn.refNo} | ${txn.narration}`);
+            if (DEBUG) Logger.log(`✅ IMPORTED | ${txn.isDebit?"DR":"CR"} | ₹${txn.amount} | ${txn.refNo} | ${txn.narration}`);
             stats.imported++;
 
-          } catch(msgErr) {
-            stats.errors.push("Msg error: " + (msgErr.message || msgErr));
-            stats.skipped++;
-          }
+          } catch(msgErr) { stats.errors.push("Msg: " + (msgErr.message||msgErr)); stats.skipped++; }
         });
 
-      } catch(threadErr) {
-        stats.errors.push("Thread error: " + (threadErr.message || threadErr));
-      }
+      } catch(threadErr) { stats.errors.push("Thread: " + (threadErr.message||threadErr)); }
     });
 
     if (DEBUG) Logger.log(`\n📊 DONE | imported: ${stats.imported} | skipped: ${stats.skipped} | errors: ${stats.errors.length}`);
     return { ok: true, stats };
 
-  } catch(err) {
-    return { ok: false, message: String(err) };
-  }
+  } catch(err) { return { ok: false, message: String(err) }; }
 }
 
 // ── Strip HTML to plain text ──────────────────────────────────────────────
@@ -193,10 +165,7 @@ function _getGmailLabelIdByName(name) {
       if (res.labels[i].name === name) return res.labels[i].id;
     }
     return "";
-  } catch(e) {
-    Logger.log("Label lookup error: " + (e.message || e));
-    return "";
-  }
+  } catch(e) { Logger.log("Label lookup error: " + (e.message||e)); return ""; }
 }
 
 // ── Parse HDFC alert email body ───────────────────────────────────────────
@@ -205,6 +174,8 @@ function _getGmailLabelIdByName(name) {
 //          UPI transaction reference no.: 318765712182."
 // CREDIT: "Rs.500.00 is credited to your account ...
 //          Sender: RAVI KUMAR (VPA: 9876543210@ybl) on 25-06-26."
+//
+// NARRATION: VPA first, then NAME → "9246308480-4@ybl PARTHO KUNDU"
 
 function extractHDFCTransaction(cleanBody) {
   const result = { isCredit:false, isDebit:false, amount:0, refNo:"", txnDate:"", narration:"" };
@@ -213,14 +184,13 @@ function extractHDFCTransaction(cleanBody) {
   result.isDebit  = /\bdebited\b/i.test(cleanBody);
   if (!result.isCredit && !result.isDebit) return null;
 
-  // Amount — match "Rs.160.00 is debited/credited" specifically
+  // Amount
   const amtM =
     cleanBody.match(/Rs\.?\s*([\d,]+(?:\.\d{1,2})?)\s+is\s+(?:debited|credited)/i) ||
     cleanBody.match(/(?:debited|credited)\s+(?:by\s+)?Rs\.?\s*([\d,]+(?:\.\d{1,2})?)/i);
   if (amtM) {
     result.amount = parseFloat(amtM[1].replace(/,/g, ""));
   } else {
-    // Fallback: first Rs. amount that isn't the account ending digits
     const all = [...cleanBody.matchAll(/Rs\.?\s*([\d,]+(?:\.\d{1,2})?)/gi)];
     for (const m of all) {
       const val = parseFloat(m[1].replace(/,/g, ""));
@@ -235,7 +205,7 @@ function extractHDFCTransaction(cleanBody) {
     cleanBody.match(/reference\s*number(?:\s*is)?\s*[:\-]?\s*(\d+)/i);
   if (refM) result.refNo = refM[1];
 
-  // Date: DD-MM-YY / DD-MM-YYYY / DD/MM/YY / DD/MM/YYYY
+  // Date
   const dateM =
     cleanBody.match(/on\s+(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})(?:\b|\.)/i) ||
     cleanBody.match(/Date\s*[:\-]\s*(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})/i);
@@ -247,19 +217,23 @@ function extractHDFCTransaction(cleanBody) {
     }
   }
 
-  // Narration — debit: "towards VPA 9246308480-4@ybl (PARTHO KUNDU)"
+  // Narration DEBIT — VPA first, then NAME
+  // Email: "towards VPA 9246308480-4@ybl (PARTHO KUNDU)"
+  // Result: "9246308480-4@ybl PARTHO KUNDU"
   if (result.isDebit && !result.narration) {
     const m = cleanBody.match(/towards\s+VPA\s+([^\s(]+)\s*\(([^)]+)\)/i);
-    if (m) result.narration = m[2].trim() + ' ' + m[1].trim();
-  }
-
-  // Narration — credit: "Sender: RAVI KUMAR (VPA: 9876543210@ybl)"
-  if (result.isCredit && !result.narration) {
-    const m = cleanBody.match(/Sender\s*:\s*(.*?)\s*\(VPA:\s*([^)]+)\)/i);
     if (m) result.narration = m[1].trim() + ' ' + m[2].trim();
   }
 
-  // Fallback — any VPA-like pattern
+  // Narration CREDIT — VPA first, then NAME
+  // Email: "Sender: RAVI KUMAR (VPA: 9876543210@ybl)"
+  // Result: "9876543210@ybl RAVI KUMAR"
+  if (result.isCredit && !result.narration) {
+    const m = cleanBody.match(/Sender\s*:\s*(.*?)\s*\(VPA:\s*([^)]+)\)/i);
+    if (m) result.narration = m[2].trim() + ' ' + m[1].trim();
+  }
+
+  // Fallback
   if (!result.narration) {
     const m = cleanBody.match(/([^\s(]+@[\w]+)/i);
     if (m) result.narration = m[1];
@@ -290,10 +264,7 @@ function debugCheckUnread() {
     const clean = body.replace(/\s+/g," ").trim();
     Logger.log(`    Body(300): ${clean.substring(0,300)}`);
     const txn = extractHDFCTransaction(clean);
-    if (txn) {
-      Logger.log(`    ✅ ${txn.isDebit?"DR":"CR"} | ₹${txn.amount} | RefNo: ${txn.refNo} | ${txn.narration}`);
-    } else {
-      Logger.log(`    ❌ Could not parse`);
-    }
+    if (txn) Logger.log(`    ✅ ${txn.isDebit?"DR":"CR"} | ₹${txn.amount} | ${txn.refNo} | ${txn.narration}`);
+    else     Logger.log(`    ❌ Could not parse`);
   });
 }
