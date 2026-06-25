@@ -229,6 +229,8 @@ function appendToSheet(sheet, txnDate, narration, refNo, amount, crDr, existingR
 // ══════════════════════════════════════════════════════════
 // SOURCE 2: Parse plain-text HDFC alert email
 // ══════════════════════════════════════════════════════════
+// SOURCE 2: Parse plain-text HDFC alert email
+// Handles format: "Rs.160.00 is debited from your account ending 1250 towards VPA 9246308480-4@ybl (PARTHO KUNDU) on 25-06-26"
 function extractAlertTransaction(cleanBody) {
   const result = {
     isCredit:  false, isDebit: false,
@@ -240,54 +242,72 @@ function extractAlertTransaction(cleanBody) {
   result.isDebit  = /\bdebited\b/i.test(cleanBody);
   if (!result.isCredit && !result.isDebit) return null;
 
-  // Amount
-  const amtM = cleanBody.match(/Rs\.?\s*([\d,]+(?:\.\d{1,2})?)/i);
-  if (amtM) result.amount = parseFloat(amtM[1].replace(/,/g, ""));
+  // ── Amount: match "Rs.160.00 is debited/credited" — pick the amount tied to the action ──
+  // Try: "Rs.<amount> is debited/credited" first (most specific)
+  const amtSpecific =
+    cleanBody.match(/Rs\.?\s*([\d,]+(?:\.\d{1,2})?)\s+is\s+(?:debited|credited)/i) ||
+    cleanBody.match(/(?:debited|credited)\s+(?:by\s+)?Rs\.?\s*([\d,]+(?:\.\d{1,2})?)/i);
+  if (amtSpecific) {
+    result.amount = parseFloat(amtSpecific[1].replace(/,/g, ""));
+  } else {
+    // Fallback: first Rs. amount (avoid account numbers by requiring decimal or >3 digits only)
+    const amtAll = [...cleanBody.matchAll(/Rs\.?\s*([\d,]+(?:\.\d{1,2})?)/gi)];
+    for (const m of amtAll) {
+      const val = parseFloat(m[1].replace(/,/g, ""));
+      // Skip 4-digit account endings like 1250 that appear as "account ending 1250"
+      if (cleanBody.indexOf('ending ' + m[1]) === -1 && val > 0) {
+        result.amount = val;
+        break;
+      }
+    }
+  }
 
-  // Reference number
+  // ── Reference number ──
   const refM =
-    cleanBody.match(/UPI\s*transaction\s*reference\s*no\.?\s*:\s*(\d+)/i) ||
-    cleanBody.match(/UPI\s*Reference\s*No\.?\s*:\s*(\d+)/i) ||
-    cleanBody.match(/reference number(?: is)?\s*(\d+)/i);
+    cleanBody.match(/UPI\s*transaction\s*reference\s*no\.?\s*[:\-]?\s*(\d+)/i) ||
+    cleanBody.match(/UPI\s*Reference\s*No\.?\s*[:\-]?\s*(\d+)/i) ||
+    cleanBody.match(/reference\s*number(?:\s*is)?\s*[:\-]?\s*(\d+)/i);
   if (refM) result.refNo = refM[1];
 
-  // Date — handles DD-MM-YY and DD-MM-YYYY
+  // ── Date: handles DD-MM-YY, DD-MM-YYYY, DD/MM/YY, DD/MM/YYYY ──
   const dateM =
-    cleanBody.match(/Date\s*:\s*(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})/i) ||
-    cleanBody.match(/on\s+(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})/i);
+    cleanBody.match(/on\s+(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})(?:\b|\.)/i) ||
+    cleanBody.match(/Date\s*[:\-]\s*(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})/i);
   if (dateM) {
     const parts = dateM[1].split(/[-\/]/);
     if (parts.length === 3) {
       const [day, month, year] = parts;
       const fullYear = year.length === 2 ? "20" + year : year;
-      result.txnDate = `${month}/${day}/${fullYear}`;
+      result.txnDate = `${month}/${day}/${fullYear}`;   // MM/DD/YYYY for new Date()
     }
   }
 
-  // Narration — credit: sender VPA
-  const creditM = cleanBody.match(/Sender\s*:\s*(.*?)\s*\(VPA:\s*([^)]+)\)/i);
-  if (creditM) {
-    result.narration = `${creditM[2].trim()} ${creditM[1].trim()}`;
+  // ── Narration (DEBIT): "towards VPA 9246308480-4@ybl (PARTHO KUNDU)"
+  // Fix: VPA can contain digits, letters, dots, hyphens, @ — use [^\s(]+ to capture full VPA ──
+  if (result.isDebit && !result.narration) {
+    const debitM = cleanBody.match(/towards\s+VPA\s+([^\s(]+)\s*\(([^)]+)\)/i);
+    if (debitM) {
+      result.narration = debitM[2].trim() + ' ' + debitM[1].trim();  // "PARTHO KUNDU 9246308480-4@ybl"
+    }
   }
 
-  // Narration — debit: towards VPA
-  if (!result.narration) {
-    const debitM = cleanBody.match(/towards\s+VPA\s+([\w.\-@]+)\s+\(([^)]+)\)/i);
-    if (debitM) result.narration = `${debitM[1].trim()} ${debitM[2].trim()}`;
+  // ── Narration (CREDIT): "Sender: NAME (VPA: vpa@bank)" ──
+  if (result.isCredit && !result.narration) {
+    const creditM = cleanBody.match(/Sender\s*:\s*(.*?)\s*\(VPA:\s*([^)]+)\)/i);
+    if (creditM) {
+      result.narration = creditM[1].trim() + ' ' + creditM[2].trim();  // "NAME vpa@bank"
+    }
   }
 
-  // Fallback narration — any VPA
+  // ── Fallback narration: any VPA-like pattern ──
   if (!result.narration) {
-    const vpaM = cleanBody.match(/([\w.\-]+@\w+)/i);
+    const vpaM = cleanBody.match(/([^\s(]+@[\w]+)/i);
     if (vpaM) result.narration = vpaM[1];
   }
 
   return result;
 }
 
-// ══════════════════════════════════════════════════════════
-// SOURCE 1: Parse XLSX via Drive API v2
-// ══════════════════════════════════════════════════════════
 function parseXlsxAttachment(attachment) {
   let tempFileId  = null;
   let convertedId = null;
