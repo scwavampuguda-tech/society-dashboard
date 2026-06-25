@@ -116,6 +116,7 @@ function parseHDFCAlertsToBankDetails() {
 
             msg.markRead();
             Logger.log(`✅ ${txn.isDebit?"DR":"CR"} | ₹${txn.amount} | ${txn.refNo} | ${txn.narration}`);
+            Logger.log(`   → Row ${newRow} appended to BankDetails | Email marked as read`);
             stats.imported++;
 
           } catch(msgErr) { stats.errors.push("Msg: " + (msgErr.message||msgErr)); stats.skipped++; }
