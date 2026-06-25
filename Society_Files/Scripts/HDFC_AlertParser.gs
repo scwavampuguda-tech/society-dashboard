@@ -12,7 +12,6 @@
 
 const SHEET_ID            = "1oXmvMIfQDm51KoHHtkhg8KgK1Qi5mwFYSBdrwir85CA";
 const LABEL_NAME          = "HDFC/1250-Alerts";
-const DEBUG               = true;
 const THREAD_SEARCH_LIMIT = 50;
 
 // ── Entry points ──────────────────────────────────────────────────────────
@@ -44,17 +43,15 @@ function parseHDFCAlertsToBankDetails() {
     const sheet = ss.getSheetByName("BankDetails");
     if (!sheet) return { ok: false, message: "BankDetails sheet not found" };
 
-    // UNREAD only — once imported and marked read, never processed again
     const query   = `label:"${LABEL_NAME}" is:unread`;
     const threads = GmailApp.search(query, 0, THREAD_SEARCH_LIMIT);
 
-    if (DEBUG) Logger.log(`🔍 Query: ${query}`);
-    if (DEBUG) Logger.log(`📧 Unread threads found: ${threads.length}`);
+    Logger.log(`Unread threads: ${threads.length}`);
 
     const stats = { threadsFound: threads.length, imported: 0, skipped: 0, errors: [] };
 
     if (threads.length === 0) {
-      if (DEBUG) Logger.log("✅ No unread alerts. Nothing to import.");
+      Logger.log("No unread alerts. Nothing to import.");
       return { ok: true, stats };
     }
 
@@ -65,27 +62,22 @@ function parseHDFCAlertsToBankDetails() {
 
         unreadMsgs.forEach(msg => {
           try {
-            // Get body — HTML email so try plain first, fall back to stripped HTML
             let rawBody = msg.getPlainBody();
             if (!rawBody || rawBody.trim().length < 20) rawBody = _stripHtml(msg.getBody());
             if (!rawBody || rawBody.trim().length < 10) {
-              if (DEBUG) Logger.log("Skipped: empty body — " + msg.getSubject());
               msg.markRead();
               stats.skipped++;
               return;
             }
 
             const cleanBody = rawBody.replace(/\s+/g, " ").trim();
-            if (DEBUG) Logger.log("📨 Subject: " + msg.getSubject());
-            if (DEBUG) Logger.log("   Body(300): " + cleanBody.substring(0, 300));
-
             const txn = extractHDFCTransaction(cleanBody);
 
-            if (!txn)        { if (DEBUG) Logger.log("⚠️ Could not parse"); msg.markRead(); stats.skipped++; return; }
-            if (!txn.refNo)  { if (DEBUG) Logger.log("⚠️ No RefNo");        msg.markRead(); stats.skipped++; return; }
-            if (!txn.amount) { if (DEBUG) Logger.log("⚠️ Zero amount");     msg.markRead(); stats.skipped++; return; }
+            if (!txn)        { msg.markRead(); stats.skipped++; return; }
+            if (!txn.refNo)  { msg.markRead(); stats.skipped++; return; }
+            if (!txn.amount) { msg.markRead(); stats.skipped++; return; }
 
-            // Append to BankDetails (cols A–H only, no col I)
+            // Append to BankDetails (cols A–H only)
             const lastRow        = sheet.getLastRow();
             const closingCell    = sheet.getRange(lastRow, 7);
             const closingBalance = Number(closingCell.getValue()) || 0;
@@ -122,9 +114,8 @@ function parseHDFCAlertsToBankDetails() {
 ),TRUE,FALSE),"")`;
             try { sheet.getRange(newRow, 8).setFormula(formula); } catch(e) {}
 
-            // Mark as read — this is the dedup: same email never imported again
             msg.markRead();
-            if (DEBUG) Logger.log(`✅ IMPORTED | ${txn.isDebit?"DR":"CR"} | ₹${txn.amount} | ${txn.refNo} | ${txn.narration}`);
+            Logger.log(`✅ ${txn.isDebit?"DR":"CR"} | ₹${txn.amount} | ${txn.refNo} | ${txn.narration}`);
             stats.imported++;
 
           } catch(msgErr) { stats.errors.push("Msg: " + (msgErr.message||msgErr)); stats.skipped++; }
@@ -133,7 +124,7 @@ function parseHDFCAlertsToBankDetails() {
       } catch(threadErr) { stats.errors.push("Thread: " + (threadErr.message||threadErr)); }
     });
 
-    if (DEBUG) Logger.log(`\n📊 DONE | imported: ${stats.imported} | skipped: ${stats.skipped} | errors: ${stats.errors.length}`);
+    Logger.log(`DONE | imported: ${stats.imported} | skipped: ${stats.skipped}`);
     return { ok: true, stats };
 
   } catch(err) { return { ok: false, message: String(err) }; }
@@ -218,16 +209,12 @@ function extractHDFCTransaction(cleanBody) {
   }
 
   // Narration DEBIT — VPA first, then NAME
-  // Email: "towards VPA 9246308480-4@ybl (PARTHO KUNDU)"
-  // Result: "9246308480-4@ybl PARTHO KUNDU"
   if (result.isDebit && !result.narration) {
     const m = cleanBody.match(/towards\s+VPA\s+([^\s(]+)\s*\(([^)]+)\)/i);
     if (m) result.narration = m[1].trim() + ' ' + m[2].trim();
   }
 
   // Narration CREDIT — VPA first, then NAME
-  // Email: "Sender: RAVI KUMAR (VPA: 9876543210@ybl)"
-  // Result: "9876543210@ybl RAVI KUMAR"
   if (result.isCredit && !result.narration) {
     const m = cleanBody.match(/Sender\s*:\s*(.*?)\s*\(VPA:\s*([^)]+)\)/i);
     if (m) result.narration = m[2].trim() + ' ' + m[1].trim();
@@ -258,13 +245,11 @@ function debugCheckUnread() {
   threads.forEach((thread, i) => {
     const msg = thread.getMessages().find(m => m.isUnread());
     if (!msg) return;
-    Logger.log(`\n[${i}] Subject: ${msg.getSubject()}`);
     let body = msg.getPlainBody();
     if (!body || body.trim().length < 20) body = _stripHtml(msg.getBody());
     const clean = body.replace(/\s+/g," ").trim();
-    Logger.log(`    Body(300): ${clean.substring(0,300)}`);
     const txn = extractHDFCTransaction(clean);
-    if (txn) Logger.log(`    ✅ ${txn.isDebit?"DR":"CR"} | ₹${txn.amount} | ${txn.refNo} | ${txn.narration}`);
-    else     Logger.log(`    ❌ Could not parse`);
+    if (txn) Logger.log(`[${i}] ✅ ${txn.isDebit?"DR":"CR"} | ₹${txn.amount} | ${txn.refNo} | ${txn.narration}`);
+    else     Logger.log(`[${i}] ❌ Could not parse — ${msg.getSubject()}`);
   });
 }
