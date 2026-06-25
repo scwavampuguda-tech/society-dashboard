@@ -281,3 +281,63 @@ function extractHDFCTransaction(cleanBody) {
 
   return result;
 }
+
+// ── DEBUG FUNCTIONS — run these one by one to diagnose ───────────────────
+
+// STEP 1: Run this first — shows all Gmail labels and their IDs
+function debugListLabels() {
+  const res = Gmail.Users.Labels.list('me');
+  if (!res || !res.labels) { Logger.log("No labels returned"); return; }
+  res.labels.forEach(l => Logger.log(`ID: ${l.id}  |  NAME: "${l.name}"`));
+  Logger.log("Total labels: " + res.labels.length);
+}
+
+// STEP 2: Run this — shows threads found and first message body snippet
+function debugSearchThreads() {
+  const query = `label:"${LABEL_NAME}" is:unread`;
+  Logger.log("Query: " + query);
+  const threads = GmailApp.search(query, 0, 20);
+  Logger.log("Threads found: " + threads.length);
+
+  // Also try without is:unread
+  const query2 = `label:"${LABEL_NAME}"`;
+  const threads2 = GmailApp.search(query2, 0, 20);
+  Logger.log("Threads found (all, not just unread): " + threads2.length);
+
+  if (threads2.length > 0) {
+    const msg = threads2[0].getMessages()[0];
+    Logger.log("Subject: " + msg.getSubject());
+    Logger.log("IsUnread: " + msg.isUnread());
+    const body = msg.getPlainBody() || "";
+    Logger.log("Body snippet: " + body.substring(0, 300));
+  }
+}
+
+// STEP 3: Run this — parses the most recent labeled message and shows result
+function debugParseLatestMessage() {
+  const query = `label:"${LABEL_NAME}"`;
+  const threads = GmailApp.search(query, 0, 5);
+  Logger.log("Threads found: " + threads.length);
+
+  threads.forEach((thread, ti) => {
+    thread.getMessages().forEach((msg, mi) => {
+      Logger.log(`\n--- Thread ${ti} Msg ${mi} ---`);
+      Logger.log("Subject: " + msg.getSubject());
+      Logger.log("IsUnread: " + msg.isUnread());
+      const body = (msg.getPlainBody() || msg.getBody() || "").replace(/\s+/g, " ").trim();
+      Logger.log("Body: " + body.substring(0, 400));
+      const txn = extractHDFCTransaction(body);
+      if (txn) {
+        Logger.log("✅ Parsed OK:");
+        Logger.log("  isCredit:  " + txn.isCredit);
+        Logger.log("  isDebit:   " + txn.isDebit);
+        Logger.log("  amount:    " + txn.amount);
+        Logger.log("  refNo:     " + txn.refNo);
+        Logger.log("  txnDate:   " + txn.txnDate);
+        Logger.log("  narration: " + txn.narration);
+      } else {
+        Logger.log("❌ extractHDFCTransaction returned null");
+      }
+    });
+  });
+}
