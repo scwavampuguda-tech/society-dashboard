@@ -1,14 +1,16 @@
 // ===== App Script: HDFC Alert Parser — BankDetails updater =====
 // Gmail label : HDFC/1250-Alerts
-// Sheet       : BankDetails (in SocietyData spreadsheet)
-// Requires    : Gmail Advanced Service enabled (Services → Gmail API)
+// Source      : HDFC UPI alert emails (HTML format)
+// Sheet       : BankDetails (col A-H + col I = source tag "ALERT")
 //
-// FIXES (2026-06-26 v2):
-//   - Removed is:unread filter — processes ALL labeled emails, uses refNo dedupe
-//   - Added HTML stripper — extracts plain text from HTML email body
-//   - Amount: "Rs.160 is debited" specific match — avoids account ending digits
-//   - VPA: [^\s(]+ captures full VPA like 9246308480-4@ybl
-//   - Narration: NAME first, then VPA
+// DEDUPLICATION STRATEGY (v3):
+//   1. Primary:   RefNo (UPI txn ref) must not exist in col C
+//   2. Secondary: amount+date+VPA combo must not exist in col B+D+E/F
+//      (handles same txn imported by MerchantPayout with different RRN)
+//   3. Source tag "ALERT" written to col I — distinguishes from MerchantPayout rows
+//
+// IMPORTANT: MerchantPayout.gs writes source tag "XLSX" or "ALERT_MP" to col I
+// This script writes "ALERT" to col I
 // ================================================================
 
 const SHEET_ID            = "1oXmvMIfQDm51KoHHtkhg8KgK1Qi5mwFYSBdrwir85CA";
@@ -50,18 +52,41 @@ function parseHDFCAlertsToBankDetails() {
     const labelId = _getGmailLabelIdByName(LABEL_NAME);
     if (!labelId) return { ok: false, message: `Gmail label not found: ${LABEL_NAME}` };
 
-    // FIX: No is:unread — use refNo deduplication instead
+    // ── Load existing data for deduplication ─────────────────────────────
+    const existingData   = sheet.getRange("A2:I").getValues();
+    const existingRefs   = new Set();   // col C — refNos
+    const existingCombos = new Set();   // "amount|dateStr|vpa" combos
+
+    existingData.forEach(row => {
+      const refNo  = String(row[2] || "").trim();   // col C
+      const dateV  = row[0];                         // col A — date
+      const narr   = String(row[1] || "").trim();   // col B — narration (contains VPA)
+      const wdAmt  = parseFloat(row[4]) || 0;       // col E — withdrawal
+      const dpAmt  = parseFloat(row[5]) || 0;       // col F — deposit
+      const amount = wdAmt || dpAmt;
+      const dateStr = dateV ? new Date(dateV).toDateString() : "";
+
+      if (refNo)  existingRefs.add(refNo);
+
+      // Extract VPA from narration (last word that looks like vpa@bank)
+      const vpaM = narr.match(/([^\s]+@[\w]+)\s*$/i);
+      const vpa  = vpaM ? vpaM[1].toLowerCase() : narr.toLowerCase();
+
+      if (amount && dateStr) {
+        existingCombos.add(`${amount}|${dateStr}|${vpa}`);
+      }
+    });
+
+    if (DEBUG) Logger.log(`Loaded ${existingRefs.size} existing refNos, ${existingCombos.size} combos`);
+
+    // ── Search Gmail ──────────────────────────────────────────────────────
     const query   = `label:"${LABEL_NAME}"`;
     const threads = GmailApp.search(query, 0, THREAD_SEARCH_LIMIT);
 
-    // Load all existing refNos from col C to skip duplicates
-    const existingRefs = new Set(
-      sheet.getRange("C2:C").getValues().flat().filter(Boolean)
-    );
-
     const stats = {
       threadsFound: threads.length, threadsProcessed: 0,
-      messagesSeen: 0, imported: 0, skipped: 0, errors: []
+      messagesSeen: 0, imported: 0, skippedDupRef: 0,
+      skippedDupCombo: 0, skippedOther: 0, errors: []
     };
 
     threads.forEach(thread => {
@@ -74,38 +99,44 @@ function parseHDFCAlertsToBankDetails() {
           try {
             stats.messagesSeen++;
 
-            // ── Message-level label check via Gmail API ──────────────
+            // ── Message-level label check ────────────────────────────
             const msgId = msg.getId();
             let msgResource;
-            try {
-              msgResource = Gmail.Users.Messages.get('me', msgId, { format: 'metadata' });
-            } catch (gErr) {
-              msgResource = Gmail.Users.Messages.get('me', msgId);
-            }
+            try { msgResource = Gmail.Users.Messages.get('me', msgId, { format: 'metadata' }); }
+            catch (gErr) { msgResource = Gmail.Users.Messages.get('me', msgId); }
             const labelIds = (msgResource && msgResource.labelIds) ? msgResource.labelIds : [];
-            if (labelIds.indexOf(labelId) === -1) { stats.skipped++; return; }
+            if (labelIds.indexOf(labelId) === -1) { stats.skippedOther++; return; }
             // ────────────────────────────────────────────────────────
 
-            // FIX: Try plain body first, fall back to HTML-stripped body
+            // ── Get body ─────────────────────────────────────────────
             let rawBody = msg.getPlainBody();
-            if (!rawBody || rawBody.trim().length < 20) {
-              rawBody = _stripHtml(msg.getBody());
-            }
-            if (!rawBody || rawBody.trim().length < 10) { stats.skipped++; return; }
+            if (!rawBody || rawBody.trim().length < 20) rawBody = _stripHtml(msg.getBody());
+            if (!rawBody || rawBody.trim().length < 10) { stats.skippedOther++; return; }
 
             const cleanBody = rawBody.replace(/\s+/g, " ").trim();
-            if (DEBUG) Logger.log("Body (first 300): " + cleanBody.substring(0, 300));
-
             const txn = extractHDFCTransaction(cleanBody);
 
-            if (!txn)        { if (DEBUG) Logger.log("Skipped: parse failed");    stats.skipped++; return; }
-            if (!txn.refNo)  { if (DEBUG) Logger.log("Skipped: no refNo");         stats.skipped++; return; }
-            if (!txn.amount) { if (DEBUG) Logger.log("Skipped: zero amount");      stats.skipped++; return; }
+            if (!txn)        { if (DEBUG) Logger.log("Skipped: parse failed");   stats.skippedOther++; return; }
+            if (!txn.refNo)  { if (DEBUG) Logger.log("Skipped: no refNo");        stats.skippedOther++; return; }
+            if (!txn.amount) { if (DEBUG) Logger.log("Skipped: zero amount");     stats.skippedOther++; return; }
 
-            // Deduplicate by refNo — handles already-read emails
+            // ── Dedup check 1: refNo ─────────────────────────────────
             if (existingRefs.has(txn.refNo)) {
-              if (DEBUG) Logger.log("Skipped: duplicate refNo " + txn.refNo);
-              stats.skipped++;
+              if (DEBUG) Logger.log(`Skipped dupRef: ${txn.refNo}`);
+              stats.skippedDupRef++;
+              return;
+            }
+
+            // ── Dedup check 2: amount + date + VPA combo ─────────────
+            const txnDateObj = txn.txnDate ? new Date(txn.txnDate) : new Date();
+            const txnDateStr = txnDateObj.toDateString();
+            const vpaFromNarr = (txn.narration.match(/([^\s]+@[\w]+)\s*$/i) || ["",""])[1].toLowerCase()
+                             || txn.narration.toLowerCase();
+            const combo = `${txn.amount}|${txnDateStr}|${vpaFromNarr}`;
+
+            if (existingCombos.has(combo)) {
+              if (DEBUG) Logger.log(`Skipped dupCombo (already in sheet via MerchantPayout): ${combo}`);
+              stats.skippedDupCombo++;
               return;
             }
 
@@ -119,10 +150,12 @@ function parseHDFCAlertsToBankDetails() {
             if (txn.isCredit) { depositAmt   = txn.amount; newBalance += txn.amount; }
             else              { withdrawalAmt = txn.amount; newBalance -= txn.amount; }
 
-            const txnDate = txn.txnDate ? new Date(txn.txnDate) : new Date();
-
-            sheet.appendRow([txnDate, txn.narration, txn.refNo, txnDate,
-                             withdrawalAmt, depositAmt, newBalance, ""]);
+            sheet.appendRow([
+              txnDateObj, txn.narration, txn.refNo, txnDateObj,
+              withdrawalAmt, depositAmt, newBalance,
+              "",          // col H — reconciliation formula (set below)
+              "ALERT"      // col I — source tag: distinguishes from MerchantPayout
+            ]);
 
             const newRow = sheet.getLastRow();
             try { sheet.getRange(newRow, 1).setNumberFormat("dd-mm-yyyy"); } catch(e) {}
@@ -145,10 +178,12 @@ function parseHDFCAlertsToBankDetails() {
 
             if (DEBUG) Logger.log(`✅ ${txn.isDebit?"DR":"CR"} | ₹${txn.amount} | ${txn.refNo} | ${txn.narration}`);
 
+            // Update in-memory dedup sets
             existingRefs.add(txn.refNo);
+            existingCombos.add(combo);
             stats.imported++;
 
-          } catch(errMsg) { stats.errors.push("Msg: " + (errMsg.message || errMsg)); stats.skipped++; }
+          } catch(errMsg) { stats.errors.push("Msg: " + (errMsg.message || errMsg)); stats.skippedOther++; }
         });
       } catch(errThread) { stats.errors.push("Thread: " + (errThread.message || errThread)); }
     });
@@ -163,19 +198,15 @@ function parseHDFCAlertsToBankDetails() {
 function _stripHtml(html) {
   if (!html) return "";
   return html
-    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, " ")   // remove style blocks
-    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, " ")  // remove script blocks
-    .replace(/<br\s*\/?>/gi, "\n")                       // <br> → newline
-    .replace(/<\/?(p|div|td|tr|li|h\d)[^>]*>/gi, "\n")  // block tags → newline
-    .replace(/<a\s[^>]*href="([^"]+)"[^>]*>.*?<\/a>/gi, "$1") // links → URL
-    .replace(/<[^>]+>/g, " ")                            // strip remaining tags
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&#\d+;/gi, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, " ")
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, " ")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?(p|div|td|tr|li|h\d)[^>]*>/gi, "\n")
+    .replace(/<a\s[^>]*href="([^"]+)"[^>]*>.*?<\/a>/gi, "$1")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<").replace(/&gt;/gi, ">")
+    .replace(/&#\d+;/gi, " ").replace(/\s+/g, " ").trim();
 }
 
 // ── Gmail label ID lookup ─────────────────────────────────────────────────
@@ -195,8 +226,6 @@ function _getGmailLabelIdByName(name) {
 }
 
 // ── extractHDFCTransaction ────────────────────────────────────────────────
-// DEBIT:  "Rs.160.00 is debited from your account ending 1250 towards VPA 9246308480-4@ybl (PARTHO KUNDU) on 25-06-26"
-// CREDIT: "Rs.500.00 is credited to your account ... Sender: RAVI KUMAR (VPA: 9876543210@ybl) on 25-06-26"
 
 function extractHDFCTransaction(cleanBody) {
   const result = { isCredit:false, isDebit:false, amount:0, refNo:"", txnDate:"", narration:"" };
@@ -226,7 +255,7 @@ function extractHDFCTransaction(cleanBody) {
     cleanBody.match(/reference\s*number(?:\s*is)?\s*[:\-]?\s*(\d+)/i);
   if (refM) result.refNo = refM[1];
 
-  // ── Date: DD-MM-YY / DD-MM-YYYY / DD/MM/YY / DD/MM/YYYY ──────────────
+  // ── Date ──────────────────────────────────────────────────────────────
   const dateM =
     cleanBody.match(/on\s+(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})(?:\b|\.)/i) ||
     cleanBody.match(/Date\s*[:\-]\s*(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})/i);
@@ -270,19 +299,13 @@ function debugListLabels() {
 
 function debugSearchThreads() {
   const query = `label:"${LABEL_NAME}"`;
-  Logger.log("Query: " + query);
   const threads = GmailApp.search(query, 0, 5);
   Logger.log("Threads found: " + threads.length);
   if (threads.length > 0) {
     const msg = threads[0].getMessages()[0];
     Logger.log("Subject: " + msg.getSubject());
-    Logger.log("IsUnread: " + msg.isUnread());
-    const plain = msg.getPlainBody() || "";
-    Logger.log("PlainBody length: " + plain.length);
-    Logger.log("PlainBody snippet: " + plain.substring(0, 200));
     const stripped = _stripHtml(msg.getBody());
-    Logger.log("HTML-stripped length: " + stripped.length);
-    Logger.log("HTML-stripped snippet: " + stripped.substring(0, 400));
+    Logger.log("Stripped (400): " + stripped.substring(0, 400));
   }
 }
 
@@ -293,18 +316,15 @@ function debugParseLatestMessage() {
   threads.forEach((thread, ti) => {
     thread.getMessages().forEach((msg, mi) => {
       Logger.log(`\n--- Thread ${ti} Msg ${mi} ---`);
-      Logger.log("Subject: " + msg.getSubject());
       let rawBody = msg.getPlainBody();
       if (!rawBody || rawBody.trim().length < 20) rawBody = _stripHtml(msg.getBody());
       const cleanBody = rawBody.replace(/\s+/g, " ").trim();
       Logger.log("Body (300): " + cleanBody.substring(0, 300));
       const txn = extractHDFCTransaction(cleanBody);
       if (txn) {
-        Logger.log("✅ isCredit=" + txn.isCredit + " isDebit=" + txn.isDebit);
-        Logger.log("   amount=" + txn.amount + " refNo=" + txn.refNo);
-        Logger.log("   txnDate=" + txn.txnDate + " narration=" + txn.narration);
+        Logger.log(`✅ ${txn.isDebit?"DR":"CR"} ₹${txn.amount} ref=${txn.refNo} date=${txn.txnDate} narr=${txn.narration}`);
       } else {
-        Logger.log("❌ extractHDFCTransaction returned null");
+        Logger.log("❌ parse failed");
       }
     });
   });
