@@ -471,7 +471,13 @@
             const savedUser = sessionStorage.getItem('societyPortalUser');
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
-                initializePortal();
+                // Force re-login if old session missing allMembers (handles multi-plot fix)
+                if (!currentUser.isAdmin && (!currentUser.allMembers || currentUser.allMembers.length === 0)) {
+                    sessionStorage.removeItem('societyPortalUser');
+                    showLoginForm();
+                } else {
+                    initializePortal();
+                }
             } else {
                 showLoginForm();
             }
@@ -566,26 +572,29 @@
                     sessionStorage.setItem('societyPortalUser', JSON.stringify(currentUser));
                     initializePortal();
                 } else {
-                    // User login - find their member record
-                    let foundMember = null;
-                    
+                    // User login — collect ALL properties linked to this email
+                    let foundMembers = [];
+
                     for (const [key, member] of Object.entries(memberData)) {
                         if (key.startsWith('_')) continue;
-                        
                         const ownerEmail = String(member.email || '').toLowerCase().trim();
                         const proxyEmail = String(member.proxyEmail || '').toLowerCase().trim();
-                        
                         if (ownerEmail === emailInput || proxyEmail === emailInput) {
-                            foundMember = member;
-                            break;
+                            foundMembers.push(member);   // ← collect ALL, no break
                         }
                     }
-                    
-                    if (!foundMember) {
+
+                    if (foundMembers.length === 0) {
                         throw new Error('Email not found. Please use the email registered with the society.');
                     }
-                    
-                    currentUser = { email: emailInput, isAdmin: false, member: foundMember };
+
+                    // Store all matched members; first one shown by default
+                    currentUser = {
+                        email:      emailInput,
+                        isAdmin:    false,
+                        member:     foundMembers[0],
+                        allMembers: foundMembers        // ← all properties for this email
+                    };
                     sessionStorage.setItem('societyPortalUser', JSON.stringify(currentUser));
                     initializePortal(fromCache);
                 }
@@ -746,16 +755,20 @@
                 localStorage.setItem('societyData', JSON.stringify(data));
                 localStorage.setItem('societyDataTime', Date.now().toString());
                 
-                // Update user's member data
+                // Update user's member data — re-collect ALL properties
+                let refreshedMembers = [];
                 for (const [key, member] of Object.entries(memberData)) {
                     if (key.startsWith('_')) continue;
                     const ownerEmail = String(member.email || '').toLowerCase().trim();
                     const proxyEmail = String(member.proxyEmail || '').toLowerCase().trim();
                     if (ownerEmail === currentUser.email || proxyEmail === currentUser.email) {
-                        currentUser.member = member;
-                        sessionStorage.setItem('societyPortalUser', JSON.stringify(currentUser));
-                        break;
+                        refreshedMembers.push(member);   // collect ALL — no break
                     }
+                }
+                if (refreshedMembers.length > 0) {
+                    currentUser.allMembers = refreshedMembers;
+                    currentUser.member     = refreshedMembers[0];
+                    sessionStorage.setItem('societyPortalUser', JSON.stringify(currentUser));
                 }
                 
                 updateRefreshTimes();
@@ -828,10 +841,11 @@
         // DISPLAY FUNCTIONS
         // ============================================================
         function displayUserStatement() {
-            const member = currentUser.member;
-            document.getElementById('propertyTabs').style.display = 'none';
-            document.getElementById('propertyContents').innerHTML = generatePropertyContent(member, false);
-            document.getElementById('resultsCard').classList.add('show');
+            // Use allMembers if available (handles email linked to multiple plots)
+            const members = (currentUser.allMembers && currentUser.allMembers.length > 0)
+                ? currentUser.allMembers
+                : [currentUser.member];
+            displayResults(members);
         }
         
         function searchMember() {
@@ -1054,13 +1068,14 @@
                 (member.payments || []).forEach(pay => {
                     const category = String(pay.category || '');
                     const isRegular = category.includes('Regular') || category.includes('Maintenance');
-                    const periodDisplay = isRegular && pay.billPeriod ? '<span class="bill-period">📅 ' + pay.billPeriod + '</span>' : '-';
+                    const periodDisplay = isRegular && pay.billPeriod
+                        ? '<span class="bill-period">📅 ' + pay.billPeriod + '</span>'
+                        : '-';
                     html += '<tr><td>' + (pay.date || '') + '</td><td>' + (pay.receiptNo || '') + '</td><td>' + (pay.category || '') + '</td>';
                     html += '<td>' + periodDisplay + '</td><td>' + (pay.description || '') + '</td>';
                     html += '<td class="amount-positive">₹' + (pay.amount || 0).toLocaleString('en-IN') + '</td><td>' + (pay.mode || '') + '</td></tr>';
                 });
             }
-            html += '</tbody></table></div>';
             
             return html;
         }

@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCRWA — Income &amp; Expense Analysis</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:Arial,sans-serif; font-size:11px; color:#222; background:#f0f2f8; }
+
+@page { size:A4 landscape; margin:10mm 8mm 10mm 8mm; }
+@media print {
+  @page { size:A4 landscape; margin:8mm 6mm; }
+  body { background:#fff !important; font-size:7.5px; }
+  .no-print { display:none !important; }
+
+  /* Each page fills the sheet */
+  .pg { page-break-before:always; background:#fff !important;
+        padding:0 !important; box-shadow:none !important;
+        max-width:100% !important; width:100% !important; }
+  .pg:first-child { page-break-before:avoid; }
+
+  .section-card { box-shadow:none !important; border:1px solid #ccc !important;
+                  margin-bottom:3px !important; padding:3px 5px !important;
+                  overflow:visible !important; }
+
+  /* Table: fit to page width, no overflow */
+  .table-wrap { overflow:visible !important; width:100% !important; }
+  table { font-size:7px !important; width:100% !important;
+          table-layout:auto !important; border-collapse:collapse !important; }
+  thead th, tfoot td, tbody td {
+    font-size:7px !important; padding:2px 3px !important;
+    min-width:0 !important; white-space:nowrap !important; }
+
+  thead { display:table-header-group; }
+  tfoot { display:table-footer-group; }
+
+  /* Header */
+  .report-header { margin-bottom:3px !important; padding:2px 0 !important; }
+  .report-header h1 { font-size:10px !important; }
+  .report-header h2 { font-size:8px !important; }
+  .report-header .meta { font-size:7px !important; }
+
+  /* KPI cards */
+  .kpi-bar { margin-bottom:3px !important; gap:3px !important; flex-wrap:wrap !important; }
+  .kpi { padding:2px 4px !important; }
+  .kpi .val { font-size:10px !important; }
+  .kpi .lbl, .kpi .sub { font-size:6.5px !important; }
+
+  .narrative { padding:4px 6px !important; font-size:7.5px !important; line-height:1.4 !important; }
+  .narrative h4 { font-size:8px !important; margin-bottom:2px !important; }
+  .section-title { font-size:8px !important; padding-bottom:2px !important; margin-bottom:3px !important; }
+  .report-footer { font-size:7px !important; margin-top:3px !important; padding-top:2px !important; }
+  .src-badge { font-size:7px !important; padding:1px 4px !important; }
+
+  /* Kill all column min-widths in print — let browser fit to page */
+  .col-head, .col-data, .col-tot, .col-pct,
+  thead th, tfoot td, tbody td {
+    min-width:0 !important; width:auto !important; }
+  table { width:100% !important; table-layout:auto !important; font-size:6.5px !important; }
+  thead th, tfoot td { font-size:6.5px !important; padding:2px 2px !important; }
+  tbody td           { font-size:6.5px !important; padding:1px 2px !important; }
+  /* Keep expense head + sub-rows together in print */
+  tbody tr { page-break-inside:avoid !important; break-inside:avoid !important; }
+  /* Tighter sub-row font */
+  tbody tr[style*="fafbff"] td { font-size:6px !important; padding:1px 2px !important; }
+
+
+}
+
+/* Loading */
+#loading {
+  position:fixed; inset:0; background:#1a3a6b;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  color:#fff; z-index:999;
+}
+#loading h2 { font-size:20px; margin-bottom:10px; }
+#loading p  { font-size:13px; color:#aac4ff; margin-top:6px; }
+.spinner {
+  width:48px; height:48px; border:5px solid rgba(255,255,255,.2);
+  border-top-color:#fff; border-radius:50%;
+  animation:spin .8s linear infinite; margin-bottom:18px;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+#app { display:none; }
+
+/* Page */
+.pg { max-width:1340px; margin:0 auto; padding:8px 10px 10px; background:#fff; }
+
+/* Header */
+.report-header { text-align:center; padding:8px 0 6px;
+  border-bottom:3px solid #1a3a6b; margin-bottom:10px; }
+.report-header h1 { font-size:16px; color:#1a3a6b; font-weight:bold; }
+.report-header h2 { font-size:12.5px; color:#444; margin-top:3px; }
+.report-header .meta { font-size:10px; color:#666; margin-top:3px; }
+
+/* Section card */
+.section-card { background:#fff; border:1px solid #d0daea; border-radius:6px;
+  box-shadow:0 2px 6px rgba(26,58,107,.07); padding:7px 10px; margin-bottom:7px; }
+.section-title { font-size:12px; font-weight:bold; color:#1a3a6b;
+  border-bottom:2px solid #1a3a6b; padding-bottom:4px; margin-bottom:8px; }
+
+/* KPI */
+.kpi-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:7px; }
+.kpi { flex:1; min-width:110px; background:#f4f6fb; border:1px solid #c8d4ea;
+  border-radius:6px; padding:5px 8px; text-align:center; }
+.kpi .lbl { font-size:9px; color:#777; text-transform:uppercase; letter-spacing:.5px; }
+.kpi .val { font-size:15px; font-weight:bold; color:#1a3a6b; margin-top:2px; }
+.kpi .sub { font-size:8.5px; color:#888; margin-top:1px; }
+.kpi.green .val { color:#1a7a3c; }
+.kpi.red   .val { color:#c0392b; }
+.kpi.amber .val { color:#b7770d; }
+
+/* Tables */
+table { width:100%; border-collapse:collapse; }
+thead th { background:#1a3a6b; color:#fff; padding:4px 5px;
+  text-align:right; padding-right:5px; font-size:10px; white-space:nowrap; }
+thead th.tl { text-align:left; padding-left:8px; }
+tfoot td { background:#1a3a6b; color:#fff; font-weight:bold;
+  padding:4px 5px; font-size:10px; text-align:right; }
+tfoot td.tl { text-align:left; padding-left:8px; }
+tbody tr:nth-child(even) td { background:#f7f9fc; }
+tbody tr:hover td { background:#edf2ff !important; }
+td { padding:3px 5px; border-bottom:1px solid #e2e8f0; vertical-align:middle; }
+.tr { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.tl { text-align:left; }
+.fw { font-weight:bold; }
+.ok  { color:#1a7a3c; }
+.hi  { color:#c0392b; }
+.nil { color:#ccc; text-align:right; }
+td { word-break:break-word; overflow-wrap:anywhere; }
+.pct { color:#555; font-size:10px; white-space:nowrap; text-align:right; }
+
+/* Narrative */
+.narrative { background:#f7faff; border:1px solid #c4d4ee; border-radius:6px;
+  padding:9px 13px; font-size:10.5px; line-height:1.75; }
+.narrative h4 { color:#1a3a6b; font-size:11.5px; margin-bottom:6px;
+  border-bottom:1px solid #d0daea; padding-bottom:3px; }
+.n-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 18px; margin-top:6px; }
+.n-block { border-left:3px solid #1a3a6b; padding-left:8px; }
+.n-block .title { font-weight:bold; color:#1a3a6b; display:block; margin-bottom:2px; font-size:11px; }
+
+/* Print button */
+.print-btn { background:#1a3a6b; color:#fff; border:none;
+  padding:8px 20px; border-radius:5px; font-size:12.5px;
+  cursor:pointer; margin-right:8px; }
+.print-btn:hover { background:#2a5aab; }
+
+/* Footer */
+.report-footer { margin-top:10px; font-size:9px; color:#888;
+  text-align:center; border-top:1px solid #ddd; padding-top:5px; }
+
+/* Data source badge */
+.src-badge { display:inline-block; padding:2px 9px; border-radius:3px;
+  font-size:9.5px; font-weight:bold; margin-left:8px; }
+.src-live  { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
+.src-exact { background:#cce5ff; color:#004085; border:1px solid #b8daff; }
+
+  /* Table column sizing */
+  .col-head { min-width:200px; }
+  .col-data { min-width:100px; }
+  .col-tot  { min-width:90px;  }
+  .col-pct  { min-width:60px;  }
+
+
+/* Charts */
+.charts-section { margin-top:8px; }
+.charts-row { display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; }
+.chart-box { background:#f7f9fc; border:1px solid #dce6f5; border-radius:8px;
+             padding:10px 14px; flex:1 1 0; min-width:0; width:0;
+             display:flex; flex-direction:column; }
+.chart-box canvas { flex:1; width:100% !important; height:260px !important;
+                    max-height:260px !important; min-height:260px !important; }
+.chart-title { font-size:11px; font-weight:700; color:#1a3a6b;
+               text-align:center; margin-bottom:8px; letter-spacing:.3px; }
+@media print {
+  .charts-row { flex-wrap:nowrap; gap:6px; }
+  .chart-box   { padding:4px 6px; min-width:0; }
+  .chart-title { font-size:8px !important; margin-bottom:4px; }
+  canvas { max-height:150px !important; width:100% !important;
+           display:block !important; visibility:visible !important; }
+  .charts-section { page-break-inside:avoid !important; break-inside:avoid !important; }
+  .chart-box { page-break-inside:avoid !important; overflow:visible !important;
+               background:#fff !important; }
+  .chart-box.chart-wide canvas { max-height:160px !important; }
+  .charts-row { display:flex !important; flex-wrap:nowrap !important;
+                gap:6px !important; align-items:flex-start !important; }
+}
+
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <h2>🏛️ SCRWA — Income &amp; Expense Analysis</h2>
+  <p id="load-msg">Connecting to Google Sheet...</p>
+</div>
+
+<div id="app">
+
+<!-- PAGE 1 — SUMMARY -->
+<div class="pg">
+  <div class="report-header">
+    <h1>🏛️ SCRWA — Senior Citizens Residential Welfare Association, Vampuguda, Hyderabad</h1>
+    <h2>Income &amp; Expense Analysis — Financial Summary</h2>
+    <div class="meta" id="hdr-meta">Regd. No: 2240/2006</div>
+  </div>
+
+  <div class="no-print" style="margin-bottom:10px;">
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <span style="font-size:10.5px;color:#666;">
+      <b>Landscape</b> · Enable <b>Background graphics</b> · Margins: <b>Minimum</b>
+    </span>
+  </div>
+
+  <div class="kpi-bar" id="kpi-bar"></div>
+
+  <div class="section-card">
+    <div class="section-title">📅 Financial Year Summary</div>
+    <table>
+      <thead><tr>
+        <th class="tl" style="width:150px;">Financial Year</th>
+        <th style="width:130px;">Total Income (₹)</th>
+        <th style="width:130px;">Total Expense (₹)</th>
+        <th style="width:110px;">Net (₹)</th>
+        <th style="width:130px;">Closing Balance (₹)</th>
+        <th style="width:80px;">Income %</th>
+        <th style="width:80px;">Expense %</th>
+        <th style="width:80px;">Saving %</th>
+      </tr></thead>
+      <tbody id="fy-tbody"></tbody>
+      <tfoot><tr id="fy-tfoot"></tr></tfoot>
+    </table>
+  </div>
+
+  <div class="narrative" id="narrative"></div>
+
+  <div class="section-card charts-section">
+    <div class="section-title">📊 Visual Summary</div>
+    <div class="charts-row">
+
+      <!-- Bar chart: FY Income vs Expense -->
+      <div class="chart-box">
+        <div class="chart-title">Income vs Expense — Year Wise</div>
+        <canvas id="chart-fy"></canvas>
+      </div>
+
+      <!-- Pie: Income by Head -->
+      <div class="chart-box">
+        <div class="chart-title">Income by Account Head</div>
+        <canvas id="chart-inc-pie"></canvas>
+      </div>
+
+      <!-- Pie: Expense by Head -->
+      <div class="chart-box">
+        <div class="chart-title">Expense by Account Head</div>
+        <canvas id="chart-exp-pie"></canvas>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div class="report-footer">
+    SCRWA Vampuguda &nbsp;|&nbsp; scwa.vampuguda@gmail.com &nbsp;|&nbsp;
+    ✅ Live — Google Sheet &nbsp;|&nbsp; For internal use only.
+  </div>
+</div>
+
+<!-- PAGE 2 — YEAR-WISE -->
+<div class="pg">
+  <div class="report-header">
+    <h1>🏛️ SCRWA — Income &amp; Expense — Year-wise (Account Head × Financial Year)</h1>
+    <h2>Head-wise breakdown of Income and Expense across Financial Years</h2>
+    <div class="meta" id="pg2-meta"></div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">
+      📥 INCOME — Year-wise
+      <span class="src-badge src-live">✅ Live exact dates</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table><thead id="iyr-h"></thead><tbody id="iyr-b"></tbody><tfoot id="iyr-f"></tfoot></table>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">
+      📤 EXPENSE — Year-wise
+      <span class="src-badge src-live">✅ Live exact dates</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table><thead id="eyr-h"></thead><tbody id="eyr-b"></tbody><tfoot id="eyr-f"></tfoot></table>
+    </div>
+  </div>
+
+  <div class="report-footer">
+    SCRWA Vampuguda &nbsp;|&nbsp; scwa.vampuguda@gmail.com &nbsp;|&nbsp;
+    ✅ Live — Google Sheet &nbsp;|&nbsp; For internal use only.
+  </div>
+</div>
+
+<!-- PAGE 3 — QUARTER-WISE -->
+<div class="pg">
+  <div class="report-header">
+    <h1>🏛️ SCRWA — Income &amp; Expense — Quarter-wise (Account Head × Quarter)</h1>
+    <h2>Head-wise breakdown across Financial Year Quarters — Exact transaction dates</h2>
+    <div class="meta" id="pg3-meta"></div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">
+      📥 INCOME — Quarter-wise
+      <span class="src-badge src-live">✅ Live exact dates</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table><thead id="iqr-h"></thead><tbody id="iqr-b"></tbody><tfoot id="iqr-f"></tfoot></table>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">
+      📤 EXPENSE — Quarter-wise
+      <span class="src-badge src-live">✅ Live exact dates</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table><thead id="eqr-h"></thead><tbody id="eqr-b"></tbody><tfoot id="eqr-f"></tfoot></table>
+    </div>
+  </div>
+
+  <div class="report-footer">
+    SCRWA Vampuguda &nbsp;|&nbsp; scwa.vampuguda@gmail.com &nbsp;|&nbsp;
+    ✅ Live — Google Sheet &nbsp;|&nbsp; For internal use only.
+  </div>
+</div>
+
+
+<!-- PAGE 4 — INTERNAL ORDER BREAKDOWN -->
+<div class="pg">
+  <div class="report-header">
+    <h1>&#127963;&#65039; SCRWA &#8212; Internal Order Analysis</h1>
+    <h2>Income &amp; Expense by Event / Activity (Internal Order-wise)</h2>
+    <div class="meta" id="pg4-meta"></div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">&#127968; Society / Regular Activities</div>
+    <table>
+      <thead><tr>
+        <th class="tl" style="min-width:220px;">Internal Order</th>
+        <th style="width:55px;">Code</th>
+        <th style="width:130px;">Total Income (&#8377;)</th>
+        <th style="width:130px;">Total Expense (&#8377;)</th>
+        <th style="width:110px;">Net (&#8377;)</th>
+        <th class="tl" style="width:75px;">Status</th>
+      </tr></thead>
+      <tbody id="io-soc-b"></tbody>
+      <tfoot><tr id="io-soc-f"></tr></tfoot>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">&#127881; Festivals &amp; Events</div>
+    <table>
+      <thead><tr>
+        <th class="tl" style="min-width:220px;">Internal Order</th>
+        <th style="width:55px;">Code</th>
+        <th style="width:130px;">Total Income (&#8377;)</th>
+        <th style="width:130px;">Total Expense (&#8377;)</th>
+        <th style="width:110px;">Net (&#8377;)</th>
+        <th class="tl" style="width:75px;">Status</th>
+      </tr></thead>
+      <tbody id="io-fes-b"></tbody>
+      <tfoot><tr id="io-fes-f"></tr></tfoot>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">&#128203; Grand Summary — All Internal Orders</div>
+    <table>
+      <thead><tr>
+        <th class="tl" style="min-width:220px;">Category</th>
+        <th style="width:130px;">Total Income (&#8377;)</th>
+        <th style="width:130px;">Total Expense (&#8377;)</th>
+        <th style="width:110px;">Net (&#8377;)</th>
+        <th style="width:75px;">% Income</th>
+        <th style="width:75px;">% Expense</th>
+      </tr></thead>
+      <tbody id="io-sum-b"></tbody>
+      <tfoot><tr id="io-sum-f"></tr></tfoot>
+    </table>
+  </div>
+
+  <div class="report-footer">
+    SCRWA Vampuguda &nbsp;|&nbsp; scwa.vampuguda@gmail.com &nbsp;|&nbsp;
+    &#9989; Live &#8212; Google Sheet &nbsp;|&nbsp; For internal use only.
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+'use strict';
+
+const API_URL = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+
+const INR  = n => { const v=Math.round(Math.abs(Number(n)||0)); return v?'₹'+v.toLocaleString('en-IN'):''; };
+const fmts = n => { const v=Math.round(Number(n)||0); return (v>=0?'+':'−')+'₹'+Math.abs(v).toLocaleString('en-IN'); };
+const pct  = (a,b) => b ? (Number(a)/Number(b)*100).toFixed(1)+'%' : '—';
+const strip= s => String(s||'').replace(/^[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F ]+/gu,'').trim();
+
+// ── Date helpers ──────────────────────────────────────────────────────────
+function getFY(d){
+  if(!d) return 'N/A';
+  const m=parseInt(String(d).substring(5,7),10), y=parseInt(String(d).substring(0,4),10);
+  if(isNaN(m)||isNaN(y)) return 'N/A';
+  return m>=4 ? `${y}–${y+1}` : `${y-1}–${y}`;
+}
+function getQtr(d){
+  if(!d) return null;
+  const m=parseInt(String(d).substring(5,7),10);
+  if(isNaN(m)) return null;
+  const fy=getFY(d);
+  const q = m>=4&&m<=6  ? 'Q1'
+           : m>=7&&m<=9  ? 'Q2'
+           : m>=10&&m<=12? 'Q3'
+           :                'Q4';
+  return `${shortFY(fy)} / ${q}`;
+}
+// Normalise FY: "2024-2025" → "2024–2025", "2024-25" → "2024–2025"
+function normFY(v){
+  if(!v) return v;
+  v = String(v).trim().replace('-','–');
+  return v.replace(/^(\d{4})–(\d{2})$/, (_,y1,y2)=>`${y1}–20${y2}`);
+}
+function shortFY(v){
+  if(!v) return v;
+  v = String(v).trim();
+  let m = v.match(/^(\d{4})[\-\u2013](\d{4})$/);
+  if(m) return m[1].slice(2)+'-'+m[2].slice(2);
+  m = v.match(/^(\d{4})[\-\u2013](\d{2})$/);
+  if(m) return m[1].slice(2)+'-'+m[2];
+  return v;
+}
+
+const sortFY  = (a,b) => String(a).localeCompare(String(b));
+const sortQtr = (a,b) => {
+  const key = s => { const m=s.match(/(\d{4}).*Q(\d)/); return m?m[1]+m[2]:s; };
+  return key(a).localeCompare(key(b));
+};
+
+// ── Aggregation ───────────────────────────────────────────────────────────
+function aggData(txns,flow,colFn){
+  const res={};
+  txns.forEach(t=>{
+    if(t.flow!==flow||!t.amount) return;
+    const col=String(colFn(t)||'N/A'), head=t.head||'Other', sub=t.sub||'';
+    if(!res[col])       res[col]      ={_total:0};
+    if(!res[col][head]) res[col][head]={_total:0, _subs:{}};
+    if(sub){ res[col][head]._subs[sub]=(res[col][head]._subs[sub]||0)+t.amount; }
+    res[col][head]._total += t.amount;
+    res[col]._total       += t.amount;
+  });
+  return res;
+}
+function getAmt(data,col,head){ const c=data[col]; return c&&c[head]?c[head]._total||0:0; }
+function getColTot(data,col)  { const c=data[col]; return c?c._total||0:0; }
+
+// ── Generic table builder ─────────────────────────────────────────────────
+function buildTable(txns,flow,colFn,sortFn,hId,bId,fId,sharedCols,showSub){
+  const cols  = sharedCols || [...new Set(txns.filter(t=>t.flow===flow&&t.amount>0)
+                  .map(t=>String(colFn(t)||'')).filter(Boolean))].sort(sortFn);
+  const heads = [...new Set(txns.filter(t=>t.flow===flow&&t.amount>0)
+                  .map(t=>t.head||'Other'))].sort();
+  const data  = aggData(txns,flow,colFn);
+  const vcls  = flow==='in'?'ok':'hi';
+  const grand = cols.reduce((s,c)=>s+getColTot(data,c),0)||1;
+
+  let th=`<tr><th class="tl col-head">Account Head${showSub?' / SubHead':''}</th>`;
+  // Fixed-layout colgroup — Income & Expense columns align exactly
+  const nCols = cols.length;
+  const dPct  = nCols > 0 ? Math.floor(61 / nCols) : 10;
+  let cg = '<colgroup><col style="width:22%;">';
+  cols.forEach(()=> cg += `<col style="width:${dPct}%;">`);
+  cg += '<col style="width:10%;"><col style="width:7%;"></colgroup>';
+  const tblEl = document.getElementById(hId).closest('table');
+  if(tblEl){
+    tblEl.style.tableLayout = 'fixed';
+    tblEl.style.width = '100%';
+    const prev = tblEl.querySelector('colgroup');
+    if(prev) prev.remove();
+    tblEl.insertAdjacentHTML('afterbegin', cg);
+  }
+  cols.forEach(c=>th+=`<th class="col-data">${c}</th>`);
+  th+=`<th class="col-tot" style="background:#0d2a57;">Total (₹)</th>
+       <th class="col-pct" style="background:#0d2a57;">% Share</th></tr>`;
+  document.getElementById(hId).innerHTML=th;
+
+  let tb='';
+  heads.forEach(head=>{
+    const rowTot=cols.reduce((s,c)=>s+getAmt(data,c,head),0);
+    if(!rowTot) return;
+    tb+=`<tr><td class="tl fw">${head}</td>`;
+    cols.forEach(c=>{
+      const v=getAmt(data,c,head);
+      tb+=v?`<td class="tr ${vcls}">${INR(v)}</td>`:`<td class="nil">—</td>`;
+    });
+    tb+=`<td class="tr ${vcls} fw">${INR(rowTot)}</td>
+         <td class="pct">${pct(rowTot,grand)}</td></tr>`;
+    if(showSub){
+      const allSubs=[...new Set(cols.flatMap(c=>{
+        const h=data[c]&&data[c][head]; return h&&h._subs?Object.keys(h._subs):[];
+      }))].sort();
+      allSubs.forEach(sub=>{
+        const subTot=cols.reduce((a,c)=>{const h=data[c]&&data[c][head];return a+(h&&h._subs&&h._subs[sub]||0);},0);
+        if(!subTot) return;
+        tb+=`<tr style="background:#fafbff !important;"><td class="tl" style="padding-left:20px;color:#555;font-size:10px;">&#8627; ${sub}</td>`;
+        cols.forEach(c=>{const h=data[c]&&data[c][head];const v=h&&h._subs&&h._subs[sub]||0;
+          tb+=v?`<td class="tr" style="color:#777;font-size:10px;">${INR(v)}</td>`:`<td class="nil">&#8212;</td>`;
+        });
+        tb+=`<td class="tr" style="color:#777;font-size:10px;">${INR(subTot)}</td>
+             <td class="pct" style="color:#aaa;">${pct(subTot,rowTot)}</td></tr>`;
+      });
+    }
+  });
+  document.getElementById(bId).innerHTML=tb;
+
+  let tf=`<tr><td class="tl">TOTAL</td>`;
+  cols.forEach(c=>tf+=`<td class="tr">${INR(getColTot(data,c))}</td>`);
+  tf+=`<td class="tr">${INR(grand)}</td><td class="tr">100%</td></tr>`;
+  document.getElementById(fId).innerHTML=tf;
+}
+
+// ── Page 1 ────────────────────────────────────────────────────────────────
+function buildPage1(fyWise,totIn,totOut,balance,incH,expH,txCount){
+  const fys=Object.keys(fyWise).sort(sortFY);
+  const saveRate=totIn?(balance/totIn*100).toFixed(1):0;
+
+  document.getElementById('kpi-bar').innerHTML=[
+    {lbl:'Total Income',    val:INR(totIn),    sub:'All financial years', cls:'green'},
+    {lbl:'Total Expense',   val:INR(totOut),   sub:'All financial years', cls:'red'},
+    {lbl:'Net Balance',     val:INR(balance),  sub:'Closing corpus',      cls:'green'},
+    {lbl:'Saving Rate',     val:saveRate+'%',  sub:'Of income retained',  cls:'amber'},
+    {lbl:'Transactions',    val:txCount,        sub:'Total records — ',  cls:''},
+    {lbl:'Financial Years', val:fys.length,     sub:'Active FYs tracked',  cls:''},
+  ].map(k=>`<div class="kpi ${k.cls}">
+    <div class="lbl">${k.lbl}</div><div class="val">${k.val}</div><div class="sub">${k.sub}</div>
+  </div>`).join('');
+
+  let rows='',ti=0,to=0;
+  fys.forEach((fy,i)=>{
+    const v=fyWise[fy]||{inflow:0,outflow:0,closing:0};
+    const net=v.inflow-v.outflow;
+    ti+=v.inflow; to+=v.outflow;
+    const ytd=i===fys.length-1;
+    rows+=`<tr${ytd?' style="background:#eef3ff !important;"':''}>
+      <td class="tl fw">${shortFY(fy)}${ytd?'&nbsp;<span style="font-size:10px;color:#888;">(YTD)</span>':''}</td>
+      <td class="tr ok fw">${INR(v.inflow)}</td>
+      <td class="tr hi fw">${INR(v.outflow)}</td>
+      <td class="tr ${net>=0?'ok':'hi'} fw">${fmts(net)}</td>
+      <td class="tr fw">${INR(v.closing)}</td>
+      <td class="pct">${pct(v.inflow,totIn)}</td>
+      <td class="pct">${pct(v.outflow,totOut)}</td>
+      <td class="pct ok">${v.inflow?((v.inflow-v.outflow)/v.inflow*100).toFixed(1)+'%':'—'}</td>
+    </tr>`;
+  });
+  document.getElementById('fy-tbody').innerHTML=rows;
+  const tn=ti-to;
+  document.getElementById('fy-tfoot').innerHTML=
+    `<td class="tl">GRAND TOTAL</td>
+     <td class="tr">${INR(ti)}</td><td class="tr">${INR(to)}</td>
+     <td class="tr">${fmts(tn)}</td><td class="tr">${INR(balance)}</td>
+     <td class="tr">100%</td><td class="tr">100%</td><td class="tr">${pct(tn,ti)}</td>`;
+
+  // Narrative
+  const topI=Object.entries(incH).sort((a,b)=>(b[1].amount||b[1]||0)-(a[1].amount||a[1]||0));
+  const topE=Object.entries(expH).sort((a,b)=>(b[1].amount||b[1]||0)-(a[1].amount||a[1]||0));
+  const ti2=topI[0]||['—',{amount:0}], te2=topE[0]||['—',{amount:0}];
+  const lv=fyWise[fys[fys.length-1]]||{inflow:0,outflow:0};
+  const healthy=lv.inflow>=lv.outflow;
+  const ti2a=typeof ti2[1]==='object'?ti2[1].amount||0:ti2[1]||0;
+  const te2a=typeof te2[1]==='object'?te2[1].amount||0:te2[1]||0;
+  document.getElementById('narrative').innerHTML=`
+    <h4>📊 Financial Health Narrative — SCRWA Vampuguda</h4>
+    <div class="n-grid">
+      <div class="n-block">
+        <span class="title">💰 Overall Position</span>
+        Total income <b class="ok">${INR(totIn)}</b> vs expenses <b class="hi">${INR(totOut)}</b>
+        across <b>${fys.length}</b> FYs. Corpus: <b class="ok">${INR(balance)}</b> · Saving rate <b>${saveRate}%</b>.
+      </div>
+      <div class="n-block">
+        <span class="title">📅 Current Year — ${fys[fys.length-1]} (YTD)</span>
+        Income <b class="ok">${INR(lv.inflow)}</b> · Expense <b class="hi">${INR(lv.outflow)}</b> ·
+        Net <b class="${healthy?'ok':'hi'}">${fmts(lv.inflow-lv.outflow)}</b>.
+        ${healthy?'<b style="color:#1a7a3c;">✅ Income exceeds expenses.</b>'
+                 :'<b style="color:#c0392b;">⚠️ Expenses exceed income.</b>'}
+      </div>
+      <div class="n-block">
+        <span class="title">📥 Top Income Source</span>
+        <b>${strip(ti2[0])}</b> — <b class="ok">${INR(ti2a)}</b> (${pct(ti2a,totIn)} of income).
+        ${topI.length>1?'Others: '+topI.slice(1,3).map(([h,v])=>`<b>${strip(h)}</b> ${INR(typeof v==='object'?v.amount||0:v)}`).join(', ')+'.':''}
+      </div>
+      <div class="n-block">
+        <span class="title">📤 Top Expense Head</span>
+        <b>${strip(te2[0])}</b> — <b class="hi">${INR(te2a)}</b> (${pct(te2a,totOut)} of expense).
+        ${topE.length>1?'Others: '+topE.slice(1,3).map(([h,v])=>`<b>${strip(h)}</b> ${INR(typeof v==='object'?v.amount||0:v)}`).join(', ')+'.':''}
+      </div>
+    </div>`;
+}
+
+// ── MAIN ──────────────────────────────────────────────────────────────────
+
+  const IO_NAMES = {
+    'MOMEN01': 'Monthly Maintenance',
+    'INDPE01': 'Initial / Member Deposits',
+    'CNDPE01': 'Construction Deposits',
+    'SOCEX01': 'Society General Expenses',
+    'INDEX01': 'Independence Day',
+    'RPLEX01': 'Republic Day',
+    'GNHCD01': 'Ganesh Chaturthi',
+    'BNUCD01': 'Bonnalu Festival',
+    'DIWCD01': 'Diwali',
+    'UGACD01': 'Ugadi',
+    'SANKCD01':'Sankranti',
+  };
+  function ioName(code){ return IO_NAMES[code] || code; }
+
+  function buildIOTable(items, totals, bId, fId, grandIn, grandOut){
+    const INR2 = n => n ? '₹'+Math.round(Math.abs(n)).toLocaleString('en-IN') : '';
+    const fmts2= n => { const v=Math.round(n||0); return (v>=0?'+':'−')+'₹'+Math.abs(v).toLocaleString('en-IN'); };
+    let tb = '';
+    (items||[]).forEach(item=>{
+      const net = item.net || (item.income - item.expense);
+      const status = net > 0 ? '<span style="color:#1a7a3c;font-weight:bold;">Surplus</span>'
+                   : net < 0 ? '<span style="color:#c0392b;font-weight:bold;">Deficit</span>'
+                   :            '<span style="color:#888;">Nil</span>';
+      tb += `<tr>
+        <td class="tl fw">${ioName(item.code)}</td>
+        <td class="tc" style="font-size:9px;color:#888;">${item.code}</td>
+        <td class="tr ok">${INR2(item.income)}</td>
+        <td class="tr hi">${INR2(item.expense)}</td>
+        <td class="tr fw ${net>=0?'ok':'hi'}">${fmts2(net)}</td>
+        <td class="tl">${status}</td>
+      </tr>`;
+    });
+    document.getElementById(bId).innerHTML = tb || '<tr><td colspan="6" class="nil">No data</td></tr>';
+    if(totals && fId){
+      const net = totals.net || (totals.income - totals.expense);
+      document.getElementById(fId).innerHTML =
+        `<td class="tl">TOTAL</td>
+         <td></td>
+         <td class="tr">${INR2(totals.income)}</td>
+         <td class="tr">${INR2(totals.expense)}</td>
+         <td class="tr">${fmts2(net)}</td>
+         <td></td>`;
+    }
+  }
+
+  function buildPage4(io, totIn, totOut){
+    const INR2  = n => n ? '₹'+Math.round(Math.abs(n)).toLocaleString('en-IN') : '₹0';
+    const fmts2 = n => { const v=Math.round(n||0); return (v>=0?'+':'−')+'₹'+Math.abs(v).toLocaleString('en-IN'); };
+    const pct2  = (a,b) => b ? (Math.abs(a)/Math.abs(b)*100).toFixed(1)+'%' : '—';
+
+    // Society — all items in society + items from other that are deposit/maintenance
+    const socItems  = [...(io.society?.items||[])];
+    const socTotals = io.society?.totals || {income:0,expense:0,net:0};
+
+    // Festival — items from 'other' that are events (GNHCD01, BNUCD01, RPLEX01, INDEX01...)
+    const festItems  = [...(io.festival?.items||[]), ...(io.other?.items||[])].filter(i=>{
+      const c=i.code||'';
+      return c.startsWith('GNH')||c.startsWith('BNU')||c.startsWith('DIW')||
+             c.startsWith('UGA')||c.startsWith('SANK')||c.startsWith('RPL')||
+             c.startsWith('IND')||c.startsWith('EVT')||c.startsWith('FED')||
+             c.startsWith('FES');
+    });
+    // Remaining 'other' items not in festival
+    const festCodes = new Set(festItems.map(i=>i.code));
+    const otherItems = (io.other?.items||[]).filter(i=>!festCodes.has(i.code));
+
+    // Merge festival + other deposit items into their right buckets
+    const allFest = [...festItems, ...otherItems];
+    const festTotals = allFest.reduce((t,i)=>({
+      income:t.income+(i.income||0), expense:t.expense+(i.expense||0),
+      net:t.net+((i.income||0)-(i.expense||0))
+    }), {income:0,expense:0,net:0});
+
+    buildIOTable(socItems,  socTotals,  'io-soc-b','io-soc-f', totIn, totOut);
+    buildIOTable(allFest,   festTotals, 'io-fes-b','io-fes-f', totIn, totOut);
+
+    // Grand summary
+    const cats = [
+      {name:'&#127968; Society / Regular', ...socTotals},
+      {name:'&#127881; Festivals &amp; Events', ...festTotals},
+    ];
+    const grand = cats.reduce((t,c)=>({income:t.income+c.income,expense:t.expense+c.expense,net:t.net+c.net}),{income:0,expense:0,net:0});
+
+    let tb='';
+    cats.forEach(c=>{
+      tb+=`<tr>
+        <td class="tl fw">${c.name}</td>
+        <td class="tr ok">${INR2(c.income)}</td>
+        <td class="tr hi">${INR2(c.expense)}</td>
+        <td class="tr ${c.net>=0?'ok':'hi'} fw">${fmts2(c.net)}</td>
+        <td class="pct">${pct2(c.income,grand.income)}</td>
+        <td class="pct">${pct2(c.expense,grand.expense)}</td>
+      </tr>`;
+    });
+    document.getElementById('io-sum-b').innerHTML=tb;
+    document.getElementById('io-sum-f').innerHTML=
+      `<td class="tl">GRAND TOTAL</td>
+       <td class="tr">${INR2(grand.income)}</td>
+       <td class="tr">${INR2(grand.expense)}</td>
+       <td class="tr">${fmts2(grand.net)}</td>
+       <td class="tr">100%</td><td class="tr">100%</td>`;
+  }
+
+
+  const _charts = [];
+  function buildCharts(fyRows, incHeads, expHeads){
+    const COLORS = [
+      '#2563eb','#16a34a','#dc2626','#d97706','#7c3aed',
+      '#0891b2','#be185d','#65a30d','#ea580c','#6366f1'
+    ];
+    const INR = n => '₹'+Math.round(n).toLocaleString('en-IN');
+
+    // ── Bar: FY Income vs Expense
+    const fyLabels = fyRows.map(r=>shortFY(r.fy)||r.fy);
+    const fyIn     = fyRows.map(r=>r.income||0);
+    const fyOut    = fyRows.map(r=>r.expense||0);
+    const fyClose  = fyRows.map(r=>r.closing||0);
+    _charts.push(new Chart(document.getElementById('chart-fy'), {
+      type:'bar',
+      data:{
+        labels: fyLabels,
+        datasets:[
+          { label:'Income',          data:fyIn,    backgroundColor:'#2563eb', borderRadius:5 },
+          { label:'Expense',         data:fyOut,   backgroundColor:'#dc2626', borderRadius:5 },
+          { label:'Closing Balance', data:fyClose, backgroundColor:'#16a34a', borderRadius:5,
+            type:'line', fill:false, tension:.3,
+            borderColor:'#16a34a', pointRadius:5, pointBackgroundColor:'#16a34a', yAxisID:'y' }
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{
+          legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:12 } },
+          tooltip:{ callbacks:{ label: ctx => ' '+INR(ctx.raw) } }
+        },
+        scales:{
+          y:{ beginAtZero:true, ticks:{
+            callback: v => '₹'+( v>=100000 ? (v/100000).toFixed(1)+'L' : (v/1000).toFixed(0)+'K' ),
+            font:{size:9} }, grid:{color:'#eee'} },
+          x:{ ticks:{font:{size:10}}, grid:{display:false} }
+        }
+      }
+    }));
+
+    // ── Pie helper
+    function makePie(canvasId, data){
+      const labels = data.map(d=>d.head);
+      const vals   = data.map(d=>d.amount);
+      const bgs    = COLORS.slice(0, data.length);
+      _charts.push(new Chart(document.getElementById(canvasId), {
+        type:'doughnut',
+        data:{ labels, datasets:[{ data:vals, backgroundColor:bgs,
+                borderWidth:1, borderColor:'#fff', hoverOffset:6 }] },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{
+            legend:{ position:'bottom', labels:{ font:{size:9}, boxWidth:10, padding:6 } },
+            tooltip:{ callbacks:{ label: ctx =>
+              ' '+ctx.label+': '+INR(ctx.raw)+
+              ' ('+((ctx.raw/vals.reduce((a,b)=>a+b,0))*100).toFixed(1)+'%)' } }
+          }
+        }
+      }));
+    }
+
+    makePie('chart-inc-pie', incHeads);
+    makePie('chart-exp-pie', expHeads);
+  }
+
+async function run(){
+  const setMsg = m => { const e=document.getElementById('load-msg'); if(e) e.textContent=m; };
+  const setMeta= (id,t) => { const e=document.getElementById(id); if(e) e.innerHTML=t; };
+
+  try {
+    setMsg('Fetching live data from Google Sheet...');
+    const raw = await (await fetch(API_URL)).json();
+
+    setMsg('Processing transactions...');
+
+    // ── Use _transactions () — exact dates for ALL flows ──────────
+    const txRaw = raw._transactions || [];
+    const fin   = raw._financial    || {};
+    const fyWise= fin.fyWise        || {};
+    const incH  = fin.income        || {};
+    const expH  = fin.expense       || {};
+
+    // Build unified txn list from _transactions
+    const allTxns = txRaw.map(t=>({
+      flow  : t.flowType === 'in' ? 'in' : 'out',
+      fy    : normFY(t.fyYear || getFY(t.date||'')),
+      qtr   : getQtr(t.date||'') || normFY(t.fyYear||getFY(t.date||'')),
+      head  : strip(t.accountHead||'Other'),
+      sub   : strip(t.accountSubHead||''),
+      amount: Math.abs(parseFloat(t.amount)||0)
+    })).filter(t=>t.amount>0);
+
+    const incTxns = allTxns.filter(t=>t.flow==='in');
+    const expTxns = allTxns.filter(t=>t.flow==='out');
+
+    // ── Financials from _financial (pre-computed, accurate) ─────────
+    const totIn   = fin.totalIncome   || incTxns.reduce((s,t)=>s+t.amount,0);
+    const totOut  = fin.totalExpense  || expTxns.reduce((s,t)=>s+t.amount,0);
+    const balance = fin.currentBalance !== undefined ? fin.currentBalance : totIn-totOut;
+
+    // Normalise fyWise keys
+    const fyNorm={};
+    Object.entries(fyWise).forEach(([k,v])=>{ fyNorm[normFY(k)]=v; });
+
+    // Fill closing if missing
+    let run=0;
+    Object.keys(fyNorm).sort(sortFY).forEach(fy=>{
+      run+=(fyNorm[fy].inflow||0)-(fyNorm[fy].outflow||0);
+      if(!fyNorm[fy].closing) fyNorm[fy].closing=Math.round(run);
+    });
+
+    // ── Timestamp ────────────────────────────────────────────────────
+    const now=new Date().toLocaleString('en-IN',{
+      weekday:'short',day:'2-digit',month:'short',year:'numeric',
+      hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'
+    })+' IST';
+    const metaHtml=`Regd. No: 2240/2006 &nbsp;|&nbsp; Vampuguda, Hyderabad
+      &nbsp;|&nbsp; <b style="color:#1a7a3c;">✅ Live — Google Sheet</b>
+      &nbsp;|&nbsp; ${txRaw.length} transactions &nbsp;|&nbsp; Generated: ${now}`;
+    ['hdr-meta','pg2-meta','pg3-meta','pg4-meta'].forEach(id=>setMeta(id,metaHtml));
+
+    setMsg('Rendering report...');
+
+    // ── Build ────────────────────────────────────────────────────────
+    buildPage1(fyNorm, totIn, totOut, balance, incH, expH, txRaw.length);
+
+    // Shared column sets — union of income + expense so both tables align
+    const fyrCols = [...new Set([
+      ...incTxns.filter(t=>t.amount>0).map(t=>t.fy),
+      ...expTxns.filter(t=>t.amount>0).map(t=>t.fy)
+    ])].filter(Boolean).sort(sortFY);
+
+    const qtrCols = [...new Set([
+      ...incTxns.filter(t=>t.amount>0).map(t=>t.qtr),
+      ...expTxns.filter(t=>t.amount>0).map(t=>t.qtr)
+    ])].filter(Boolean).sort(sortQtr);
+
+    // Page 2 — Year-wise (shared FY columns)
+    buildTable(incTxns,'in',  t=>t.fy, sortFY, 'iyr-h','iyr-b','iyr-f', fyrCols);
+    buildTable(expTxns,'out', t=>t.fy, sortFY, 'eyr-h','eyr-b','eyr-f', fyrCols);
+
+    // Page 3 — Quarter-wise (shared Quarter columns; expense shows subHead)
+    buildTable(incTxns,'in',  t=>t.qtr, sortQtr, 'iqr-h','iqr-b','iqr-f', qtrCols, false);
+    buildTable(expTxns,'out', t=>t.qtr, sortQtr, 'eqr-h','eqr-b','eqr-f', qtrCols, true);
+
+    buildPage4(raw._internalOrders||{}, totIn, totOut);
+
+
+    // Build charts — fyWise is an object keyed by FY string
+    const fyWiseObj = (raw._financial&&raw._financial.fyWise)||{};
+    const fyChartRows = Object.entries(fyWiseObj).map(([fy,v])=>({
+      fy, income: v.inflow||v.income||0, expense: v.outflow||v.expense||0, closing: v.closing||0
+    })).sort((a,b)=>a.fy.localeCompare(b.fy));
+
+    // income/expense heads — values may be numbers or objects
+    const incHeadData = Object.entries((raw._financial&&raw._financial.income)||{})
+      .filter(([k])=>!k.startsWith('_')&&k!=='total')
+      .map(([k,v])=>({ head:k, amount: typeof v==='object'?(v.total||v.inflow||v.amount||0):Number(v)||0 }))
+      .filter(d=>d.amount>0).sort((a,b)=>b.amount-a.amount).slice(0,8);
+    const expHeadData = Object.entries((raw._financial&&raw._financial.expense)||{})
+      .filter(([k])=>!k.startsWith('_')&&k!=='total')
+      .map(([k,v])=>({ head:k, amount: typeof v==='object'?(v.total||v.outflow||v.amount||0):Number(v)||0 }))
+      .filter(d=>d.amount>0).sort((a,b)=>b.amount-a.amount).slice(0,8);
+
+    if(fyChartRows.length) buildCharts(fyChartRows, incHeadData, expHeadData);
+
+    // Force chart re-render before print (fixes blank canvas in PDF)
+    const mql = window.matchMedia('print');
+    function onBeforePrint(){
+      _charts.forEach(c=>{ c.resize(); c.update('none'); });
+    }
+    mql.addEventListener('change', e=>{ if(e.matches) onBeforePrint(); });
+    window.addEventListener('beforeprint', onBeforePrint);
+    window.addEventListener('afterprint', ()=>{ setTimeout(()=>_charts.forEach(c=>c.resize()), 100); });
+
+
+    document.getElementById('loading').style.display='none';
+    document.getElementById('app').style.display='block';
+
+  } catch(err){
+    const el=document.getElementById('load-msg');
+    if(el) el.innerHTML='❌ Error: '+err.message;
+    document.getElementById('loading').style.background='#7b0000';
+    console.error(err);
+  }
+}
+
+run();
+</script>
+</body>
+</html>

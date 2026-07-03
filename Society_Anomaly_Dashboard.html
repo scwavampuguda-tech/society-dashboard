@@ -28,15 +28,17 @@
         .header {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
-            padding: 30px;
+            padding: 20px 28px;
             border-radius: 15px;
-            text-align: center;
             margin-bottom: 25px;
             box-shadow: 0 10px 40px rgba(231,76,60,0.4);
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        
+
         .header::before {
             content: '';
             position: absolute;
@@ -53,24 +55,65 @@
             );
             animation: headerMove 20s linear infinite;
         }
-        
-        @keyframes headerMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
+
+        .header-logo-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
         }
-        
+        .header-logo-img {
+            width: 85px;
+            height: 85px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: white;
+            padding: 4px;
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 15px rgba(255,215,0,0.6), 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .header-logo-img:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 25px rgba(255,215,0,0.9), 0 6px 20px rgba(0,0,0,0.4);
+        }
+        .header-regd-no {
+            font-size: 0.68em;
+            color: #FFD700;
+            font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+        .header-center {
+            flex: 1;
+            text-align: center;
+            padding: 0 15px;
+            position: relative;
+            z-index: 2;
+        }
+
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 2.2em;
+            margin-bottom: 8px;
             position: relative;
             z-index: 1;
         }
-        
+
         .header p {
-            font-size: 1.1em;
+            font-size: 1em;
             opacity: 0.9;
             position: relative;
             z-index: 1;
+        }
+
+        @media (max-width: 600px) {
+            .header { flex-direction: column; gap: 12px; text-align: center; padding: 18px; }
+            .header-logo-img { width: 65px; height: 65px; }
+            .header h1 { font-size: 1.5em; }
         }
         
         .scan-indicator {
@@ -522,11 +565,34 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🔍 Society Anomaly Dashboard</h1>
-            <p>Data Quality & Integrity Analysis | <span id="currentDate">Loading...</span></p>
-            <div class="scan-indicator" id="scanIndicator">⏳ Scanning...</div>
+
+            <!-- Logo Left -->
+            <div class="header-logo-wrap">
+                <img class="header-logo-img"
+                     src="icons/society_logo.png"
+                     alt="SCRWA Logo"
+                     onerror="this.style.display='none'">
+                <span class="header-regd-no">Regd No. 2240/2006</span>
+            </div>
+
+            <!-- Center Title -->
+            <div class="header-center">
+                <h1>&#128680; Society Anomaly Dashboard</h1>
+                <p>Data Quality &amp; Integrity Analysis | <span id="currentDate">Loading...</span></p>
+                <div class="scan-indicator" id="scanIndicator">&#128269; Scanning...</div>
+            </div>
+
+            <!-- Logo Right -->
+            <div class="header-logo-wrap">
+                <img class="header-logo-img"
+                     src="icons/society_logo.png"
+                     alt="SCRWA Logo"
+                     onerror="this.style.display='none'">
+                <span class="header-regd-no">Regd No. 2240/2006</span>
+            </div>
+
         </div>
-        
+
         <!-- Data Quality Score -->
         <div class="quality-score">
             <div class="score-circle" id="scoreCircle" style="--score: 0">
