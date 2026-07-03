@@ -1,6 +1,6 @@
 import os
 
-OUT = r'C:\Users\parkundu\Desktop\Society_SCRWA\Society_Files\HTML_Portals\SCRWA_Standalone_Report.html'
+OUT = r'C:\Users\parkundu\Desktop\Society_SCRWA\Society_Files\HTML_Portals\SCRWA_LaneWise_Report.html'
 
 LANES_JS = """
 const LANES = [
