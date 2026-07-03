@@ -789,7 +789,7 @@ function renderReport(raw) {
     if (r.naCt) pills.push('— ' + r.naCt + ' No Data');
     const pillStr  = pills.join('  ·  ');
     const metaStr  = r.lane.pids.length + ' props  ·  Billed: ' + ifmt(r.bTot)
-                   + '  ·  Paid: ' + ifmt(r.pTot)
+                   + '  ·  Paid: ' + ifmt0(r.pTot)
                    + '  ·  Outstanding: ' + ifmt(r.due)
                    + (pillStr ? '   ' + pillStr : '');
     detHTML += '<tr class="lh" data-lane="' + r.lane.name + '">'
