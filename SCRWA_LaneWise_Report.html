@@ -242,6 +242,25 @@ tbody tr:hover td{background:#f8fafc}
   th{padding:6px 7px;font-size:10px}
   td{padding:5px 7px;font-size:10px}
 }
+
+/* -- Lane Outstanding Severity Tiers ---------------------------------------- */
+.lane-critical td{background:linear-gradient(90deg,#fff0f0,#fff5f5)!important;border-left:4px solid #dc2626!important}
+.lane-critical td:first-child{color:#b91c1c!important;font-weight:700}
+.lane-high td{background:linear-gradient(90deg,#fff7ed,#fffbf5)!important;border-left:4px solid #ea580c!important}
+.lane-high td:first-child{color:#c2410c!important;font-weight:700}
+.lane-medium td{background:linear-gradient(90deg,#fefce8,#fffef5)!important;border-left:4px solid #ca8a04!important}
+.lane-medium td:first-child{color:#a16207!important;font-weight:700}
+.lane-ok td{background:linear-gradient(90deg,#f0fdf4,#f7fef9)!important;border-left:4px solid #16a34a!important}
+.lane-ok td:first-child{color:#15803d!important;font-weight:700}
+.sev-badge{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:6px;vertical-align:middle}
+.sev-crit{background:#fee2e2;color:#b91c1c}
+.sev-high{background:#ffedd5;color:#c2410c}
+.sev-med{background:#fef9c3;color:#a16207}
+.sev-ok{background:#dcfce7;color:#15803d}
+.lh.lh-critical td{background:linear-gradient(90deg,#fee2e2,#fff0f0)!important;border-left:4px solid #dc2626!important;color:#b91c1c!important}
+.lh.lh-high td{background:linear-gradient(90deg,#ffedd5,#fff7ed)!important;border-left:4px solid #ea580c!important;color:#c2410c!important}
+.lh.lh-medium td{background:linear-gradient(90deg,#fef9c3,#fefce8)!important;border-left:4px solid #ca8a04!important;color:#a16207!important}
+.lh.lh-ok td{background:linear-gradient(90deg,#dcfce7,#f0fdf4)!important;border-left:4px solid #16a34a!important;color:#15803d!important}
 </style>
 </head>
 <body>
@@ -540,7 +559,7 @@ function applySearch() {
 
 
 // ── Cache constants ────────────────────────────────────────
-const CACHE_VERSION  = '202607040031';          // bumped on every rebuild
+const CACHE_VERSION  = '202607040037';          // bumped on every rebuild
 const CACHE_KEY      = 'scrwaReportData_'  + CACHE_VERSION;
 const CACHE_TIME_KEY = 'scrwaReportTime_'  + CACHE_VERSION;
 const CACHE_DURATION = 4 * 60 * 60 * 1000; // 4 hours — hard limit
@@ -714,6 +733,22 @@ function fmtName(raw) {
   return '<span title="' + raw.replace(/"/g, '&quot;') + '">' + parts[0].trim() + ' <span style="color:#94a3b8;font-size:11px">&amp; \u2026</span></span>';
 }
 
+
+function sevClass(billed,due){
+  if(billed===0)return 'ok';
+  const pct=due/billed*100;
+  if(pct>=90)return 'critical';
+  if(pct>=70)return 'high';
+  if(pct>=50)return 'medium';
+  return 'ok';
+}
+function sevBadge(billed,due){
+  const cls=sevClass(billed,due);
+  const pct=billed>0?Math.round(due/billed*100):0;
+  const icon={critical:'\uD83D\uDD34',high:'\uD83D\uDFE0',medium:'\uD83D\uDFE1',ok:'\u2705'};
+  const pill={critical:'sev-crit',high:'sev-high',medium:'sev-med',ok:'sev-ok'};
+  return '<span class="sev-badge '+pill[cls]+'">'+icon[cls]+' '+pct+'% due</span>';
+}
 function renderReport(raw) {
   let gtProps=0, gtBilled=0, gtPaid=0, gtDue=0;
   let gtPd=0, gtPt=0, gtPu=0, gtNa=0;
@@ -746,8 +781,9 @@ function renderReport(raw) {
   // Summary table
   let sumHTML = '';
   summaryRows.forEach(r => {
-    sumHTML += '<tr>'
-      + '<td style="text-align:left">\uD83C\uDFE0 ' + r.lane.name + ' (' + r.lane.plots + ')</td>'
+    const sCls=sevClass(r.bTot,r.due);
+    sumHTML += '<tr class="lane-'+sCls+'">'  
+      + '<td style="text-align:left">\uD83C\uDFE0 ' + r.lane.name + ' (' + r.lane.plots + ')' + sevBadge(r.bTot,r.due) + '</td>'
       + '<td style="text-align:center">' + r.lane.pids.length + '</td>'
       + '<td class="c-amt" style="text-align:right">' + ifmt(r.bTot) + '</td>'
       + '<td class="c-amt' + (r.pTot ? '' : ' c-dim') + '" style="text-align:right">' + ifmt(r.pTot) + '</td>'
@@ -787,7 +823,8 @@ function renderReport(raw) {
                    + '  ·  Paid: ' + ifmt(r.pTot)
                    + '  ·  Outstanding: ' + ifmt(r.due)
                    + (pillStr ? '   ' + pillStr : '');
-    detHTML += '<tr class="lh" data-lane="' + r.lane.name + '">'
+    const lhCls=sevClass(r.bTot,r.due);
+    detHTML += '<tr class="lh lh-'+lhCls+'" data-lane="' + r.lane.name + '">'
              + '<td colspan="11">\uD83C\uDFE0 ' + r.lane.name + ' — ' + r.lane.plots
              + ' <span class="lmeta">' + metaStr + '</span></td></tr>';
 
