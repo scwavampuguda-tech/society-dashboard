@@ -400,7 +400,7 @@ function ifmt(n) {
 }
 function ifmt0(n) {
   n = Math.round(n);
-  if (n === 0) return '<span style="color:#94a3b8">\u20b90</span>';
+  if (n === 0) return '\u20b90';
   return ifmt(n);
 }
 
@@ -755,7 +755,7 @@ function renderReport(raw) {
       + '<td style="text-align:left">\uD83C\uDFE0 ' + r.lane.name + ' (' + r.lane.plots + ')</td>'
       + '<td style="text-align:center">' + r.lane.pids.length + '</td>'
       + '<td class="c-amt" style="text-align:right">' + ifmt(r.bTot) + '</td>'
-      + '<td class="c-amt" style="text-align:right">' + ifmt0(r.pTot) + '</td>'
+      + '<td class="c-amt' + (r.pTot ? '' : ' c-dim') + '" style="text-align:right">' + ifmt(r.pTot) + '</td>'
       + '<td class="c-amt c-due" style="text-align:right">' + ifmt(r.due) + '</td>'
       + '<td class="c-dim" style="text-align:right">—</td>'
       + '<td style="text-align:center;color:#16a34a;font-weight:600">' + (r.pdCt || '<span class="c-dim">—</span>') + '</td>'
