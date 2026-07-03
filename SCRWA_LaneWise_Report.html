@@ -145,6 +145,79 @@ tbody tr:hover td{background:#f8fafc}
 .c-btn-slot{width:26px;text-align:center;padding:4px 2px;color:#e2e8f0}
 .c-email{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#475569}
 
+/* ── Mobile Responsive ──────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Header — stack vertically, hide second logo */
+  .hdr-inner { flex-direction:column; align-items:center; gap:8px; }
+  .hdr-inner .hdr-logo-wrap:last-child { display:none; }
+  .hdr-logo  { width:56px; height:56px; }
+  .hdr h1    { font-size:14px; letter-spacing:.3px; }
+  .hdr .sub  { font-size:11px; }
+  .hdr       { padding:12px 14px 10px; }
+
+  /* KPI cards — 2×2 grid */
+  .stats     { flex-wrap:wrap; }
+  .sc        { flex:1 1 50%; min-width:50%; border-right:none !important;
+               border-bottom:1px solid rgba(255,255,255,.15); }
+  .sc .v     { font-size:17px; }
+  .sc .l     { font-size:9px; }
+
+  /* Search bar — full width, compact */
+  .search-bar  { padding:8px 10px; flex-wrap:wrap; gap:6px; }
+  .search-wrap { max-width:100%; flex:1 1 100%; }
+  .search-hint { display:none; }
+  .search-count{ min-width:unset; font-size:10px; }
+
+  /* Section padding — tighter */
+  .sec   { padding:10px 8px; }
+  .sec-t { font-size:13px; margin-bottom:10px; }
+
+  /* Tables — horizontal scroll wrapper */
+  .sec { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  table { min-width:600px; }
+  .sumtbl { min-width:520px; }
+
+  /* Table font & padding — compact */
+  th { font-size:10px; padding:5px 5px; }
+  td { font-size:11px; padding:3px 4px; }
+  .lh td { font-size:11px; padding:5px 6px; }
+
+  /* Action buttons — bigger tap targets */
+  .c-act-wrap .btn-mail,
+  .c-act-wrap .btn-wa,
+  .c-act-wrap .btn-sms { width:26px; height:26px; font-size:11px; border-radius:6px; }
+  .c-act-wrap { width:96px; }
+
+  /* FAB buttons — smaller, better positioned */
+  .fab         { padding:10px 14px; font-size:11px; }
+  .refresh-btn { bottom:14px; right:14px; }
+  .print-btn   { bottom:58px; right:14px; }
+
+  /* Login box — full width on mobile */
+  .login-box { min-width:unset; width:88%; padding:24px 18px; }
+  .login-box h2 { font-size:17px; }
+
+  /* Allow name/plot to wrap on mobile */
+  .c-name { white-space:normal; }
+  .c-plot { white-space:normal; }
+
+  /* Lane meta info — hide on very small screens to save space */
+  .lmeta { display:none; }
+
+  /* Footer */
+  .ftr { font-size:10px; padding:14px 10px; }
+}
+
+/* ── Extra small phones (< 400px) ──────────────────────────── */
+@media (max-width: 400px) {
+  .hdr h1  { font-size:12px; }
+  .sc .v   { font-size:15px; }
+  .sc .l   { font-size:8px; }
+  th, td   { font-size:10px; padding:2px 3px; }
+  .fab     { padding:8px 10px; font-size:10px; }
+}
+
 @media print{
   body,td,th{font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji","Segoe UI",Arial,sans-serif}
   .act-btns,.btn-mail,.btn-wa,.btn-sms{display:none!important}
@@ -467,7 +540,7 @@ function applySearch() {
 
 
 // ── Cache constants ────────────────────────────────────────
-const CACHE_VERSION  = '202607032315';          // bumped on every rebuild
+const CACHE_VERSION  = '202607040022';          // bumped on every rebuild
 const CACHE_KEY      = 'scrwaReportData_'  + CACHE_VERSION;
 const CACHE_TIME_KEY = 'scrwaReportTime_'  + CACHE_VERSION;
 const CACHE_DURATION = 4 * 60 * 60 * 1000; // 4 hours — hard limit
