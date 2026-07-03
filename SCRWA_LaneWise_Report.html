@@ -545,7 +545,7 @@ function applySearch() {
 
 
 // ── Cache constants ────────────────────────────────────────
-const CACHE_VERSION  = '202607040102';          // bumped on every rebuild
+const CACHE_VERSION  = '202607040108';          // bumped on every rebuild
 const CACHE_KEY      = 'scrwaReportData_'  + CACHE_VERSION;
 const CACHE_TIME_KEY = 'scrwaReportTime_'  + CACHE_VERSION;
 const CACHE_DURATION = 4 * 60 * 60 * 1000; // 4 hours — hard limit
@@ -783,9 +783,9 @@ function renderReport(raw) {
   let sno = 0;
   summaryRows.forEach(r => {
     const pills = [];
-    if (r.pdCt) pills.push('\u2713 ' + r.pdCt + ' Paid');
-    if (r.ptCt) pills.push('\u25c6 ' + r.ptCt + ' Partial');
-    if (r.puCt) pills.push('\u2717 ' + r.puCt + ' Unpaid');
+    if (r.pdCt) pills.push('\u2705 ' + r.pdCt + ' Paid');
+    if (r.ptCt) pills.push('\uD83D\uDD36 ' + r.ptCt + ' Partial');
+    if (r.puCt) pills.push('X ' + r.puCt + ' Unpaid');
     if (r.naCt) pills.push('— ' + r.naCt + ' No Data');
     const pillStr  = pills.join('  ·  ');
     const metaStr  = r.lane.pids.length + ' props  ·  Billed: ' + ifmt(r.bTot)
@@ -793,7 +793,7 @@ function renderReport(raw) {
                    + '  ·  Outstanding: ' + ifmt(r.due)
                    + (pillStr ? '   ' + pillStr : '');
     detHTML += '<tr class="lh" data-lane="' + r.lane.name + '">'
-             + '<td colspan="11">\uD83C\uDFE0 ' + r.lane.name + ' — ' + r.lane.plots
+             + '<td colspan="11">🏠 ' + r.lane.name + ' — ' + r.lane.plots
              + ' <span class="lmeta">' + metaStr + '</span></td></tr>';
 
     r.lane.pids.forEach(pid => {
