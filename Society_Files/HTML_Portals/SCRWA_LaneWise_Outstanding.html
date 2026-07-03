@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCRWA — Lane-wise Outstanding</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--primary:#1a3c5e;--accent:#2ecc71;--danger:#e74c3c;--warn:#f39c12;--bg:#f0f4f8;--border:#e1e8ed;--text:#2c3e50;--muted:#7f8c8d;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);font-size:13px;}
+
+/* LOADER */
+#loader{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(240,244,248,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
+.spinner{width:48px;height:48px;border:4px solid #ddd;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#loaderMsg{margin-top:14px;color:#555;font-size:13px;}
+
+/* LOGIN */
+#loginScreen{display:none;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a3c5e 0%,#2ecc71 100%);}
+.login-box{background:#fff;border-radius:16px;padding:40px;width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;}
+.login-box .logo{font-size:48px;margin-bottom:8px;}
+.login-box h2{color:var(--primary);font-size:22px;margin-bottom:4px;}
+.login-box .sub{color:var(--muted);font-size:12px;margin-bottom:24px;}
+.login-box input{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:8px;font-size:14px;outline:none;transition:.2s;margin-bottom:10px;display:block;}
+.login-box input:focus{border-color:var(--primary);}
+.login-box button{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;margin-top:4px;transition:.2s;}
+.login-box button:hover{background:#1a5276;}
+.err{color:var(--danger);font-size:12px;margin-top:10px;min-height:18px;}
+
+/* APP */
+#app{display:none;}
+.topbar{background:var(--primary);color:#fff;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.topbar .brand{display:flex;align-items:center;gap:10px;}
+.topbar .brand h1{font-size:16px;font-weight:700;}
+.topbar .brand small{font-size:11px;opacity:.7;display:block;}
+.topbar .right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.pill{border-radius:20px;padding:4px 12px;font-size:12px;}
+.pill-user{background:rgba(255,255,255,.15);}
+.pill-admin{background:rgba(255,167,38,.25);border:1px solid #f39c12;color:#f39c12;font-weight:700;font-size:11px;}
+.btn{border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;color:#fff;}
+.btn-refresh{background:rgba(255,255,255,.15);}
+.btn-refresh:hover{background:rgba(255,255,255,.28);}
+.btn-print{background:#e67e22;}
+.btn-print:hover{background:#d35400;}
+.btn-logout{background:#c0392b;}
+.btn-logout:hover{background:#a93226;}
+
+.main{padding:20px;max-width:1400px;margin:0 auto;}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin-bottom:20px;}
+.kpi-card{background:#fff;border-radius:12px;padding:16px 18px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:4px solid var(--accent);position:relative;overflow:hidden;}
+.kpi-card.red{border-left-color:#e74c3c;} .kpi-card.green{border-left-color:#27ae60;} .kpi-card.blue{border-left-color:#2980b9;} .kpi-card.orange{border-left-color:#e67e22;}
+.kpi-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:26px;opacity:.1;}
+.kpi-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.kpi-value{font-size:22px;font-weight:700;color:var(--text);margin:4px 0;}
+.kpi-sub{font-size:10px;color:var(--muted);}
+
+/* FY TABS */
+.fy-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.fy-tab{padding:6px 16px;border-radius:20px;border:2px solid var(--border);background:#fff;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);transition:.2s;}
+.fy-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.toolbar input,.toolbar select{padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;outline:none;background:#fff;}
+.toolbar input{flex:1;min-width:200px;}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--primary);}
+
+/* TABLE */
+.card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:16px;overflow:hidden;}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:#1a3c5e;color:#fff;font-size:11px;padding:9px 10px;text-align:left;white-space:nowrap;}
+th.r{text-align:right;} th.c{text-align:center;}
+td{padding:7px 10px;border-bottom:1px solid #f0f4f8;vertical-align:middle;}
+tr:hover td{background:#f5f8ff;}
+td.r{text-align:right;font-variant-numeric:tabular-nums;}
+td.c{text-align:center;}
+.due{color:#c0392b;font-weight:700;}
+.adv{color:#1a7a3c;font-weight:700;}
+.lane-hdr td{background:#e8edf8!important;color:#1a3a6b;font-weight:700;font-size:12px;padding:8px 10px;border-top:2px solid #1a3c5e;border-bottom:1px solid #b0bdd8;}
+.lane-meta{font-weight:400;font-size:10px;color:#555;margin-left:8px;}
+.badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.b-active{background:#d5f0db;color:#1a7a3c;}
+.b-inactive{background:#fce8e6;color:#c0392b;}
+.b-other{background:#e8e8e8;color:#555;}
+tfoot tr td{background:#1a3c5e;color:#fff;font-weight:700;font-size:12px;padding:9px 10px;}
+tfoot td.r{text-align:right;}
+.data-ts{font-size:10px;color:var(--muted);text-align:right;margin-bottom:8px;}
+.empty{text-align:center;color:var(--muted);padding:40px;font-size:14px;}
+
+/* PRINT */
+@media print{
+  .no-print{display:none!important;}
+  body{font-size:10px;background:#fff;}
+  @page{size:A4 landscape;margin:10mm 8mm;}
+  th,.lane-hdr td,tfoot tr td{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+
+/* CHART */
+.chart-card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:16px;padding:16px 20px;}
+.chart-card .chart-title{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.chart-card .chart-title span{font-size:11px;color:var(--muted);font-weight:400;}
+.chart-toggle{display:flex;gap:6px;margin-bottom:4px;}
+.chart-toggle button{padding:3px 10px;border-radius:12px;border:1px solid var(--border);background:#fff;font-size:11px;cursor:pointer;color:var(--muted);transition:.15s;}
+.chart-toggle button.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+#chartWrap{position:relative;height:340px;}
+</style>
+</head>
+<body>
+
+<!-- LOADER: visible by default, hidden after init -->
+<div id="loader">
+  <div class="spinner"></div>
+  <p id="loaderMsg">Connecting to server...</p>
+</div>
+
+<!-- LOGIN: hidden by default, shown by JS -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="logo">🏛️</div>
+    <h2>SCRWA Society</h2>
+    <p class="sub">Lane-wise Outstanding Portal<br>Vampuguda, Hyderabad</p>
+    <input type="email" id="emailIn" placeholder="Enter your registered email" autocomplete="email" />
+    <button onclick="doLogin()">🔐 Enter Portal</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- APP: hidden by default, shown after login -->
+<div id="app">
+  <div class="topbar no-print">
+    <div class="brand">
+      <div>
+        <h1>🏙️ Lane-wise Outstanding</h1>
+        <small>SCRWA · Vampuguda Reddy Colony</small>
+      </div>
+    </div>
+    <div class="right">
+      <span class="pill pill-admin" id="adminBadge" style="display:none">👑 Admin</span>
+      <span class="pill pill-user" id="userBadge"></span>
+      <button class="btn btn-refresh" onclick="loadFresh()">🔄 Refresh</button>
+      <button class="btn btn-print" onclick="window.print()">🖨️ Print</button>
+      <button class="btn btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div id="fyTabs" class="fy-tabs no-print"></div>
+    <div id="kpis" class="kpi-grid"></div>
+
+    <div class="toolbar no-print">
+      <input type="text" id="srch" placeholder="🔍 Search name, plot or property ID..." oninput="renderTable()" />
+      <select id="fStatus" onchange="renderTable()">
+        <option value="">All Status</option>
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+        <option value="Exited">Exited</option>
+      </select>
+      <select id="fLane" onchange="renderTable()"><option value="">All Lanes</option></select>
+      <select id="fDues" onchange="renderTable()">
+        <option value="">All Members</option>
+        <option value="due">Has Outstanding</option>
+        <option value="clear">Fully Paid</option>
+        <option value="adv">Has Advance</option>
+      </select>
+    </div>
+
+    <div class="data-ts no-print" id="dataTs"></div>
+
+    <!-- LANE CHART -->
+    <div class="chart-card no-print">
+      <div class="chart-title">
+        📊 Lane-wise Summary — <span id="chartFyLabel"></span>
+        <div class="chart-toggle">
+          <button id="ctBilled"  class="active" onclick="setChartMode('billed')">Billed</button>
+          <button id="ctPaid"    onclick="setChartMode('paid')">Paid</button>
+          <button id="ctDue"     onclick="setChartMode('due')">Outstanding</button>
+          <button id="ctAll"     onclick="setChartMode('all')">All</button>
+        </div>
+      </div>
+      <div id="chartWrap"><canvas id="laneChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="c" style="width:55px">ID</th>
+              <th class="c" style="width:85px">Plot</th>
+              <th style="min-width:190px">Owner Name</th>
+              <th class="r" style="width:95px">Billed</th>
+              <th class="r" style="width:95px">Paid</th>
+              <th class="r" style="width:100px">Outstanding</th>
+              <th class="r" style="width:85px">Advance</th>
+              <th class="c" style="width:90px">Status</th>
+            </tr>
+          </thead>
+          <tbody id="tBody"></tbody>
+          <tfoot><tr id="tFoot"></tr></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:10px;color:#aaa;margin-top:8px;padding-top:8px;border-top:1px solid #ddd;">
+      SCRWA · Vampuguda Reddy Colony Welfare Association · scwa.vampuguda@gmail.com · Regd. No: 2240/2006 · Internal Use Only
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+var API_URL   = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+var ADMINS    = ['bilsaibaba@gmail.com','premikakatta1@gmail.com','parthok@gmail.com'];
+var SESS_USER = 'scrwa_lane_u';
+var SESS_DATA = 'scrwa_lane_d';
+var CACHE_TTL = 4 * 60 * 60 * 1000;
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+var members     = [];
+var fyList      = [];
+var activeFY    = '';
+var currentUser = null;
+
+// ── DOM HELPERS ──────────────────────────────────────────────────────────────
+function el(id)       { return document.getElementById(id); }
+function show(id)     { el(id).style.display = 'block'; }
+function showFlex(id) { el(id).style.display = 'flex'; }
+function hide(id)     { el(id).style.display = 'none'; }
+function setLoader(on, msg) {
+  el('loader').style.display = on ? 'flex' : 'none';
+  if (msg) el('loaderMsg').textContent = msg;
+}
+
+// ── FORMATTING ───────────────────────────────────────────────────────────────
+function inr(n) {
+  n = parseFloat(n) || 0;
+  return n !== 0 ? '\u20B9' + n.toLocaleString('en-IN') : '\u2014';
+}
+
+// ── PARSE RAW API RESPONSE ───────────────────────────────────────────────────
+// API returns: { "100": {propertyID, name, email, laneNo, invoices[], payments[]}, "101":{...} }
+function parseRaw(raw) {
+  var mArr = [];
+  var fySet = {};
+
+  Object.keys(raw).forEach(function(k) {
+    var m = raw[k];
+    if (!m || typeof m !== 'object' || !m.propertyID) return;
+
+    // Collect FY years from invoices
+    var invs = m.invoices || [];
+    invs.forEach(function(inv) {
+      var fy = inv.fyYear || inv.fy || '';
+      if (fy) fySet[fy] = 1;
+    });
+
+    // Collect FY years from payments too
+    var pmts = m.payments || [];
+    pmts.forEach(function(p) {
+      var fy = p.fyYear || p.fy || '';
+      if (fy) fySet[fy] = 1;
+    });
+
+    mArr.push(m);
+  });
+
+  var fys = Object.keys(fySet).sort();
+  return { members: mArr, fyList: fys };
+}
+
+// ── FIGURES FOR ONE MEMBER IN activeFY ───────────────────────────────────────
+function figures(m) {
+  var invs = (m.invoices || []).filter(function(i) {
+    return (i.fyYear || i.fy || '') === activeFY;
+  });
+
+  var billed = 0, paid = 0;
+  invs.forEach(function(i) {
+    billed += parseFloat(i.billAmount  || i.amount || 0);
+    paid   += parseFloat(i.paidAmount  || 0);
+  });
+
+  // If paidAmount not on invoices, sum payments directly
+  if (paid === 0) {
+    var pmts = (m.payments || []).filter(function(p) {
+      return (p.fyYear || p.fy || '') === activeFY;
+    });
+    pmts.forEach(function(p) { paid += parseFloat(p.amount || 0); });
+  }
+
+  var outstanding = Math.max(0, billed - paid);
+  var advance     = paid > billed ? paid - billed : 0;
+  return { billed: billed, paid: paid, outstanding: outstanding, advance: advance };
+}
+
+// ── LANE SORT KEY ─────────────────────────────────────────────────────────────
+function laneKey(laneStr) {
+  var m = String(laneStr).match(/(\d+)/);
+  return m ? parseInt(m[1], 10) : 999;
+}
+
+// ── AUTH ─────────────────────────────────────────────────────────────────────
+function doLogin() {
+  var email = (el('emailIn').value || '').trim().toLowerCase();
+  var errEl = el('loginErr');
+  errEl.textContent = '';
+
+  if (!email) { errEl.textContent = 'Please enter your registered email.'; return; }
+
+  setLoader(true, 'Verifying email...');
+
+  fetch(API_URL + '?action=getData')
+    .then(function(r) { return r.json(); })
+    .then(function(raw) {
+      var parsed  = parseRaw(raw);
+      var isAdmin = ADMINS.indexOf(email) >= 0;
+      var record  = null;
+      var isProxy = false;
+
+      parsed.members.forEach(function(m) {
+        if ((m.email || '').toLowerCase() === email) { record = m; isProxy = false; }
+        else if ((m.proxyEmail || '').toLowerCase() === email && email !== '') { record = m; isProxy = true; }
+      });
+
+      if (!isAdmin && !record) {
+        errEl.textContent = 'Email not registered. Please check and try again.';
+        setLoader(false);
+        return;
+      }
+
+      currentUser = record || { email: email, name: email };
+      if (isProxy) currentUser._loginAs = 'proxy';
+      try { sessionStorage.setItem(SESS_USER, JSON.stringify(currentUser)); } catch(e) {}
+      try { sessionStorage.setItem(SESS_DATA, JSON.stringify({ raw: raw, ts: Date.now() })); } catch(e) {}
+
+      hide('loginScreen');
+      show('app');
+      try {
+        processData(raw);
+      } catch(ex) {
+        console.error('processData crash:', ex);
+        var tb = document.getElementById('tBody');
+        if (tb) tb.innerHTML = '<tr><td colspan="8" style="padding:30px;text-align:center;color:red;font-size:14px;">⚠️ Error loading data: ' + ex.message + '</td></tr>';
+      }
+      setLoader(false);
+    })
+    .catch(function(e) {
+      errEl.textContent = 'Connection error. Please try again.';
+      setLoader(false);
+    });
+}
+
+function doLogout() {
+  try { sessionStorage.removeItem(SESS_USER); } catch(e) {}
+  currentUser = null;
+  hide('app');
+  showFlex('loginScreen');
+}
+
+// ── LOAD FRESH ────────────────────────────────────────────────────────────────
+function loadFresh() {
+  setLoader(true, 'Refreshing data...');
+  fetch(API_URL + '?action=getData')
+    .then(function(r) { return r.json(); })
+    .then(function(raw) {
+      try { sessionStorage.setItem(SESS_DATA, JSON.stringify({ raw: raw, ts: Date.now() })); } catch(e) {}
+      processData(raw);
+      setLoader(false);
+    })
+    .catch(function() {
+      alert('Failed to refresh. Check your connection.');
+      setLoader(false);
+    });
+}
+
+// ── PROCESS DATA ──────────────────────────────────────────────────────────────
+function processData(raw) {
+  var parsed = parseRaw(raw);
+  members = parsed.members;
+  fyList  = parsed.fyList;
+
+  if (fyList.length > 0 && !activeFY) {
+    activeFY = fyList[fyList.length - 1];
+  }
+
+  var isAdmin = ADMINS.indexOf((currentUser.email || '').toLowerCase()) >= 0;
+  var proxyLabel = currentUser._loginAs === 'proxy' ? ' (Proxy)' : '';
+  el('userBadge').textContent = '\uD83D\uDC64 ' + (currentUser.name || currentUser.email || 'User') + proxyLabel;
+  if (isAdmin) show('adminBadge'); else hide('adminBadge');
+
+  buildFYTabs();
+  buildLaneFilter();
+  renderKPIs();
+  renderTable();
+  renderLaneChart();
+
+  el('dataTs').textContent =
+    'Refreshed: ' + new Date().toLocaleString('en-IN') +
+    '  \u00B7  ' + members.length + ' properties loaded';
+}
+
+// ── FY TABS ────────────────────────────────────────────────────────────────────
+function buildFYTabs() {
+  var c = el('fyTabs');
+  c.innerHTML = '';
+  fyList.forEach(function(fy) {
+    var b = document.createElement('button');
+    b.className = 'fy-tab' + (fy === activeFY ? ' active' : '');
+    b.textContent = fy;
+    b.onclick = function() {
+      activeFY = fy;
+      document.querySelectorAll('.fy-tab').forEach(function(x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      renderKPIs();
+      renderTable();
+      renderLaneChart();
+    };
+    c.appendChild(b);
+  });
+}
+
+// ── LANE FILTER ────────────────────────────────────────────────────────────────
+function buildLaneFilter() {
+  var lanes = [];
+  var seen  = {};
+  members.forEach(function(m) {
+    var l = (m.laneNo || m.lane || '').trim();
+    if (l && !seen[l]) { seen[l] = 1; lanes.push(l); }
+  });
+  lanes.sort(function(a, b) { return laneKey(a) - laneKey(b); });
+
+  var sel = el('fLane');
+  var cur = sel.value;
+  sel.innerHTML = '<option value="">All Lanes</option>';
+  lanes.forEach(function(l) {
+    var o = document.createElement('option');
+    o.value = l;
+    var m = l.match(/Lane\s*(\d+)/i);
+    o.textContent = m ? 'Lane ' + m[1] : l;
+    sel.appendChild(o);
+  });
+  if (cur) sel.value = cur;
+}
+
+// ── KPIs ───────────────────────────────────────────────────────────────────────
+function renderKPIs() {
+  var tB=0, tP=0, tO=0, tA=0, tN=0;
+  members.forEach(function(m) {
+    var f = figures(m);
+    tB += f.billed; tP += f.paid; tO += f.outstanding; tA += f.advance;
+    if (f.billed > 0) tN++;
+  });
+  el('kpis').innerHTML =
+    kpiCard('blue',   '🏘️', 'Total Properties', members.length, tN + ' billed · FY ' + activeFY) +
+    kpiCard('',       '📋', 'Total Billed',      inr(tB),        'FY ' + activeFY) +
+    kpiCard('green',  '✅', 'Collected',          inr(tP),        'Payments received') +
+    kpiCard('red',    '⚠️', 'Outstanding',        inr(tO),        'Pending recovery') +
+    kpiCard('orange', '💰', 'Advance',            inr(tA),        'Overpaid amount');
+}
+function kpiCard(color, icon, label, value, sub) {
+  return '<div class="kpi-card ' + color + '"><div class="kpi-icon">' + icon + '</div>' +
+    '<div class="kpi-label">' + label + '</div>' +
+    '<div class="kpi-value">' + value + '</div>' +
+    '<div class="kpi-sub">' + sub + '</div></div>';
+}
+
+// ── TABLE ──────────────────────────────────────────────────────────────────────
+function renderTable() {
+  var srch   = (el('srch').value || '').toLowerCase();
+  var fSt    = (el('fStatus').value || '').toLowerCase();
+  var fLane  = el('fLane').value;
+  var fDues  = el('fDues').value;
+
+  // Group by lane
+  var laneMap = {};
+  members.forEach(function(m) {
+    var l = (m.laneNo || m.lane || 'Unknown').trim();
+    if (!laneMap[l]) laneMap[l] = [];
+    laneMap[l].push(m);
+  });
+
+  var lanes = Object.keys(laneMap).sort(function(a, b) { return laneKey(a) - laneKey(b); });
+
+  var html = '', gB=0, gP=0, gO=0, gA=0, gC=0;
+
+  lanes.forEach(function(lane) {
+    if (fLane && lane !== fLane) return;
+
+    var rows = laneMap[lane].filter(function(m) {
+      var f  = figures(m);
+      var nm = (m.name    || '').toLowerCase();
+      var pl = (m.plotNo  || '').toLowerCase();
+      var id = (m.propertyID || '').toLowerCase();
+      var st = (m.status  || 'Active').toLowerCase();
+
+      if (srch  && nm.indexOf(srch) < 0 && pl.indexOf(srch) < 0 && id.indexOf(srch) < 0) return false;
+      if (fSt   && st.indexOf(fSt) < 0) return false;
+      if (fDues === 'due'   && f.outstanding <= 0) return false;
+      if (fDues === 'clear' && (f.billed === 0 || f.outstanding > 0)) return false;
+      if (fDues === 'adv'   && f.advance <= 0) return false;
+      return true;
+    });
+
+    if (!rows.length) return;
+
+    var lB=0, lP=0, lO=0, lA=0;
+    rows.forEach(function(m) {
+      var f = figures(m); lB+=f.billed; lP+=f.paid; lO+=f.outstanding; lA+=f.advance;
+    });
+
+    // Lane header row
+    var laneNum = lane.match(/Lane\s*(\d+)/i);
+    var laneLabel = laneNum ? 'Lane ' + laneNum[1] : lane;
+    html += '<tr class="lane-hdr"><td colspan="8">🏘️ ' + laneLabel +
+      '<span class="lane-meta">' + rows.length + ' props' +
+      ' &nbsp;·&nbsp; Billed: ' + inr(lB) +
+      ' &nbsp;·&nbsp; Paid: ' + inr(lP) +
+      ' &nbsp;·&nbsp; Due: ' + inr(lO) +
+      (lA > 0 ? ' &nbsp;·&nbsp; Adv: ' + inr(lA) : '') +
+      '</span></td></tr>';
+
+    rows.forEach(function(m) {
+      var f   = figures(m);
+      var st  = m.status || 'Active';
+      var stL = st.toLowerCase();
+      var bc  = stL.indexOf('active') >= 0 && stL.indexOf('inactive') < 0 ? 'b-active' :
+                stL.indexOf('inactive') >= 0 ? 'b-inactive' : 'b-other';
+      // Strip emoji/symbols from status (safe cross-browser method)
+      var stTxt = st.replace(/[^\w\s\-\/]/g, '').trim();
+
+      html += '<tr>' +
+        '<td class="c">'  + (m.propertyID || '—') + '</td>' +
+        '<td class="c">'  + (m.plotNo     || '—') + '</td>' +
+        '<td>'            + (m.name       || '—') + '</td>' +
+        '<td class="r">'  + inr(f.billed)         + '</td>' +
+        '<td class="r">'  + inr(f.paid)           + '</td>' +
+        '<td class="r ' + (f.outstanding > 0 ? 'due' : '') + '">' + inr(f.outstanding) + '</td>' +
+        '<td class="r ' + (f.advance     > 0 ? 'adv' : '') + '">' + inr(f.advance)     + '</td>' +
+        '<td class="c"><span class="badge ' + bc + '">' + (stTxt || 'Active') + '</span></td>' +
+        '</tr>';
+
+      gB += f.billed; gP += f.paid; gO += f.outstanding; gA += f.advance; gC++;
+    });
+  });
+
+  el('tBody').innerHTML = html || '<tr><td colspan="8" class="empty">No records match your filter.</td></tr>';
+  el('tFoot').innerHTML =
+    '<td colspan="3">GRAND TOTAL \u2014 ' + gC + ' Properties</td>' +
+    '<td class="r">' + inr(gB) + '</td>' +
+    '<td class="r">' + inr(gP) + '</td>' +
+    '<td class="r" style="color:#ffa8a8">' + inr(gO) + '</td>' +
+    '<td class="r" style="color:#a8ffca">' + inr(gA) + '</td>' +
+    '<td></td>';
+}
+
+// ── LANE CHART ────────────────────────────────────────────────────────────────
+var laneChartInst = null;
+var chartMode     = 'billed'; // 'billed' | 'paid' | 'due' | 'all'
+
+function setChartMode(mode) {
+  chartMode = mode;
+  ['ctBilled','ctPaid','ctDue','ctAll'].forEach(function(id) {
+    var btn = document.getElementById(id);
+    if (btn) btn.classList.remove('active');
+  });
+  var map = { billed:'ctBilled', paid:'ctPaid', due:'ctDue', all:'ctAll' };
+  var active = document.getElementById(map[mode]);
+  if (active) active.classList.add('active');
+  renderLaneChart();
+}
+
+function renderLaneChart() {
+  if (!members.length) return;
+
+  // Aggregate per lane
+  var laneMap = {};
+  members.forEach(function(m) {
+    var l = (m.laneNo || m.lane || 'Unknown').trim();
+    if (!laneMap[l]) laneMap[l] = { billed:0, paid:0, due:0 };
+    var f = figures(m);
+    laneMap[l].billed += f.billed;
+    laneMap[l].paid   += f.paid;
+    laneMap[l].due    += f.outstanding;
+  });
+
+  var sortedLanes = Object.keys(laneMap).sort(function(a,b){ return laneKey(a)-laneKey(b); });
+
+  // Shorten label: "Lane 01" → "L01"
+  var labels = sortedLanes.map(function(l) {
+    var m = l.match(/Lane\s*(\d+)/i);
+    return m ? 'Lane ' + parseInt(m[1],10) : l;
+  });
+
+  var dataBilled = sortedLanes.map(function(l){ return laneMap[l].billed; });
+  var dataPaid   = sortedLanes.map(function(l){ return laneMap[l].paid;   });
+  var dataDue    = sortedLanes.map(function(l){ return laneMap[l].due;    });
+
+  // Update FY label
+  var fyLbl = document.getElementById('chartFyLabel');
+  if (fyLbl) fyLbl.textContent = 'FY ' + activeFY;
+
+  var datasets = [];
+  if (chartMode === 'billed' || chartMode === 'all') {
+    datasets.push({ label:'Billed',      data: dataBilled, backgroundColor:'rgba(41,128,185,0.75)',  borderColor:'#2980b9', borderWidth:1 });
+  }
+  if (chartMode === 'paid' || chartMode === 'all') {
+    datasets.push({ label:'Paid',        data: dataPaid,   backgroundColor:'rgba(39,174,96,0.75)',   borderColor:'#27ae60', borderWidth:1 });
+  }
+  if (chartMode === 'due' || chartMode === 'all') {
+    datasets.push({ label:'Outstanding', data: dataDue,    backgroundColor:'rgba(231,76,60,0.75)',   borderColor:'#e74c3c', borderWidth:1 });
+  }
+
+  var ctx = document.getElementById('laneChart').getContext('2d');
+
+  if (laneChartInst) { laneChartInst.destroy(); }
+
+  laneChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: labels, datasets: datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 11 }, padding: 12 } },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              return ' ' + ctx.dataset.label + ': ₹' + ctx.parsed.y.toLocaleString('en-IN');
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 10 } }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            font: { size: 10 },
+            callback: function(v) {
+              if (v >= 100000) return '₹' + (v/100000).toFixed(1) + 'L';
+              if (v >= 1000)   return '₹' + (v/1000).toFixed(0) + 'K';
+              return '₹' + v;
+            }
+          },
+          grid: { color: 'rgba(0,0,0,0.05)' }
+        }
+      }
+    }
+  });
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────────
+window.onload = function() {
+  setLoader(true, 'Loading...');
+
+  var savedUser = null;
+  var savedData = null;
+  try { savedUser = JSON.parse(sessionStorage.getItem(SESS_USER)); } catch(e) {}
+  try { savedData = JSON.parse(sessionStorage.getItem(SESS_DATA)); } catch(e) {}
+
+  if (savedUser) {
+    currentUser = savedUser;
+
+    // Use cache if fresh
+    if (savedData && savedData.raw && (Date.now() - savedData.ts) < CACHE_TTL) {
+      processData(savedData.raw);
+      hide('loginScreen');
+      show('app');
+      setLoader(false);
+      return;
+    }
+
+    // Cache stale — fetch fresh
+    setLoader(true, 'Refreshing data...');
+    fetch(API_URL + '?action=getData')
+      .then(function(r) { return r.json(); })
+      .then(function(raw) {
+        try { sessionStorage.setItem(SESS_DATA, JSON.stringify({ raw: raw, ts: Date.now() })); } catch(e) {}
+        processData(raw);
+        hide('loginScreen');
+        show('app');
+        setLoader(false);
+      })
+      .catch(function() {
+        try { sessionStorage.removeItem(SESS_USER); } catch(e) {}
+        setLoader(false);
+        showFlex('loginScreen');
+      });
+  } else {
+    setLoader(false);
+    showFlex('loginScreen');
+  }
+};
+
+// Enter key on login
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && el('loginScreen').style.display !== 'none') doLogin();
+});
+</script>
+</body>
+</html>

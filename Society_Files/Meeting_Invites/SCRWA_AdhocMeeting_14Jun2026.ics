@@ -1,0 +1,29 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//SCRWA//AdhocMeeting//EN
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VEVENT
+UID:scrwa-adhoc-20260614@vampuguda
+DTSTAMP:20260613T165358
+DTSTART;TZID=Asia/Calcutta:20260614T090000
+DTEND;TZID=Asia/Calcutta:20260614T110000
+SUMMARY:SCRWA Adhoc Society Meeting – June 2026
+LOCATION:Near Poleramma Temple, Plot Nos. 121 & 122, Vampuguda, Hyderabad
+DESCRIPTION:SCRWA Adhoc Society Meeting\nDate: Sunday 14 June 2026\nTime: 09:00 AM IST\nVenue: Near Poleramma Temple\, Plot Nos. 121 & 122\, Vampuguda\n\nIn our last meeting\, due to the MLA's inauguration at one place and the Society Meeting at another\, we could not do full justice to the discussions. This adhoc meeting is called to address pressing issues.\n\n— SCRWA Secretary
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:SCRWA Adhoc Meeting in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:SCRWA Adhoc Meeting starts in 15 minutes!
+END:VALARM
+END:VEVENT
+END:VCALENDAR

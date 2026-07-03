@@ -1,0 +1,2032 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//SCRWA//MeetingInvite//EN
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-101@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Bonthakarla Hemanth Kumar & Bonthakarla Hima Sai Durga,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Bonthakarla Hemanth Kumar & Bonthakarla Hima Sai Durga;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:b.hemanthkumar1@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-105@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Katikala Anand Kumar,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Katikala Anand Kumar;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:anandmudhiraj5273@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-108@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Virula Karuna Sagar & Rep by claiment B. Chiranjan Reddy,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Virula Karuna Sagar & Rep by claiment B. Chiranjan Reddy;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:virulasagar2006@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-109@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear K. Adithya Viswanath,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=K. Adithya Viswanath;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:adithya.kethari@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-111@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Raavi Yadagiri Reddy,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Raavi Yadagiri Reddy;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:yadagirireddyravi@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-114@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Suthari Pavan Kumar,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Suthari Pavan Kumar;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:sutharipavank@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-118@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Annaram Swetha Reddy,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Annaram Swetha Reddy;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:reddy66663@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-120@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Kondamuri Sarvarayudu,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Kondamuri Sarvarayudu;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:itzmenyna@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-121@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear A. M. Lakshmi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=A. M. Lakshmi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:mmappani@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-121@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear A. M. Lakshmi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=A. M. Lakshmi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:aln.appani@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-124@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Ulligadda Vijay Kumar,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Ulligadda Vijay Kumar;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:uvijayk1969@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-125@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Sanjay Kudrimoti,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Sanjay Kudrimoti;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:sanjaykumar1972@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-126@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Gandam Narasimha Rao,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Gandam Narasimha Rao;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:nsraog@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-129@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear A. Jyothi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=A. Jyothi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:gnaneshwar6210@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-133@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Sangam Yadagiri,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Sangam Yadagiri;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:giri9sangem@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-135@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Sudagani Shiva Rama Krishna & Thanda Sanjana,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Sudagani Shiva Rama Krishna & Thanda Sanjana;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:Saishivaramakrishna@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-141@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Racha Prem Kumar,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Racha Prem Kumar;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:rprem1982@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-144@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Burra Premika & Burra Venkatesh,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Burra Premika & Burra Venkatesh;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:venkateshgoudburra@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-144@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Burra Premika & Burra Venkatesh,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Burra Premika & Burra Venkatesh;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:premikakatta1@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-150@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Anantha Sunitha,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Anantha Sunitha;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:ananthasunitha@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-150@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Anantha Sunitha,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Anantha Sunitha;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:bilsaibaba@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-152@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Syed Abbas Ali Razvi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Syed Abbas Ali Razvi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:abbasrazvi04@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-154@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Bobbepalli V Revathi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Bobbepalli V Revathi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:revathi60695@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-159@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear A. Arun Kumar,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=A. Arun Kumar;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:arunkumar.anantha@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-162@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear A . Malathi & A. Jyothi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=A . Malathi & A. Jyothi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:mahesh.rapole97@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-170@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Sardar Ekvinder Singh,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Sardar Ekvinder Singh;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:ekvinder@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-170@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Sardar Ekvinder Singh,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Sardar Ekvinder Singh;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:ekvinder@googlemail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-171@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear D. Jaya Lakshmi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=D. Jaya Lakshmi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:dvramanareddy51@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-196@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Rajashekar Yadav Lamba Yelliah,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Rajashekar Yadav Lamba Yelliah;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:lambarajasheker@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-198@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Tiruchirapally Hemanth Kumar & Gokul Vimala,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Tiruchirapally Hemanth Kumar & Gokul Vimala;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:hemanth.kumar291@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-199@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Kurakula Raju,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Kurakula Raju;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:raju793k@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-210@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Bommena Suresh Yadav & Bommena Sahithi Yadav,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Bommena Suresh Yadav & Bommena Sahithi Yadav;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:yadavs786@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-211@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Mandapuram Vinay Reddy,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Mandapuram Vinay Reddy;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:vinayreddy360@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-216@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Regulapati Supriya,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Regulapati Supriya;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:cnuhackz@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-221@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Thotakura Vijaya Sekhar,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Thotakura Vijaya Sekhar;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:vsthota55@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-001@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Anima Kundu,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Anima Kundu;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:Animaprasad1942@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-001@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Anima Kundu,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Anima Kundu;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:parthok@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-002@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Phani Kumar Chivukula,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Phani Kumar Chivukula;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:phanikumar.chivukula@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-003@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Sheri Naresh & Sheri Swapna,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Sheri Naresh & Sheri Swapna;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:nareshsheri038@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-004@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Rallakathva Sashi Rekha,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Rallakathva Sashi Rekha;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:sandeeprallakatva@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-005@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Ajay Kumar Kinnera,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Ajay Kumar Kinnera;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:gilly.aj143@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-006@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Gummadidala Naveen & Gummadidala Bhavani,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Gummadidala Naveen & Gummadidala Bhavani;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:venusnaveen3@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-009@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Dhanagiri Swetha Reddy,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Dhanagiri Swetha Reddy;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:Swetha0518@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-013@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Bhogra Karthik & Bhogra Swarupa,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Bhogra Karthik & Bhogra Swarupa;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:bhograkarthik@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-014@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Atanu Majumder,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Atanu Majumder;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:atanu.majder@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-015@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Niladri Banerjee,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Niladri Banerjee;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:Banerjeenil1412@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-016@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Macharla Srikanth,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Macharla Srikanth;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:macharlasrikanth12@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-017@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Parusa Tirupati Raj,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Parusa Tirupati Raj;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:tirupatiraj1971@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-018@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Potaraboina Rajasekhar & Potaraboina Lalitha,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Potaraboina Rajasekhar & Potaraboina Lalitha;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:rajashekar1896@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-019@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Vijaya Lakshmi Kopparthi & Seetha Rama Rao Kopparthi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Vijaya Lakshmi Kopparthi & Seetha Rama Rao Kopparthi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:sai755@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-020@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Puli Prithvi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Puli Prithvi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:prithvi2595@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-022@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Kondu Srilatha,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Kondu Srilatha;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:lathas478@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-023@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Sumalatha Sattiraju,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Sumalatha Sattiraju;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:srasprashanth@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-024@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Prathap Nitin Singh & Dubey Shasshankaa,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Prathap Nitin Singh & Dubey Shasshankaa;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:krishnagopal6925@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-027@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Peddinti Deepak Bhargava & Parasaram Sai Monika,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Peddinti Deepak Bhargava & Parasaram Sai Monika;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:deepakbhargav06@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-029@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Madhasu Sri Laxmi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Madhasu Sri Laxmi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:laxmanbandi5@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-030@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Gudapati Madhu Kumar & Gudapati Surekha,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Gudapati Madhu Kumar & Gudapati Surekha;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:gudapatisurekhamadhu@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-031@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear E. Vijaya Pal Reddy,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=E. Vijaya Pal Reddy;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:vijaya.reddy123r@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-032@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Ponnam Bhikshapathi Goud & Ellavva, Devaraju & Kishan,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Ponnam Bhikshapathi Goud & Ellavva, Devaraju & Kishan;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:vijaydevarajuponnam@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-033@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Kattula Vishnu Jyothi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Kattula Vishnu Jyothi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:anand0474@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-035@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Darapolla Ramulu & Darapolla Sai Leela,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Darapolla Ramulu & Darapolla Sai Leela;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:darapolaramulu473@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-036@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Ravi V S S B Rao & Ravi Kumari,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Ravi V S S B Rao & Ravi Kumari;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:ravirao31183@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-040@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Junnuthula Karuna,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Junnuthula Karuna;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:jkaruna677@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-041@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear M Suvarna,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=M Suvarna;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:mosangisriramulu@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-049@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Lakshmi Narayana Kondu,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Lakshmi Narayana Kondu;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:lakshmi.kondu@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-051@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Virupakshi Balusu,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Virupakshi Balusu;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:veeru.15081978@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-053@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Kethari Ramanjaneyulu,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Kethari Ramanjaneyulu;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:cherryno786@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-054@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Late Gurram Narsimha,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Late Gurram Narsimha;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:gurramsrikanth179@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-056@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Tanneru Satyavathi,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Tanneru Satyavathi;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:krishnatanneru1966@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-059@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Bachu Narsimha,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Bachu Narsimha;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:kartdeepu@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-061@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Usha Rani & Niharika Singh,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Usha Rani & Niharika Singh;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:ashish1807@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-063@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Pabbala Ramesh & Ch. Praveen,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Pabbala Ramesh & Ch. Praveen;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:rameshpabbala15@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-066@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Pampari Buchi Ramulu & Pampari Ravinder,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Pampari Buchi Ramulu & Pampari Ravinder;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:pampariramulu6@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-071@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Gundarpu Indira,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Gundarpu Indira;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:lamba.ramakrishna@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-075@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Satyanarayana Chivukula,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Satyanarayana Chivukula;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:koushik.chivukula@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-081@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Yagateela Sailaja,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Yagateela Sailaja;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:rangaprasadlic@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-085@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Thota Lavanya,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Thota Lavanya;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:thotanagesh984@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-088@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Bodigey Krishna,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Bodigey Krishna;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:bodegeykrishna@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-089@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Ashvini Pavan,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Ashvini Pavan;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:Prp5243@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-097@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear Yellupula Savitha & Kurapati Daniel,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=Yellupula Savitha & Kurapati Daniel;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:kdanny.eclat@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:scrwa-meeting-20260614-098@scrwa.vampuguda
+DTSTAMP:20260613T164403Z
+DTSTART;TZID=Asia/Calcutta:20260614T100000
+DTEND;TZID=Asia/Calcutta:20260614T120000
+SUMMARY:SCRWA General Body Meeting – June 2026
+LOCATION:Community Hall, Vampuguda, Hyderabad
+DESCRIPTION:Dear T. Kishore Kumar,\n\nYou are cordially invited to the SCRWA General Body Meeting.\n\nDate : Sunday, 14 June 2026\nTime : 10:00 AM – 12:00 PM IST\nVenue: Community Hall, Vampuguda, Hyderabad\n\nAgenda will be shared separately.\n\nRegards,\nSCRWA Secretary\nSenior Citizens Residential Welfare Association (SCRWA)\nRegd. No. 2240/2006
+ORGANIZER;CN=SCRWA Secretary:MAILTO:scwa.vampuguda@gmail.com
+ATTENDEE;CN=T. Kishore Kumar;RSVP=TRUE;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PARTICIPANT:MAILTO:kishore.1462@gmail.com
+STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 in 1 hour
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: SCRWA General Body Meeting – June 2026 Tomorrow
+END:VALARM
+END:VEVENT
+
+END:VCALENDAR

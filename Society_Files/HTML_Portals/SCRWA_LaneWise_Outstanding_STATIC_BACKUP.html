@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCRWA — Lane-wise Outstanding Report</title>
+<style>
+  /* ── Base ── */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #222; background: #fff; }
+
+  /* ── Print setup ── */
+  @page { size: A4 landscape; margin: 10mm 8mm 10mm 8mm; }
+  @media print {
+    .no-print { display: none !important; }
+    body { font-size: 10.5px; }
+    .page-break { page-break-before: always; }
+    thead { display: table-header-group; }
+    tfoot { display: table-footer-group; }
+  }
+
+  /* ── Header ── */
+  .report-header { text-align: center; padding: 10px 0 6px; border-bottom: 2px solid #1a3a6b; margin-bottom: 8px; }
+  .report-header h1 { font-size: 16px; color: #1a3a6b; letter-spacing: 0.5px; }
+  .report-header h2 { font-size: 13px; color: #333; margin-top: 3px; }
+  .report-header .meta { font-size: 10px; color: #666; margin-top: 4px; }
+
+  /* ── KPI bar ── */
+  .kpi-bar { display: flex; gap: 10px; margin: 8px 0; flex-wrap: wrap; }
+  .kpi { flex: 1; min-width: 120px; background: #f4f6fb; border: 1px solid #d0d7e8;
+           border-radius: 6px; padding: 7px 10px; text-align: center; }
+  .kpi .label { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi .value { font-size: 14px; font-weight: bold; color: #1a3a6b; margin-top: 2px; }
+  .kpi.red .value { color: #c0392b; }
+  .kpi.green .value { color: #1a7a3c; }
+
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: #1a3a6b; color: #fff; font-size: 11px;
+    padding: 7px 6px; text-align: center; position: sticky; top: 0;
+  }
+  thead th.left { text-align: left; }
+  tfoot td {
+    background: #1a3a6b; color: #fff; font-weight: bold;
+    font-size: 11px; padding: 7px 6px; text-align: right;
+  }
+  tfoot td.tc { text-align: center; }
+
+  tr:nth-child(even) td { background: #f8f9fc; }
+  tr:hover td { background: #edf2ff; }
+
+  td { padding: 5px 6px; border-bottom: 1px solid #e8eaf0; vertical-align: middle; }
+  .tc { text-align: center; }
+  .amt { text-align: right; font-variant-numeric: tabular-nums; }
+  .name { font-weight: 500; }
+  .amt-due { color: #c0392b; font-weight: bold; }
+  .amt-adv { color: #1a7a3c; font-weight: bold; }
+
+  /* ── Lane header ── */
+  .lane-header td {
+    background: #e8edf8 !important; color: #1a3a6b;
+    font-weight: bold; font-size: 11.5px; padding: 6px 8px;
+    border-top: 2px solid #1a3a6b; border-bottom: 1px solid #b0bdd8;
+  }
+  .lane-meta { font-weight: normal; font-size: 10px; color: #444; margin-left: 10px; }
+
+  /* ── Badges ── */
+  .badge { font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
+  .badge.active   { background: #d4edda; color: #1a7a3c; }
+  .badge.inactive { background: #f8d7da; color: #c0392b; }
+  .badge.other    { background: #e2e3e5; color: #444; }
+
+  /* ── Print button ── */
+  .print-btn {
+    display: inline-block; margin: 8px 0 12px;
+    background: #1a3a6b; color: #fff; border: none;
+    padding: 8px 20px; border-radius: 5px; font-size: 13px;
+    cursor: pointer; font-family: Arial, sans-serif;
+  }
+  .print-btn:hover { background: #2a5aab; }
+
+  /* ── Footer ── */
+  .report-footer {
+    margin-top: 10px; font-size: 9px; color: #888;
+    text-align: center; border-top: 1px solid #ddd; padding-top: 5px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="report-header">
+  <h1>🏛️ SCRWA — Senior Citizens Residential Welfare Association</h1>
+  <h2>Lane-wise Outstanding Report &nbsp;|&nbsp; Vampuguda, Hyderabad</h2>
+  <div class="meta">Regd. No: 2240/2006 &nbsp;&nbsp;|&nbsp;&nbsp; Generated: 13 Jun 2026, 10:27 PM</div>
+</div>
+
+<!-- ── Print button ── -->
+<div class="no-print" style="margin-bottom:8px;">
+  <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  <span style="font-size:11px; color:#666; margin-left:12px;">
+    Tip: Use <b>Landscape</b> orientation for best results
+  </span>
+</div>
+
+<!-- ── KPI Summary ── -->
+<div class="kpi-bar no-print">
+  <div class="kpi"><div class="label">Total Properties</div><div class="value">228</div></div>
+  <div class="kpi"><div class="label">Total Billed</div><div class="value">₹708,500</div></div>
+  <div class="kpi green"><div class="label">Total Paid</div><div class="value">₹150,001</div></div>
+  <div class="kpi red"><div class="label">Total Outstanding</div><div class="value">₹558,499</div></div>
+  <div class="kpi"><div class="label">Advance (Overpaid)</div><div class="value">₹0</div></div>
+</div>
+
+<!-- ── Main Table ── -->
+<table>
+  <thead>
+    <tr>
+      <th style="width:55px;">Property ID</th>
+      <th style="width:55px;">Plot No</th>
+      <th class="left" style="width:200px;">Owner Name</th>
+      <th style="width:90px;">Total Billed</th>
+      <th style="width:90px;">Total Paid</th>
+      <th style="width:90px;">Outstanding</th>
+      <th style="width:80px;">Advance</th>
+      <th style="width:65px;">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 01 - Plot 001 to 003
+        <span class="lane-meta">
+          3 properties &nbsp;|&nbsp;
+          Billed: ₹4,000 &nbsp;|&nbsp;
+          Paid: — &nbsp;|&nbsp;
+          Outstanding: ₹4,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">118</td>
+      <td class="tc">001</td>
+      <td class="name">Annaram Swetha Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">052</td>
+      <td class="tc">002</td>
+      <td class="name">Godugulla Nikhil & Kuthadi Rajeshwari</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">116</td>
+      <td class="tc">003</td>
+      <td class="name">Kurimilla Sanjeeva Goud</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 02 - Plot 004 to 013
+        <span class="lane-meta">
+          13 properties &nbsp;|&nbsp;
+          Billed: ₹44,000 &nbsp;|&nbsp;
+          Paid: ₹15,000 &nbsp;|&nbsp;
+          Outstanding: ₹29,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">106</td>
+      <td class="tc">004</td>
+      <td class="name">Gundarpu Indira</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">171</td>
+      <td class="tc">008</td>
+      <td class="name">D. Jaya Lakshmi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">035</td>
+      <td class="tc">010</td>
+      <td class="name">Darapolla Ramulu & Darapolla Sai Leela</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,000</td>
+      <td class="amt amt-due">₹3,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">109</td>
+      <td class="tc">010/1</td>
+      <td class="name">K. Adithya Viswanath</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,000</td>
+      <td class="amt amt-due">₹1,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">077</td>
+      <td class="tc">006/E/P</td>
+      <td class="name">Kolisetty Guna Siva Tejaswi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">078</td>
+      <td class="tc">006/W/P</td>
+      <td class="name">V. Padmakala</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">101</td>
+      <td class="tc">007/E/P</td>
+      <td class="name">Bonthakarla Hemanth Kumar & Bonthakarla Hima Sai Durga</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">013</td>
+      <td class="tc">007/W/P</td>
+      <td class="name">Bhogra Karthik & Bhogra Swarupa</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">082</td>
+      <td class="tc">009/N/P</td>
+      <td class="name">Tanniru Srinivas Rao</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">084</td>
+      <td class="tc">009/S/P</td>
+      <td class="name">Vemuri Ravi Kumar & Vemuri Murali Krishna</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">108</td>
+      <td class="tc">012/S/P</td>
+      <td class="name">Virula Karuna Sagar & Rep by claiment B. Chiranjan Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">098</td>
+      <td class="tc">011/N/P 011/S/P 012/N/P</td>
+      <td class="name">T. Kishore Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">061</td>
+      <td class="tc">013/A 013/B</td>
+      <td class="name">Usha Rani & Niharika Singh</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,000</td>
+      <td class="amt amt-due">₹1,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 03 - Plot 014 to 019 and Plot 041 to 047
+        <span class="lane-meta">
+          13 properties &nbsp;|&nbsp;
+          Billed: ₹32,000 &nbsp;|&nbsp;
+          Paid: — &nbsp;|&nbsp;
+          Outstanding: ₹32,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">104</td>
+      <td class="tc">014</td>
+      <td class="name">Kommidi Yadaiah</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">126</td>
+      <td class="tc">041</td>
+      <td class="name">Gandam Narasimha Rao</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">169</td>
+      <td class="tc">042</td>
+      <td class="name">Venu Vijay C. D.</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">167</td>
+      <td class="tc">043</td>
+      <td class="name">Raveen Kumar Odnam</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">176</td>
+      <td class="tc">044</td>
+      <td class="name">Smt. G. Anasuya</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">180</td>
+      <td class="tc">045</td>
+      <td class="name">Bandi Ramu</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">178</td>
+      <td class="tc">046</td>
+      <td class="name">Govindaswamy Jayavarman</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">179</td>
+      <td class="tc">047</td>
+      <td class="name">S. Umamaheshwari</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">100</td>
+      <td class="tc">044/P</td>
+      <td class="name">Mediconda Buchaiah</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">086</td>
+      <td class="tc">016/W/P</td>
+      <td class="name">Chindam Venkatesh</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">088</td>
+      <td class="tc">017/E/P</td>
+      <td class="name">Bodigey Krishna</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">182</td>
+      <td class="tc">017/W/P</td>
+      <td class="name">Chindam Shiva Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">085</td>
+      <td class="tc">015/W/P 016/E/P</td>
+      <td class="name">Thota Lavanya</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 04 - Plot 020 to 025
+        <span class="lane-meta">
+          9 properties &nbsp;|&nbsp;
+          Billed: ₹20,000 &nbsp;|&nbsp;
+          Paid: ₹9,000 &nbsp;|&nbsp;
+          Outstanding: ₹11,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">189</td>
+      <td class="tc">021</td>
+      <td class="name">Dusari Arun Kumar</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">009</td>
+      <td class="tc">022</td>
+      <td class="name">Dhanagiri Swetha Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,500</td>
+      <td class="amt amt-due">₹500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">010</td>
+      <td class="tc">023</td>
+      <td class="name">Dhanagiri Swetha Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,500</td>
+      <td class="amt amt-due">₹500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">223</td>
+      <td class="tc">024</td>
+      <td class="name">Kurakula Govardhan</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹2,000</td>
+      <td class="amt amt-due">₹2,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">192</td>
+      <td class="tc">025</td>
+      <td class="name">Dusari Thilak Goud</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">099</td>
+      <td class="tc">020/P</td>
+      <td class="name">Onteddu Pandu & Onteddu Vara Laksmi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">215</td>
+      <td class="tc">020/P/W</td>
+      <td class="name">Dhanalakshmi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">208</td>
+      <td class="tc">024/N/P</td>
+      <td class="name">Dusari Arun Kumar</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">220</td>
+      <td class="tc">024/S/P</td>
+      <td class="name">Dusari Thilak Goud</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 05 - Plot 027 to 031
+        <span class="lane-meta">
+          5 properties &nbsp;|&nbsp;
+          Billed: ₹20,000 &nbsp;|&nbsp;
+          Paid: ₹7,000 &nbsp;|&nbsp;
+          Outstanding: ₹13,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">163</td>
+      <td class="tc">027</td>
+      <td class="name">Kaira Laxmi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">011</td>
+      <td class="tc">028</td>
+      <td class="name">Dhanagiri Swetha Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,500</td>
+      <td class="amt amt-due">₹500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">012</td>
+      <td class="tc">029</td>
+      <td class="name">Dhanagiri Swetha Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,500</td>
+      <td class="amt amt-due">₹500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">193</td>
+      <td class="tc">030</td>
+      <td class="name">D Janardhan Reddy & Akula Shravan Kumar, Cheekoti Venkateswarlu,  Akula Sravan Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">170</td>
+      <td class="tc">031</td>
+      <td class="name">Sardar Ekvinder Singh</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 06 - Plot 032 to 040
+        <span class="lane-meta">
+          9 properties &nbsp;|&nbsp;
+          Billed: ₹32,000 &nbsp;|&nbsp;
+          Paid: ₹4,000 &nbsp;|&nbsp;
+          Outstanding: ₹28,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">187</td>
+      <td class="tc">032</td>
+      <td class="name">Saraswathi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,500</td>
+      <td class="amt amt-due">₹2,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">188</td>
+      <td class="tc">033</td>
+      <td class="name">Saraswathi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,500</td>
+      <td class="amt amt-due">₹2,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">174</td>
+      <td class="tc">034</td>
+      <td class="name">N. Yougender</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">173</td>
+      <td class="tc">035</td>
+      <td class="name">N. Yougender</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">177</td>
+      <td class="tc">036</td>
+      <td class="name">Smt. S. Padmini</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">221</td>
+      <td class="tc">037</td>
+      <td class="name">Thotakura Vijaya Sekhar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,000</td>
+      <td class="amt amt-due">₹3,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">168</td>
+      <td class="tc">038</td>
+      <td class="name">Mogulla Ella Reddy</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">128</td>
+      <td class="tc">040/P/E</td>
+      <td class="name">D. Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">127</td>
+      <td class="tc">040/P/W</td>
+      <td class="name">M. Durga Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 07 - Plot 048 to 049
+        <span class="lane-meta">
+          2 properties &nbsp;|&nbsp;
+          Billed: ₹8,000 &nbsp;|&nbsp;
+          Paid: — &nbsp;|&nbsp;
+          Outstanding: ₹8,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">136</td>
+      <td class="tc">048</td>
+      <td class="name">Jyothi Setty</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">194</td>
+      <td class="tc">049/P 050/P</td>
+      <td class="name">Kamagani Srinivas Goud</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 08 - Plot 050 to 058
+        <span class="lane-meta">
+          10 properties &nbsp;|&nbsp;
+          Billed: ₹36,000 &nbsp;|&nbsp;
+          Paid: ₹3,000 &nbsp;|&nbsp;
+          Outstanding: ₹33,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">032</td>
+      <td class="tc">051</td>
+      <td class="name">Ponnam Bhikshapathi Goud & Ellavva, Devaraju & Kishan</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">024</td>
+      <td class="tc">055</td>
+      <td class="name">Prathap Nitin Singh & Dubey Shasshankaa</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">133</td>
+      <td class="tc">056</td>
+      <td class="name">Sangam Yadagiri</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">162</td>
+      <td class="tc">057</td>
+      <td class="name">A . Malathi & A. Jyothi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">184</td>
+      <td class="tc">058</td>
+      <td class="name">Rapole Mahesh</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">051</td>
+      <td class="tc">050/P</td>
+      <td class="name">Virupakshi Balusu</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,000</td>
+      <td class="amt amt-due">₹1,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">092</td>
+      <td class="tc">052/P</td>
+      <td class="name">Kumari Penujuri Sarvani</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">158</td>
+      <td class="tc">053/P</td>
+      <td class="name">Pali Appa Rao</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">114</td>
+      <td class="tc">054/E/P</td>
+      <td class="name">Suthari Pavan Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">115</td>
+      <td class="tc">054/W/P</td>
+      <td class="name">Suthari Pavan Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 09 - Plot 059 to 070
+        <span class="lane-meta">
+          15 properties &nbsp;|&nbsp;
+          Billed: ₹52,500 &nbsp;|&nbsp;
+          Paid: ₹13,001 &nbsp;|&nbsp;
+          Outstanding: ₹39,499
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">185</td>
+      <td class="tc">059</td>
+      <td class="name">Rapole Sai Kaushik</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">186</td>
+      <td class="tc">060</td>
+      <td class="name">Rapole Mahesh</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">134</td>
+      <td class="tc">061</td>
+      <td class="name">Sangam Yadagiri</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">030</td>
+      <td class="tc">062</td>
+      <td class="name">Gudapati Madhu Kumar & Gudapati Surekha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,501</td>
+      <td class="amt amt-due">₹2,499</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">150</td>
+      <td class="tc">066</td>
+      <td class="name">Anantha Sunitha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">007</td>
+      <td class="tc">067</td>
+      <td class="name">Lamba Rajasekhar Yadav & Lamba Sirisha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹500</td>
+      <td class="amt amt-due">₹3,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">129</td>
+      <td class="tc">069</td>
+      <td class="name">A. Jyothi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">130</td>
+      <td class="tc">070</td>
+      <td class="name">A. Jyothi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">057</td>
+      <td class="tc">063/P</td>
+      <td class="name">Badha Bhojaiah Karthik</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,500</td>
+      <td class="amt amt-due">₹2,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">207</td>
+      <td class="tc">063/P</td>
+      <td class="name">Uppala Omkar</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">212</td>
+      <td class="tc">068/EP</td>
+      <td class="name">Sadiya Kausar</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">197</td>
+      <td class="tc">068/WP</td>
+      <td class="name">Kurakula Ashok & Mattam Ravathi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">198</td>
+      <td class="tc">065/E/P</td>
+      <td class="name">Tiruchirapally Hemanth Kumar & Gokul Vimala</td>
+      <td class="amt">₹4,500</td>
+      <td class="amt">₹4,500</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">199</td>
+      <td class="tc">065/W/P</td>
+      <td class="name">Kurakula Raju</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,000</td>
+      <td class="amt amt-due">₹3,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">206</td>
+      <td class="tc">063/P 64</td>
+      <td class="name">T. Naveen Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 10 - Plot 071 to 077
+        <span class="lane-meta">
+          7 properties &nbsp;|&nbsp;
+          Billed: ₹28,000 &nbsp;|&nbsp;
+          Paid: ₹1,000 &nbsp;|&nbsp;
+          Outstanding: ₹27,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">131</td>
+      <td class="tc">071</td>
+      <td class="name">A. Jyothi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">132</td>
+      <td class="tc">072</td>
+      <td class="name">A. Jyothi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">097</td>
+      <td class="tc">073</td>
+      <td class="name">Yellupula Savitha & Kurapati Daniel</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">008</td>
+      <td class="tc">074</td>
+      <td class="name">Lamba Rajasekhar Yadav & Lamba Sirisha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">159</td>
+      <td class="tc">075</td>
+      <td class="name">A. Arun Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,000</td>
+      <td class="amt amt-due">₹3,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">137</td>
+      <td class="tc">076</td>
+      <td class="name">Kommidi Rishika Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">138</td>
+      <td class="tc">077</td>
+      <td class="name">Kommidi Rishika Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 11 - Plot 078 to 107
+        <span class="lane-meta">
+          45 properties &nbsp;|&nbsp;
+          Billed: ₹144,000 &nbsp;|&nbsp;
+          Paid: ₹57,000 &nbsp;|&nbsp;
+          Outstanding: ₹87,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">033</td>
+      <td class="tc">078</td>
+      <td class="name">Kattula Vishnu Jyothi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">164</td>
+      <td class="tc">079</td>
+      <td class="name">Sunitha Awasthi</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">117</td>
+      <td class="tc">080</td>
+      <td class="name">Kaku Ravi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">190</td>
+      <td class="tc">081</td>
+      <td class="name">Sudagani Sai Siva Rama Krishna & Suodgani Sanjana</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">216</td>
+      <td class="tc">081</td>
+      <td class="name">Regulapati Supriya</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,000</td>
+      <td class="amt amt-due">₹1,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">079</td>
+      <td class="tc">083</td>
+      <td class="name">Bommagani Shyam & Bommagani Sunitha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹2,000</td>
+      <td class="amt amt-due">₹2,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">017</td>
+      <td class="tc">088</td>
+      <td class="name">Parusa Tirupati Raj</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹2,000</td>
+      <td class="amt amt-due">₹2,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">166</td>
+      <td class="tc">089</td>
+      <td class="name">Vangala Lalitha & Vangala Venkata Narsimha Raju</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">096</td>
+      <td class="tc">091</td>
+      <td class="name">Puthuri Lakshmi Tulasi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹500</td>
+      <td class="amt amt-due">₹3,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">145</td>
+      <td class="tc">092</td>
+      <td class="name">Y. Bhaskar Reddy</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">211</td>
+      <td class="tc">092</td>
+      <td class="name">Mandapuram Vinay Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,500</td>
+      <td class="amt amt-due">₹500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">121</td>
+      <td class="tc">095</td>
+      <td class="name">A. M. Lakshmi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">122</td>
+      <td class="tc">096</td>
+      <td class="name">A. M. Lakshmi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">074</td>
+      <td class="tc">099</td>
+      <td class="name">Earva Padma</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,000</td>
+      <td class="amt amt-due">₹1,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">019</td>
+      <td class="tc">100</td>
+      <td class="name">Vijaya Lakshmi Kopparthi & Seetha Rama Rao Kopparthi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">001</td>
+      <td class="tc">101</td>
+      <td class="name">Anima Kundu</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">025</td>
+      <td class="tc">102</td>
+      <td class="name">V. Veera Venkata Ramana</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">034</td>
+      <td class="tc">103</td>
+      <td class="name">Ranjith Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">080</td>
+      <td class="tc">104</td>
+      <td class="name">Yasur Srisha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">105</td>
+      <td class="tc">106/P</td>
+      <td class="name">Katikala Anand Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">144</td>
+      <td class="tc">107/P</td>
+      <td class="name">Burra Premika & Burra Venkatesh</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹2,500</td>
+      <td class="amt amt-due">₹1,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">038</td>
+      <td class="tc">082/N/P</td>
+      <td class="name">Kanakatla Pandu Mudhiraj</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">039</td>
+      <td class="tc">082/S/P</td>
+      <td class="name">Parusa Tirupati Raj</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">029</td>
+      <td class="tc">084/N/P</td>
+      <td class="name">Madhasu Sri Laxmi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">042</td>
+      <td class="tc">084/S/P</td>
+      <td class="name">Nagaraja Sai Krishna Kopparthi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">059</td>
+      <td class="tc">085/N/P</td>
+      <td class="name">Bachu Narsimha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,000</td>
+      <td class="amt amt-due">₹1,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">015</td>
+      <td class="tc">085/S/P</td>
+      <td class="name">Niladri Banerjee</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">183</td>
+      <td class="tc">086/N/P</td>
+      <td class="name">Lachoria Dinesh Kumar & Lachoria Raj Kumar</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">139</td>
+      <td class="tc">086/S/P</td>
+      <td class="name">M S Prabhakar & M S Jhansi Lakshmi, M S Neha Priynaka</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">065</td>
+      <td class="tc">087/N/P</td>
+      <td class="name">Pampari Ravinder & Pampari Buchi Ramulu</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹500</td>
+      <td class="amt amt-due">₹3,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">066</td>
+      <td class="tc">087/S/P</td>
+      <td class="name">Pampari Buchi Ramulu & Pampari Ravinder</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">165</td>
+      <td class="tc">089/P/N</td>
+      <td class="name">Vangala Ram Mohan</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">146</td>
+      <td class="tc">094/S/P</td>
+      <td class="name">Pothamsetty Soma Sekhar</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">219</td>
+      <td class="tc">094/S/P</td>
+      <td class="name">Dondapati Govindamma & C. Chandrakala</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">123</td>
+      <td class="tc">097/N/P</td>
+      <td class="name">Kondu Vijaya Prakash</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,000</td>
+      <td class="amt amt-due">₹1,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">049</td>
+      <td class="tc">097/S/P</td>
+      <td class="name">Lakshmi Narayana Kondu</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">070</td>
+      <td class="tc">098/N/P</td>
+      <td class="name">Puvena Sree Ramulu</td>
+      <td class="amt">₹2,500</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹2,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">225</td>
+      <td class="tc">098/N/P</td>
+      <td class="name">Inthiyaz Khan Abdul</td>
+      <td class="amt">₹1,500</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹1,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">068</td>
+      <td class="tc">098/S/P</td>
+      <td class="name">Puvena Sree Ramulu</td>
+      <td class="amt">₹2,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹2,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">227</td>
+      <td class="tc">098/S/P</td>
+      <td class="name">Rampelli Bharat</td>
+      <td class="amt">₹2,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹2,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">083</td>
+      <td class="tc">105/N/P</td>
+      <td class="name">Pavan Kumar & Praveen Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,000</td>
+      <td class="amt amt-due">₹1,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">014</td>
+      <td class="tc">105/S/P</td>
+      <td class="name">Atanu Majumder</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">045</td>
+      <td class="tc">090 (005-B/NP 005-C/SP)</td>
+      <td class="name">Natakarani Subba Rao</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">044</td>
+      <td class="tc">090 (005-B/SP)</td>
+      <td class="name">Mandapuram Vinay Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,000</td>
+      <td class="amt amt-due">₹1,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">053</td>
+      <td class="tc">106/P 107/P</td>
+      <td class="name">Kethari Ramanjaneyulu</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 12 - Plot 108 to 133
+        <span class="lane-meta">
+          37 properties &nbsp;|&nbsp;
+          Billed: ₹104,000 &nbsp;|&nbsp;
+          Paid: ₹20,000 &nbsp;|&nbsp;
+          Outstanding: ₹84,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">062</td>
+      <td class="tc">108</td>
+      <td class="name">Gunda Raghudath & Gunda Naga Sruthi Nakshathrika</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">175</td>
+      <td class="tc">110</td>
+      <td class="name">Kollipara Prasanna</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">140</td>
+      <td class="tc">112</td>
+      <td class="name">V. Aruna Devi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">071</td>
+      <td class="tc">113</td>
+      <td class="name">Gundarpu Indira</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">037</td>
+      <td class="tc">116</td>
+      <td class="name">Earva Varalaxmi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">022</td>
+      <td class="tc">118</td>
+      <td class="name">Kondu Srilatha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,500</td>
+      <td class="amt amt-due">₹500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">125</td>
+      <td class="tc">119</td>
+      <td class="name">Sanjay Kudrimoti</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">120</td>
+      <td class="tc">120</td>
+      <td class="name">Kondamuri Sarvarayudu</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">213</td>
+      <td class="tc">121</td>
+      <td class="name">Temple-1</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">214</td>
+      <td class="tc">122</td>
+      <td class="name">Temple-2</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">020</td>
+      <td class="tc">123</td>
+      <td class="name">Puli Prithvi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">060</td>
+      <td class="tc">124</td>
+      <td class="name">K.V.S. Vara Prasad</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">217</td>
+      <td class="tc">124</td>
+      <td class="name">Itikela Rani</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">157</td>
+      <td class="tc">125</td>
+      <td class="name">Yerraboina Kalyan Krishna</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">218</td>
+      <td class="tc">132</td>
+      <td class="name">A. Varalakshmi</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">087</td>
+      <td class="tc">133</td>
+      <td class="name">Madamanchi Gangadhar & Ravi Satya Narayana</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">002</td>
+      <td class="tc">131/P</td>
+      <td class="name">Phani Kumar Chivukula</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">067</td>
+      <td class="tc">117/NP</td>
+      <td class="name">Sudagani Sai Siva Rama Krishna</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹500</td>
+      <td class="amt amt-due">₹3,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">063</td>
+      <td class="tc">109/N/P</td>
+      <td class="name">Pabbala Ramesh & Ch. Praveen</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">210</td>
+      <td class="tc">109/N/P</td>
+      <td class="name">Bommena Suresh Yadav & Bommena Sahithi Yadav</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">064</td>
+      <td class="tc">109/S/P</td>
+      <td class="name">Krishnaveni Chevula</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">026</td>
+      <td class="tc">114/S/P</td>
+      <td class="name">Vuppalapati Veera Venkata Ramana</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">028</td>
+      <td class="tc">115/N/P</td>
+      <td class="name">Pabbala Ramesh & Chindam Sattaiah</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">209</td>
+      <td class="tc">115/N/P</td>
+      <td class="name">Avusineni Venkata Ramana & Avisineni Aruna</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">048</td>
+      <td class="tc">117/S/P</td>
+      <td class="name">Sudagani Sanjana</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">069</td>
+      <td class="tc">117/S/P</td>
+      <td class="name">Puvena Sree Ramulu</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">072</td>
+      <td class="tc">126/N/P</td>
+      <td class="name">Alivala Janardan</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹500</td>
+      <td class="amt amt-due">₹3,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">073</td>
+      <td class="tc">126/S/P</td>
+      <td class="name">A. Anitha</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">161</td>
+      <td class="tc">127/N/P</td>
+      <td class="name">Uppala Omkar & Vangapally Bhanu Chander</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">043</td>
+      <td class="tc">127/S/P</td>
+      <td class="name">Pullannagari Narender Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">006</td>
+      <td class="tc">128/N/P</td>
+      <td class="name">Gummadidala Naveen & Gummadidala Bhavani</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹500</td>
+      <td class="amt amt-due">₹3,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">021</td>
+      <td class="tc">128/S/P</td>
+      <td class="name">Pedapudi Seshacharyulu</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">004</td>
+      <td class="tc">129/N/P</td>
+      <td class="name">Rallakathva Sashi Rekha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,000</td>
+      <td class="amt amt-due">₹3,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">003</td>
+      <td class="tc">129/S/P</td>
+      <td class="name">Sheri Naresh & Sheri Swapna</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,500</td>
+      <td class="amt amt-due">₹2,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">119</td>
+      <td class="tc">130/N/P</td>
+      <td class="name">Suthari Santosh Kumar</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">027</td>
+      <td class="tc">115/S/P 114/N/P</td>
+      <td class="name">Peddinti Deepak Bhargava & Parasaram Sai Monika</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">075</td>
+      <td class="tc">130/S/P 131/N/P</td>
+      <td class="name">Satyanarayana Chivukula</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹500</td>
+      <td class="amt amt-due">₹3,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 13 - Plot 134 to 157
+        <span class="lane-meta">
+          30 properties &nbsp;|&nbsp;
+          Billed: ₹96,000 &nbsp;|&nbsp;
+          Paid: ₹19,000 &nbsp;|&nbsp;
+          Outstanding: ₹77,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">202</td>
+      <td class="tc">136</td>
+      <td class="name">M. Sambaiah</td>
+      <td class="amt">₹3,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹3,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">224</td>
+      <td class="tc">136</td>
+      <td class="name">Shobhnam Vijaya Laxmi</td>
+      <td class="amt">₹1,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹1,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">018</td>
+      <td class="tc">137</td>
+      <td class="name">Potaraboina Rajasekhar & Potaraboina Lalitha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,000</td>
+      <td class="amt amt-due">₹3,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">154</td>
+      <td class="tc">138</td>
+      <td class="name">Bobbepalli V Revathi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹500</td>
+      <td class="amt amt-due">₹3,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">124</td>
+      <td class="tc">139</td>
+      <td class="name">Ulligadda Vijay Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,000</td>
+      <td class="amt amt-due">₹1,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">135</td>
+      <td class="tc">140</td>
+      <td class="name">Sudagani Shiva Rama Krishna & Thanda Sanjana</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">191</td>
+      <td class="tc">140</td>
+      <td class="name">Venkatesh Nadagana</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹3,500</td>
+      <td class="amt amt-due">₹500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">023</td>
+      <td class="tc">143</td>
+      <td class="name">Sumalatha Sattiraju</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">107</td>
+      <td class="tc">144</td>
+      <td class="name">Yamarthi Sudharani</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">031</td>
+      <td class="tc">145</td>
+      <td class="name">E. Vijaya Pal Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">196</td>
+      <td class="tc">147</td>
+      <td class="name">Rajashekar Yadav Lamba Yelliah</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹500</td>
+      <td class="amt amt-due">₹3,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">050</td>
+      <td class="tc">148</td>
+      <td class="name">Kotigari Sumalatha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">089</td>
+      <td class="tc">149</td>
+      <td class="name">Ashvini Pavan</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">090</td>
+      <td class="tc">150</td>
+      <td class="name">Ashvini Pavan</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">091</td>
+      <td class="tc">151</td>
+      <td class="name">Ashvini Pavan</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">040</td>
+      <td class="tc">152</td>
+      <td class="name">Junnuthula Karuna</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">054</td>
+      <td class="tc">153</td>
+      <td class="name">Late Gurram Narsimha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">102</td>
+      <td class="tc">154</td>
+      <td class="name">Garnepudi Sarath Chandra</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">160</td>
+      <td class="tc">155</td>
+      <td class="name">Garnepudi Siddhartha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">076</td>
+      <td class="tc">156</td>
+      <td class="name">Syed Ghouse Mohinuddin Shadab</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">016</td>
+      <td class="tc">157</td>
+      <td class="name">Macharla Srikanth</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">055</td>
+      <td class="tc">134/N/P</td>
+      <td class="name">M. Gopinath</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">047</td>
+      <td class="tc">134/S/P</td>
+      <td class="name">Kadavakollu Anish Chaitanya</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">056</td>
+      <td class="tc">134/S/P</td>
+      <td class="name">Tanneru Satyavathi</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">005</td>
+      <td class="tc">135/N/P</td>
+      <td class="name">Ajay Kumar Kinnera</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,500</td>
+      <td class="amt amt-due">₹2,500</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">081</td>
+      <td class="tc">135/S/P</td>
+      <td class="name">Yagateela Sailaja</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,000</td>
+      <td class="amt amt-due">₹3,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">095</td>
+      <td class="tc">141/S/P</td>
+      <td class="name">Hitesh Chandwani</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">093</td>
+      <td class="tc">142/N/P</td>
+      <td class="name">Mattam Venugopal Yadav</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">228</td>
+      <td class="tc">142/N/P</td>
+      <td class="name">Kethari Harika Rani & Kethari Adarsh</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">036</td>
+      <td class="tc">141/N/P 142/S/P</td>
+      <td class="name">Ravi V S S B Rao & Ravi Kumari</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 14 - Plot 158 to 174
+        <span class="lane-meta">
+          17 properties &nbsp;|&nbsp;
+          Billed: ₹52,000 &nbsp;|&nbsp;
+          Paid: ₹2,000 &nbsp;|&nbsp;
+          Outstanding: ₹50,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">172</td>
+      <td class="tc">160</td>
+      <td class="name">Ammannagari Srinivas</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">156</td>
+      <td class="tc">162</td>
+      <td class="name">Yamarthi Sudharani</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">103</td>
+      <td class="tc">163</td>
+      <td class="name">Tanneru Bhargavi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">141</td>
+      <td class="tc">164</td>
+      <td class="name">Racha Prem Kumar</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,000</td>
+      <td class="amt amt-due">₹3,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">142</td>
+      <td class="tc">165</td>
+      <td class="name">Racha Leelavathi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">₹1,000</td>
+      <td class="amt amt-due">₹3,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">200</td>
+      <td class="tc">166</td>
+      <td class="name">M. B. Anupama</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">181</td>
+      <td class="tc">167</td>
+      <td class="name">M. B. Aruna</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">201</td>
+      <td class="tc">168</td>
+      <td class="name">M. B. Appa</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">110</td>
+      <td class="tc">171</td>
+      <td class="name">Donthiri Prabhakar Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">155</td>
+      <td class="tc">172</td>
+      <td class="name">Narshimulu Vemula</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">195</td>
+      <td class="tc">173</td>
+      <td class="name">Tanneru Sathyavathi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">111</td>
+      <td class="tc">170/P</td>
+      <td class="name">Raavi Yadagiri Reddy</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">113</td>
+      <td class="tc">171/P</td>
+      <td class="name">Sirimilla Arun Kumar</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">222</td>
+      <td class="tc">161/NP</td>
+      <td class="name">Thota Venu Madhavi</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">094</td>
+      <td class="tc">158 159</td>
+      <td class="name">Suthari Vijaya Laxmi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">058</td>
+      <td class="tc">161/S/P</td>
+      <td class="name">Guduri Jyothi</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">112</td>
+      <td class="tc">171/P 170/P</td>
+      <td class="name">Sirimilla Arun Kumar</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 15 - Plot 175 to 178
+        <span class="lane-meta">
+          8 properties &nbsp;|&nbsp;
+          Billed: ₹24,000 &nbsp;|&nbsp;
+          Paid: — &nbsp;|&nbsp;
+          Outstanding: ₹24,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">046</td>
+      <td class="tc">177/E/P</td>
+      <td class="name">Husna Tabassum</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">148</td>
+      <td class="tc">177/E/P</td>
+      <td class="name">Ambati Saritha</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🧳 Exited</span></td>
+    </tr>
+    <tr>
+      <td class="tc">147</td>
+      <td class="tc">178/W/P</td>
+      <td class="name">Pothamsetti Bhagya Lakshmi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">152</td>
+      <td class="tc">177/A/E/P</td>
+      <td class="name">Syed Abbas Ali Razvi</td>
+      <td class="amt">₹2,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹2,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge other">🔄 Transferre</span></td>
+    </tr>
+    <tr>
+      <td class="tc">226</td>
+      <td class="tc">177/A/E/P</td>
+      <td class="name">Dundigalla Bala Krishna</td>
+      <td class="amt">₹2,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹2,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">153</td>
+      <td class="tc">178/A/W/P</td>
+      <td class="name">M. Rajani</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">151</td>
+      <td class="tc">177/A/W/P 178/A/E/P</td>
+      <td class="name">Syeda Maleka Fatima</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">149</td>
+      <td class="tc">177/W/P 178/E/P</td>
+      <td class="name">Pothamsetti Bhagya Lakshmi</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr class="lane-header">
+      <td colspan="8">🏘️ Lane 16 - Plot 179 to 182
+        <span class="lane-meta">
+          5 properties &nbsp;|&nbsp;
+          Billed: ₹12,000 &nbsp;|&nbsp;
+          Paid: — &nbsp;|&nbsp;
+          Outstanding: ₹12,000
+          
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <td class="tc">041</td>
+      <td class="tc">179/P</td>
+      <td class="name">M Suvarna</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">143</td>
+      <td class="tc">180/E/P</td>
+      <td class="name">Mekala Sai baba</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">203</td>
+      <td class="tc">179 Part</td>
+      <td class="name">Sri M. Shantha</td>
+      <td class="amt">₹4,000</td>
+      <td class="amt">—</td>
+      <td class="amt amt-due">₹4,000</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge active">Active</span></td>
+    </tr>
+    <tr>
+      <td class="tc">204</td>
+      <td class="tc">179PART 180PART</td>
+      <td class="name">Salendri Madhavi Alias Lakshmi</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+    <tr>
+      <td class="tc">205</td>
+      <td class="tc">179PART 180PART</td>
+      <td class="name">Gowli Vijaya Lakshmi & Salendri Madhavi</td>
+      <td class="amt">—</td>
+      <td class="amt">—</td>
+      <td class="amt ">—</td>
+      <td class="amt ">—</td>
+      <td class="tc"><span class="badge inactive">Inactive</span></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td class="tc" colspan="3">GRAND TOTAL &nbsp;—&nbsp; 228 Properties</td>
+      <td style="text-align:right">₹708,500</td>
+      <td style="text-align:right">₹150,001</td>
+      <td style="text-align:right; color:#ffcccc;">₹558,499</td>
+      <td style="text-align:right; color:#aaffcc;">₹0</td>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>
+
+<div class="report-footer">
+  SCRWA Vampuguda &nbsp;|&nbsp; scwa.vampuguda@gmail.com &nbsp;|&nbsp;
+  This report is generated from Society records and is for internal use only.
+</div>
+
+</body>
+</html>

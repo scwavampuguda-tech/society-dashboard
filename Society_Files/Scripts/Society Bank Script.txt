@@ -1,0 +1,232 @@
+// ===== App Script: strict message-level label check using Gmail Advanced Service =====
+// 1) Enable Gmail API advanced service (Gmail) in Apps Script -> Services
+// 2) Deploy as Web App (Execute as: Me, Who has access: Anyone or Anyone with link)
+
+const SHEET_ID = "1oXmvMIfQDm51KoHHtkhg8KgK1Qi5mwFYSBdrwir85CA";
+const LABEL_NAME = "HDFC/1250-Alerts";
+const DEBUG = true;
+const THREAD_SEARCH_LIMIT = 200;
+
+function doPost(e) {
+  const result = parseHDFCAlertsToBankDetails();
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  if (e && e.parameter && e.parameter.test == "1") {
+    const result = parseHDFCAlertsToBankDetails();
+    return ContentService
+      .createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  return ContentService
+    .createTextOutput(JSON.stringify({ ok:false, message: "To test, add ?test=1" }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function parseHDFCAlertsToBankDetails() {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    if (!ss) return { ok:false, message: "Spreadsheet not found: " + SHEET_ID };
+
+    const sheet = ss.getSheetByName("BankDetails");
+    if (!sheet) return { ok:false, message: "BankDetails sheet not found" };
+
+    // Get Gmail label ID for LABEL_NAME (via Gmail API) - cached per run
+    const labelId = _getGmailLabelIdByName(LABEL_NAME);
+    if (!labelId) {
+      return { ok:false, message: `Gmail label not found: ${LABEL_NAME}` };
+    }
+
+    // Search threads that contain unread messages labeled with LABEL_NAME
+    const query = `label:"${LABEL_NAME}" is:unread`;
+    const threads = GmailApp.search(query, 0, THREAD_SEARCH_LIMIT);
+
+    const existingRefs = new Set(sheet.getRange("C2:C").getValues().flat().filter(Boolean));
+
+    const stats = { threadsFound: threads.length, threadsProcessed: 0, messagesSeen: 0, imported: 0, skipped: 0, errors: [] };
+
+    threads.forEach(thread => {
+      try {
+        const messages = thread.getMessages();
+        // only unread messages inside the thread
+        const unread = messages.filter(m => m.isUnread());
+        if (unread.length === 0) return;
+        stats.threadsProcessed++;
+
+        unread.forEach(msg => {
+          try {
+            stats.messagesSeen++;
+
+            // ---- MESSAGE-LEVEL LABEL CHECK using Gmail API ----
+            const msgId = msg.getId(); // Apps Script message id (works with Gmail API)
+            let msgResource;
+            try {
+              // Use format:'metadata' to reduce payload
+              msgResource = Gmail.Users.Messages.get('me', msgId, { format: 'metadata' });
+            } catch (gErr) {
+              // fallback to full get if metadata fails
+              msgResource = Gmail.Users.Messages.get('me', msgId);
+            }
+            const labelIds = msgResource && msgResource.labelIds ? msgResource.labelIds : [];
+            if (labelIds.indexOf(labelId) === -1) {
+              // This particular message does NOT have the label -> skip
+              stats.skipped++;
+              return;
+            }
+            // ---------------------------------------------------
+
+            const body = msg.getPlainBody() || msg.getBody();
+            if (!body) { stats.skipped++; return; }
+
+            const cleanBody = body.replace(/\s+/g, " ").trim();
+            const isCredit = /successfully credited/i.test(cleanBody);
+            const isDebit = /(has been)?\s*debited/i.test(cleanBody) || /\bdebited\b/i.test(cleanBody);
+            if (!isCredit && !isDebit) { stats.skipped++; return; }
+
+            const refMatch = cleanBody.match(/reference number(?: is)?\s*(\d{6,})/i);
+            const refNo = refMatch ? refMatch[1] : "";
+            if (!refNo) { stats.skipped++; return; }
+            if (existingRefs.has(refNo)) { stats.skipped++; 
+              // optionally mark read to avoid repeated skips
+              try { msg.markRead(); } catch (e) {}
+              return;
+            }
+
+            const amtMatch = cleanBody.match(/Rs\.?\s?([\d,]+(?:\.\d{1,2})?)/i);
+            const amount = amtMatch ? parseFloat(amtMatch[1].replace(/,/g, "")) : 0;
+
+            const dateMatch = cleanBody.match(/on\s(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})/i) || cleanBody.match(/\b(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})\b/);
+            let txnDate = "";
+            if (dateMatch) {
+              const parts = dateMatch[1].split(/[-\/]/);
+              if (parts.length === 3) {
+                const [day, month, year] = parts;
+                txnDate = `${month}/${day}/${ (year.length === 2 ? "20" + year : year) }`;
+              }
+            }
+
+            let narration = "";
+            if (isCredit) {
+              const vpaMatch = cleanBody.match(/by\sVPA\s([\w.\-@]+)/i);
+              const nameMatch = cleanBody.match(/by\sVPA\s[\w.\-@]+\s([A-Z\s]+?)\son/i);
+              const vpa = vpaMatch ? vpaMatch[1] : "";
+              const name = nameMatch ? nameMatch[1].trim() : "";
+              narration = `${vpa}${name ? " " + name : ""}`.trim();
+            } else {
+              const vpaMatch = cleanBody.match(/to\sVPA\s([\w.\-@]+)/i);
+              const nameMatch = cleanBody.match(/to\sVPA\s[\w.\-@]+\s([A-Z\s]+?)\son/i);
+              const vpa = vpaMatch ? vpaMatch[1] : "";
+              const name = nameMatch ? nameMatch[1].trim() : "";
+              narration = `${vpa}${name ? " " + name : ""}`.trim();
+            }
+
+            // Balance and append
+            const lastRow = sheet.getLastRow();
+            const closingBalanceCell = sheet.getRange(lastRow, 7);
+            const closingBalance = Number(closingBalanceCell.getValue()) || 0;
+            const closingBalanceFormat = closingBalanceCell.getNumberFormat();
+
+            let withdrawalAmt = "";
+            let depositAmt = "";
+            let newBalance = closingBalance;
+
+            if (isCredit) {
+              depositAmt = amount;
+              newBalance += amount;
+            } else {
+              withdrawalAmt = amount;
+              newBalance -= amount;
+            }
+
+            sheet.appendRow([
+              txnDate,
+              narration,
+              refNo,
+              txnDate,
+              withdrawalAmt,
+              depositAmt,
+              newBalance,
+              ""
+            ]);
+
+            const newRow = sheet.getLastRow();
+            sheet.getRange(newRow, 5).setNumberFormat("₹#,##0.00");
+            sheet.getRange(newRow, 6).setNumberFormat("₹#,##0.00");
+            sheet.getRange(newRow, 7).setNumberFormat(closingBalanceFormat);
+
+            const formula = `=IFERROR(IF(AND(
+              ABS(SUM(FILTER(TransactionDetails!G:G, TransactionDetails!A:A=C${newRow}))) = ABS(
+                IF(FILTER(TransactionDetails!C:C, TransactionDetails!A:A=C${newRow})="💰Cash In",
+                  VALUE(SUBSTITUTE(F${newRow},"₹","")),
+                  VALUE(SUBSTITUTE(E${newRow},"₹",""))
+                )
+              ),
+              COUNTA(FILTER(TransactionDetails!E:E, TransactionDetails!A:A=C${newRow})) > 0,
+              COUNTA(FILTER(TransactionDetails!F:F, TransactionDetails!A:A=C${newRow})) > 0,
+              COUNTA(FILTER(TransactionDetails!G:G, TransactionDetails!A:A=C${newRow})) > 0,
+              IF(FILTER(TransactionDetails!C:C, TransactionDetails!A:A=C${newRow})="💰Cash In",
+                COUNTA(FILTER(TransactionDetails!H:H, TransactionDetails!A:A=C${newRow})) > 0,
+                TRUE
+              )
+            ), TRUE, FALSE), "")`;
+
+            sheet.getRange(newRow, 8).setFormula(formula);
+
+            // DEBUG logs
+            if (DEBUG) {
+              Logger.log(`---------------------------`);
+              Logger.log(`Type: ${isDebit ? "Debit" : "Credit"}`);
+              Logger.log(`Ref: ${refNo}`);
+              Logger.log(`Date: ${txnDate}`);
+              Logger.log(`Amount: ₹${amount}`);
+              Logger.log(`Narration: ${narration}`);
+              Logger.log(`New Balance: ₹${newBalance}`);
+              Logger.log(`Status: Marked as Read`);
+            }
+
+            // mark read and archive if thread empty
+            try {
+              msg.markRead();
+              if (!thread.getMessages().some(m => m.isUnread())) thread.moveToArchive();
+            } catch (errMark) {
+              Logger.log("Mark read/archive failed: " + (errMark.message || errMark));
+            }
+
+            existingRefs.add(refNo);
+            stats.imported++;
+
+          } catch (errMsg) {
+            stats.errors.push("Msg error: " + (errMsg.message || errMsg));
+            stats.skipped++;
+            if (DEBUG) Logger.log("Error processing message: " + errMsg);
+          }
+        });
+      } catch (errThread) {
+        stats.errors.push("Thread error: " + (errThread.message || errThread));
+        if (DEBUG) Logger.log("Thread processing error: " + errThread);
+      }
+    });
+
+    return { ok: true, stats: stats };
+  } catch (err) {
+    return { ok:false, message: String(err) };
+  }
+}
+
+// Helper: find Gmail label ID by name using Gmail API
+function _getGmailLabelIdByName(name) {
+  try {
+    const res = Gmail.Users.Labels.list('me');
+    if (!res || !res.labels) return "";
+    for (let i=0;i<res.labels.length;i++) {
+      if (res.labels[i].name === name) return res.labels[i].id;
+    }
+    return "";
+  } catch (e) {
+    Logger.log("Error fetching Gmail labels: " + (e.message || e));
+    return "";
+  }
+}

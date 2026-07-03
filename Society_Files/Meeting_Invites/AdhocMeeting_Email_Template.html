@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;padding:20px 10px;}
+.wrap{max-width:560px;margin:0 auto;background:white;border-radius:14px;overflow:hidden;
+    box-shadow:0 4px 24px rgba(0,0,0,.13);}
+.hdr{background:linear-gradient(135deg,#7b2d8b,#a94cb0,#c76dd0);
+    color:white;padding:28px 32px;text-align:center;}
+.hdr .logo{font-size:46px;margin-bottom:6px;}
+.hdr h1{font-size:19px;font-weight:900;margin-bottom:3px;}
+.hdr h2{font-size:11.5px;font-weight:400;opacity:.85;margin-bottom:10px;}
+.hdr-badge{display:inline-block;background:rgba(255,255,255,.2);
+    border:1px solid rgba(255,255,255,.4);border-radius:20px;
+    padding:5px 16px;font-size:11.5px;font-weight:700;}
+.notice-bar{background:#fff3cd;border-top:3px solid #f0ad4e;
+    border-bottom:3px solid #f0ad4e;padding:9px 20px;
+    text-align:center;font-size:12px;color:#7d5a00;font-weight:700;}
+.body{padding:24px 30px;}
+.greeting{font-size:15px;color:#1a1a1a;margin-bottom:14px;line-height:1.6;}
+.prop-tag{display:inline-block;background:#ede0ff;color:#5a1a6b;
+    border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;margin-left:5px;}
+.context-box{background:#f8f4ff;border-left:4px solid #7b2d8b;
+    border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:14px;
+    font-size:12.5px;color:#3d1a50;line-height:1.85;}
+.detail-card{background:linear-gradient(135deg,#f4ecff,#ede0ff);
+    border:2px solid #7b2d8b;border-radius:12px;padding:18px 22px;margin:14px 0;}
+.detail-card h3{font-size:14px;color:#5a1a6b;margin-bottom:12px;font-weight:900;}
+.row{display:flex;align-items:flex-start;margin-bottom:10px;}
+.row .ic{font-size:18px;margin-right:11px;min-width:26px;}
+.row .lbl{font-size:10px;color:#888;text-transform:uppercase;font-weight:700;}
+.row .val{font-size:13px;color:#222;font-weight:700;line-height:1.5;}
+.appeal{font-size:13px;color:#444;line-height:1.85;margin:12px 0;
+    background:#fafafa;border-radius:8px;padding:12px 14px;}
+hr{border:none;border-top:2px dashed #e0d0f0;margin:20px 0;}
+.tel-header{text-align:center;color:#7b2d8b;font-size:14px;font-weight:900;
+    margin-bottom:12px;padding:8px;background:#f8f4ff;border-radius:8px;}
+.tel-context{background:#f8f4ff;border-left:4px solid #a94cb0;
+    border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:14px;
+    font-size:13px;color:#3d1a50;line-height:2.0;}
+.tel-detail{background:linear-gradient(135deg,#f4ecff,#ede0ff);
+    border:2px solid #a94cb0;border-radius:10px;
+    padding:16px 20px;margin:12px 0;font-size:13px;color:#222;line-height:2.1;}
+.cta{display:block;text-align:center;
+    background:linear-gradient(135deg,#7b2d8b,#a94cb0);
+    color:white;font-weight:900;font-size:13.5px;padding:13px 20px;
+    border-radius:10px;text-decoration:none;margin:18px 0;letter-spacing:.3px;}
+.ics-note{background:#e8f8f0;border-left:4px solid #27ae60;border-radius:6px;
+    padding:10px 14px;font-size:11px;color:#1a6b3a;margin:12px 0;}
+.footer{background:#f7f9fc;padding:14px 30px;text-align:center;
+    font-size:10px;color:#888;border-top:1px solid #eee;line-height:2.0;}
+.footer a{color:#7b2d8b;text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div class="logo">🏘️</div>
+    <h1>📢 Adhoc Society Meeting Notice</h1>
+    <h2>Senior Citizens Residential Welfare Association (SCRWA)</h2>
+    <span class="hdr-badge">📅 Sunday · 14th June 2026 · 09:00 AM</span>
+  </div>
+  <div class="notice-bar">
+    ⚠️ Adhoc Meeting — Please make it convenient to attend
+  </div>
+
+  <div class="body">
+
+    <!-- ENGLISH -->
+    <p class="greeting">Dear <strong>{{NAME}}</strong><span class="prop-tag">🏠 {{HOUSE}}</span></p>
+
+    <div class="context-box">
+      In our last meeting, due to the <strong>MLA's inauguration</strong> at one place
+      and the <strong>Society Meeting</strong> at another, we could not do full justice
+      to the discussions, and members were scattered.<br><br>
+      To address this and to take up <strong>pressing issues</strong>, we are scheduling
+      an <strong>Adhoc Society Meeting</strong>:
+    </div>
+
+    <div class="detail-card">
+      <h3>📋 Meeting Details</h3>
+      <div class="row">
+        <span class="ic">🗓️</span>
+        <div><div class="lbl">Date</div>
+             <div class="val">Sunday, 14th June 2026</div></div>
+      </div>
+      <div class="row">
+        <span class="ic">⏰</span>
+        <div><div class="lbl">Time</div>
+             <div class="val">09:00 AM – 11:00 AM IST</div></div>
+      </div>
+      <div class="row">
+        <span class="ic">📍</span>
+        <div><div class="lbl">Venue</div>
+             <div class="val">Near Poleramma Temple,<br>Plot Nos. 121 &amp; 122, Vampuguda</div></div>
+      </div>
+      <div class="row">
+        <span class="ic">🏠</span>
+        <div><div class="lbl">Your Property / Lane</div>
+             <div class="val">{{HOUSE}} &nbsp;·&nbsp; {{LANE}}</div></div>
+      </div>
+    </div>
+
+    <div class="appeal">
+      👉 <strong>Kindly make it convenient to attend</strong> so that we can have a
+      focused discussion and take collective decisions.
+    </div>
+
+    <hr>
+
+    <!-- TELUGU -->
+    <div class="tel-header">తెలుగు వెర్షన్ 🙏</div>
+    <div class="tel-context">
+      గత మీటింగ్ లో <strong>ఎమ్మెల్యే శంకుస్థాపన</strong> ఒకచోట,
+      <strong>సొసైటీ మీటింగ్</strong> మరోచోట జరగడంతో చర్చలకు పూర్తి న్యాయం
+      జరగలేదు. సభ్యులు చెల్లాచెదురుగా ఉన్నారు.<br><br>
+      ఈ సమస్యను పరిష్కరించడానికి మరియు <strong>ముఖ్యమైన అంశాలను</strong>
+      చర్చించడానికి మేము ఒక <strong>అడ్హాక్ సొసైటీ మీటింగ్</strong> నిర్వహిస్తున్నాము:
+    </div>
+    <div class="tel-detail">
+      🗓️ <strong>తేదీ &amp; సమయం:</strong>
+         జూన్ 14, 2026 (ఆదివారం) ఉదయం <strong>9:00 గంటలకు</strong><br>
+      📍 <strong>స్థలం:</strong>
+         పోలేరమ్మ ఆలయం దగ్గర, ప్లాట్ నం. 121 &amp; 122
+    </div>
+    <p style="font-size:13px;color:#444;line-height:1.8;">
+      👉 దయచేసి హాజరై సమిష్టి చర్చల్లో పాల్గొనండి.
+    </p>
+
+    <a class="cta" href="mailto:scwa.vampuguda@gmail.com?subject=Attending - SCRWA Adhoc Meeting 14 June">
+      ✅ Confirm Attendance / హాజరు నిర్ధారించండి
+    </a>
+
+    <div class="ics-note">
+      📅 <strong>Calendar Invite attached</strong> — Open the .ics file to block your
+      Google / Outlook / Apple Calendar automatically.
+      Reminders: <strong>1 hour before</strong> &amp; <strong>15 minutes before</strong>.
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <strong>Senior Citizens Residential Welfare Association (SCRWA)</strong><br>
+    Vampuguda, Hyderabad · Regd. No. 2240/2006<br>
+    <a href="mailto:scwa.vampuguda@gmail.com">scwa.vampuguda@gmail.com</a> ·
+    UPI: seniorcitizensreside.82265756@hdfcbank<br>
+    సీనియర్ సిటిజన్స్ రెసిడెన్షియల్ వెల్ఫేర్ అసోసియేషన్ (SCRWA)
+  </div>
+</div>
+</body>
+</html>

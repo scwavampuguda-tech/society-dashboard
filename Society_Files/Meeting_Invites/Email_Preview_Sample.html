@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8">
+<title>Email Preview — SCRWA Meeting Invite</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#e8ecf0; font-family:'Segoe UI',Arial,sans-serif; padding:0; }
+
+/* Top preview bar */
+.preview-bar {
+    background: #1e3c72; color: white;
+    padding: 12px 24px; font-size: 12px;
+    display: flex; align-items: center; gap: 16px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.preview-bar strong { font-size: 14px; }
+.preview-bar .info { opacity: .8; font-size: 11px; }
+.badge-pill {
+    background: #27ae60; border-radius: 20px;
+    padding: 4px 12px; font-size: 11px; font-weight: 700;
+}
+.badge-pill.orange { background: #e67e22; }
+
+/* Gmail-style chrome */
+.gmail-chrome {
+    max-width: 700px; margin: 20px auto;
+    background: white; border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15); overflow: hidden;
+}
+.gmail-header {
+    background: #f6f8fc; border-bottom: 1px solid #e0e0e0;
+    padding: 12px 20px;
+}
+.gmail-header .subject {
+    font-size: 16px; font-weight: 700; color: #202124; margin-bottom: 8px;
+}
+.gmail-header .meta {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+}
+.gmail-header .from {
+    font-size: 12px; color: #444;
+}
+.gmail-header .to-badge {
+    background: #e8f0fe; color: #1a73e8; border-radius: 4px;
+    padding: 2px 8px; font-size: 11px; font-weight: 600;
+}
+.gmail-header .attachment-badge {
+    background: #f1f3f4; border-radius: 4px;
+    padding: 2px 8px; font-size: 11px; color: #555;
+    display: flex; align-items: center; gap: 4px;
+}
+.gmail-body { padding: 20px; }
+
+/* Member switcher */
+.switcher {
+    max-width: 700px; margin: 0 auto 16px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 0 4px;
+}
+.switcher label { font-size: 12px; color: #555; font-weight: 600; }
+.switcher select {
+    flex: 1; padding: 7px 12px; border-radius: 8px;
+    border: 2px solid #2a5298; font-size: 12px; color: #1e3c72;
+    font-weight: 600; background: white; cursor: pointer;
+}
+.switcher select:focus { outline: none; border-color: #1e3c72; }
+.counter {
+    font-size: 11px; color: #888; white-space: nowrap;
+}
+
+/* The actual email */
+.email-wrap { max-width: 580px; margin: 0 auto; background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,.12); }
+.email-header { background: linear-gradient(135deg,#1e3c72,#2a5298); color: white; padding: 30px 35px; text-align: center; }
+.email-header h1 { font-size: 22px; margin: 0 0 6px; font-weight: 900; }
+.email-header h2 { font-size: 13px; font-weight: 400; opacity: .85; margin: 0; }
+.header-badge { display: inline-block; background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.4); border-radius: 20px; padding: 5px 14px; font-size: 11px; margin-top: 10px; }
+.email-body { padding: 28px 35px; }
+.greeting { font-size: 15px; color: #1a1a1a; margin-bottom: 16px; }
+.invite-card { background: linear-gradient(135deg,#f0f6ff,#e8f0ff); border: 2px solid #2a5298; border-radius: 12px; padding: 20px 24px; margin: 16px 0; }
+.invite-card h3 { font-size: 16px; color: #1e3c72; margin: 0 0 14px; font-weight: 900; }
+.row { display: flex; align-items: flex-start; margin-bottom: 10px; }
+.row .icon { font-size: 18px; margin-right: 12px; min-width: 24px; }
+.row .lbl { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 700; }
+.row .val { font-size: 13px; color: #222; font-weight: 600; }
+.cal-btn { display: block; width: 100%; text-align: center; background: linear-gradient(135deg,#1e3c72,#2a5298); color: white; font-weight: 800; font-size: 14px; padding: 14px 20px; border-radius: 10px; text-decoration: none; margin: 20px 0; letter-spacing: .3px; cursor: pointer; }
+.info-box { background: #fff8e7; border-left: 4px solid #f39c12; border-radius: 6px; padding: 12px 16px; font-size: 11px; color: #7d5a00; margin: 14px 0; }
+.email-footer { background: #f7f9fc; padding: 16px 35px; text-align: center; font-size: 10px; color: #888; border-top: 1px solid #eee; }
+.email-footer a { color: #2a5298; text-decoration: none; }
+
+/* ICS preview card */
+.ics-card {
+    max-width: 700px; margin: 16px auto;
+    background: white; border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.1);
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 14px;
+    border-left: 5px solid #2a5298;
+}
+.ics-icon { font-size: 32px; }
+.ics-info { flex: 1; }
+.ics-info strong { font-size: 13px; color: #1e3c72; }
+.ics-info p { font-size: 11px; color: #777; margin-top: 3px; }
+.ics-open { background: #2a5298; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 700; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- ── Preview bar ─────────────────────────────────────────────────── -->
+<div class="preview-bar">
+    <div>
+        <strong>📧 Email Preview — SCRWA Meeting Invite</strong>
+        <div class="info">Sunday, 14 June 2026 · 10:00 AM IST · Community Hall, Vampuguda</div>
+    </div>
+    <span class="badge-pill">81 Recipients</span>
+    <span class="badge-pill orange">Live Data ✓</span>
+</div>
+
+<!-- ── Member switcher ─────────────────────────────────────────────── -->
+<div style="max-width:700px;margin:20px auto 0;padding:0 4px;">
+    <div class="switcher">
+        <label>👤 Preview as member:</label>
+        <select id="memberSelect" onchange="switchMember()">
+            <!-- populated by JS -->
+        </select>
+        <span class="counter" id="counter"></span>
+    </div>
+</div>
+
+<!-- ── Gmail chrome ────────────────────────────────────────────────── -->
+<div class="gmail-chrome">
+    <div class="gmail-header">
+        <div class="subject">📅 SCRWA Meeting Tomorrow – 14 June 2026, 10AM | Calendar Invite Attached</div>
+        <div class="meta">
+            <span class="from">From: <strong>SCRWA Secretary</strong> &lt;scwa.vampuguda@gmail.com&gt;</span>
+            <span class="to-badge">To: <span id="toEmail">—</span></span>
+            <span class="attachment-badge">📎 SCRWA_Meeting_14Jun2026.ics</span>
+        </div>
+    </div>
+    <div class="gmail-body">
+
+        <!-- Email body -->
+        <div class="email-wrap">
+            <div class="email-header">
+                <h1>🏘️ SCRWA General Body Meeting</h1>
+                <h2>Senior Citizens Residential Welfare Association</h2>
+                <span class="header-badge">📅 Sunday, 14 June 2026 · 10:00 AM</span>
+            </div>
+            <div class="email-body">
+                <p class="greeting">Dear <strong id="memberName">—</strong>,</p>
+                <p style="font-size:13px;color:#444;line-height:1.7;">
+                    You are cordially invited to the <strong>SCRWA General Body Meeting</strong>
+                    scheduled for tomorrow. Your presence is important to discuss society matters
+                    and future plans.
+                </p>
+                <div class="invite-card">
+                    <h3>📋 Meeting Details</h3>
+                    <div class="row">
+                        <span class="icon">📅</span>
+                        <div><div class="lbl">Date</div><div class="val">Sunday, 14 June 2026</div></div>
+                    </div>
+                    <div class="row">
+                        <span class="icon">⏰</span>
+                        <div><div class="lbl">Time</div><div class="val">10:00 AM – 12:00 PM IST</div></div>
+                    </div>
+                    <div class="row">
+                        <span class="icon">📍</span>
+                        <div><div class="lbl">Venue</div><div class="val">Community Hall, Vampuguda, Hyderabad</div></div>
+                    </div>
+                    <div class="row">
+                        <span class="icon">🏠</span>
+                        <div>
+                            <div class="lbl">Your Property</div>
+                            <div class="val"><span id="memberHouse">—</span> · <span id="memberLane">—</span></div>
+                        </div>
+                    </div>
+                </div>
+                <a class="cal-btn" href="#">✅ Confirm Attendance</a>
+                <div class="info-box">
+                    📎 <strong>Calendar Invite:</strong> A .ics calendar file is attached to this email.
+                    Open it to automatically block your Google / Outlook calendar for the meeting.
+                    Reminders set: <strong>1 hour before</strong> &amp; <strong>1 day before</strong>.
+                </div>
+                <p style="font-size:12px;color:#555;line-height:1.8;">
+                    <strong>Note:</strong> Agenda details will be shared at the meeting.
+                    For queries, reply to this email or call the Secretary.
+                </p>
+            </div>
+            <div class="email-footer">
+                Senior Citizens Residential Welfare Association (SCRWA) · Vampuguda, Hyderabad<br>
+                Regd. No. 2240/2006 ·
+                <a href="mailto:scwa.vampuguda@gmail.com">scwa.vampuguda@gmail.com</a><br>
+                UPI: seniorcitizensreside.82265756@hdfcbank
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ── ICS attachment preview ──────────────────────────────────────── -->
+<div class="ics-card">
+    <div class="ics-icon">📅</div>
+    <div class="ics-info">
+        <strong>SCRWA_Meeting_14Jun2026.ics</strong>
+        <p>Calendar invite · Opens in Google Calendar / Outlook / Apple Calendar<br>
+           Auto-sets reminder 1 hour before &amp; 1 day before · Duration: 2 hours</p>
+    </div>
+    <button class="ics-open">Open .ics ↗</button>
+</div>
+
+<div style="max-width:700px;margin:16px auto 30px;padding:0 4px;">
+    <div style="background:#e8f8f0;border-radius:8px;padding:12px 16px;font-size:11px;color:#27ae60;font-weight:600;display:flex;gap:8px;align-items:center;">
+        ✅ <span>All personalisation fields confirmed — {{NAME}}, {{HOUSE}}, {{LANE}} will be replaced per recipient before sending.</span>
+    </div>
+</div>
+
+<script>
+// Member data from live CSV
+const members = [
+  {pid:"001",name:"Anima Kundu",email:"parthok@gmail.com",house:"Plot 078",lane:"Lane 11 - Plot 078 to 107"},
+  {pid:"101",name:"Bonthakarla Hemanth Kumar",email:"b.hemanthkumar1@gmail.com",house:"101",lane:"Lane 11"},
+  {pid:"105",name:"Katikala Anand Kumar",email:"anandmudhiraj5273@gmail.com",house:"105",lane:"Lane 12"},
+  {pid:"108",name:"Virula Karuna Sagar",email:"virulasagar2006@gmail.com",house:"108",lane:"Lane 12"},
+  {pid:"109",name:"K. Adithya Viswanath",email:"adithya.kethari@gmail.com",house:"109",lane:"Lane 12"},
+  {pid:"111",name:"Raavi Yadagiri Reddy",email:"yadagirireddyravi@gmail.com",house:"111",lane:"Lane 12"},
+  {pid:"114",name:"Suthari Pavan Kumar",email:"sutharipavank@gmail.com",house:"114",lane:"Lane 12"},
+  {pid:"120",name:"Kondamuri Sarvarayudu",email:"itzmenyna@gmail.com",house:"120",lane:"Lane 13"},
+  {pid:"121",name:"A. M. Lakshmi",email:"mmappani@gmail.com",house:"121",lane:"Lane 13"},
+];
+
+// Populate dropdown
+const sel = document.getElementById('memberSelect');
+members.forEach((m, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${m.pid} — ${m.name} (${m.email})`;
+    sel.appendChild(opt);
+});
+
+function switchMember() {
+    const m = members[sel.value];
+    document.getElementById('memberName').textContent  = m.name;
+    document.getElementById('memberHouse').textContent = m.house;
+    document.getElementById('memberLane').textContent  = m.lane;
+    document.getElementById('toEmail').textContent     = m.email;
+    document.getElementById('counter').textContent     = `Showing member ${parseInt(sel.value)+1} of ${members.length} (81 total in CSV)`;
+}
+
+// Init
+switchMember();
+</script>
+</body>
+</html>

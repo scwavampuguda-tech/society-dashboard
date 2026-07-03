@@ -1,0 +1,75 @@
+﻿pid,to_name,email,mobile,house,lane,status,recipient_type,source
+001,Partho Kundu,parthok@gmail.com,+919246308480,101.0,Lane 11 - Plot 078 to 107,✅ Active,Proxy (Son),ProxyDetails
+002,Phani Kumar Chivukula,phanikumar.chivukula@gmail.com,+919885352243,131/P,Lane 12 - Plot 108 to 133,✅ Active,Owner,OwnerDetails
+003,Sheri Naresh,nareshsheri038@gmail.com,+919652241318,129/S/P,Lane 12 - Plot 108 to 133,✅ Active,Owner,OwnerDetails
+004,Sandeep R Reddy,sandeeprallakatva@gmail.com,+918919251390,129/N/P,Lane 12 - Plot 108 to 133,✅ Active,Proxy (Son),ProxyDetails
+005,Ajay Kumar Kinnera,gilly.aj143@gmail.com,+919912607143,135/N/P,Lane 13 - Plot 134 to 157,✅ Active,Owner,OwnerDetails
+006,Gummadidala Naveen,venusnaveen3@gmail.com,+918125882194,128/N/P,Lane 12 - Plot 108 to 133,✅ Active,Owner,OwnerDetails
+007,Lamba Rajasekhar Yadav,lambarajasheker@gmail.com,+918147777499,067,Lane 09 - Plot 059 to 070,✅ Active,Owner,OwnerDetails
+009,Dhanagiri Swetha Reddy,swetha0518@gmail.com,+917671825563,022,Lane 04 - Plot 020 to 025,✅ Active,Owner,OwnerDetails
+013,Bhogra Karthik,bhograkarthik@gmail.com,+919160579927,007/W/P,Lane 02 - Plot 004 to 013,✅ Active,Owner,OwnerDetails
+014,Atanu Majumder,atanu.majder@gmail.com,+918179464907,105/S/P,Lane 11 - Plot 078 to 107,✅ Active,Owner,OwnerDetails
+016,Macharla Srikanth,macharlasrikanth12@gmail.com,+919392182972,157.0,Lane 13 - Plot 134 to 157,✅ Active,Owner,OwnerDetails
+017,Parusa Tirupati Raj,tirupatiraj1971@gmail.com,+919652446496,088,Lane 11 - Plot 078 to 107,✅ Active,Owner,OwnerDetails
+018,Potaraboina Rajasekhar,rajashekar1896@gmail.com,+918885370781,137,Lane 13 - Plot 134 to 157,✅ Active,Owner,OwnerDetails
+019,Vijaya Lakshmi Kopparthi,sai755@gmail.com,,100.0,Lane 11 - Plot 078 to 107,✅ Active,Owner,OwnerDetails
+020,Puli Prithvi,prithvi2595@gmail.com,+919441476225,123.0,Lane 12 - Plot 108 to 133,✅ Active,Owner,OwnerDetails
+022,Kondu Srilatha,lathas478@gmail.com,+917093322575,118,Lane 12 - Plot 108 to 133,✅ Active,Owner,OwnerDetails
+023,Prashant Sattiraju,srasprashanth@gmail.com,+919963123459,143.0,Lane 13 - Plot 134 to 157,✅ Active,Proxy (Husband),ProxyDetails
+024,Gopal Krishna Prasad,krishnagopal6925@gmail.com,919885998018,055,Lane 08 - Plot 050 to 058,✅ Active,Proxy (Father In Law),ProxyDetails
+027,Peddinti Deepak Bhargava,deepakbhargav06@gmail.com,+919052971793,115/S/P 114/N/P,Lane 12 - Plot 108 to 133,✅ Active,Owner,OwnerDetails
+029,Bandi Laxman,laxmanbandi5@gmail.com,+919246565727,084/N/P,Lane 11 - Plot 078 to 107,✅ Active,Proxy (),ProxyDetails
+030,Gudapati Madhu Kumar,gudapatisurekhamadhu@gmail.com,+919866736386,062,Lane 09 - Plot 059 to 070,✅ Active,Owner,OwnerDetails
+031,E. Vijaya Pal Reddy,vijaya.reddy123r@gmail.com,+919398807529,145,Lane 13 - Plot 134 to 157,✅ Active,Owner,OwnerDetails
+032,Ponnam Bhikshapathi Goud,vijaydevarajuponnam@gmail.com,+919989143579,051,Lane 08 - Plot 050 to 058,✅ Active,Owner,OwnerDetails
+033,Kaluvala Anandkumar,anand0474@gmail.com,+919177304306,078,Lane 11 - Plot 078 to 107,✅ Active,Proxy (Husband),ProxyDetails
+035,Darapolla Ramulu,darapolaramulu473@gmail.com,+919849413124,010,Lane 02 - Plot 004 to 013,✅ Active,Owner,OwnerDetails
+036,Ravi V S S B Rao,ravirao31183@gmail.com,+917416352943,141/N/P 142/S/P,Lane 13 - Plot 134 to 157,✅ Active,Owner,OwnerDetails
+040,Junnuthula Karuna,jkaruna677@gmail.com,+919247652145,152,Lane 13 - Plot 134 to 157,✅ Active,Owner,OwnerDetails
+041,Sriramulu Mosangi,mosangisriramulu@gmail.com,+919381312908,179/P,Lane 16 - Plot 179 to 182,✅ Active,Proxy (Husband),ProxyDetails
+044,Mandapuram Vinay Reddy,vinayreddy360@gmail.com,+919989036133,090 (005-B/SP),Lane 11 - Plot 078 to 107,✅ Active,Owner,OwnerDetails
+049,Lakshmi Narayana Kondu,lakshmi.kondu@gmail.com,+919849886188,097/S/P,Lane 11 - Plot 078 to 107,✅ Active,Owner,OwnerDetails
+051,Virupakshi Balusu,veeru.15081978@gmail.com,+919449661645,050/P,Lane 08 - Plot 050 to 058,✅ Active,Owner,OwnerDetails
+053,Kethari Ramanjaneyulu,cherryno786@gmail.com,+917989310847,106/P 107/P,Lane 11 - Plot 078 to 107,✅ Active,Owner,OwnerDetails
+054,Gurram Srikanth,gurramsrikanth179@gmail.com,+918187088006,153,Lane 13 - Plot 134 to 157,✅ Active,Proxy (Son),ProxyDetails
+056,Krishna T,krishnatanneru1966@gmail.com,+919866032923,134/S/P,Lane 13 - Plot 134 to 157,🧳 Exited,Proxy (Husband),ProxyDetails
+059,Bachu Suresh,kartdeepu@gmail.com,+919848891790,085/N/P,Lane 11 - Plot 078 to 107,✅ Active,Proxy (Son),ProxyDetails
+061,Ashish Singh Thakur,ashish1807@gmail.com,+919885851598,013/A 013/B,Lane 02 - Plot 004 to 013,✅ Active,Proxy (Husband),ProxyDetails
+063,Pabbala Ramesh,rameshpabbala15@gmail.com,+919949342527,109/N/P,Lane 12 - Plot 108 to 133,🧳 Exited,Owner,OwnerDetails
+066,Pampari Buchi Ramulu,pampariramulu6@gmail.com,+918639825957,087/S/P,Lane 11 - Plot 078 to 107,✅ Active,Owner,OwnerDetails
+067,Sudagani Sai Siva Rama Krishna,saishivaramakrishna@gmail.com,+919032132130,117/NP,Lane 12 - Plot 108 to 133,✅ Active,Owner,OwnerDetails
+071,Ramakrishna Yadav,lamba.ramakrishna@gmail.com,+918147777499,113.0,Lane 12 - Plot 108 to 133,✅ Active,Proxy (),ProxyDetails
+075,Satyanarayana Chivukula,koushik.chivukula@gmail.com,+916300452365,130/S/P 131/N/P,Lane 12 - Plot 108 to 133,✅ Active,Owner,OwnerDetails
+081,Ranga Prasad,rangaprasadlic@gmail.com,+919908816041,135/S/P,Lane 13 - Plot 134 to 157,✅ Active,Proxy (),ProxyDetails
+085,Nageshwar Thota,thotanagesh984@gmail.com,+919849196849,015/W/P 016/E/P,Lane 03 - Plot 014 to 019 and Plot 041 to 047,✅ Active,Proxy (),ProxyDetails
+088,Bodigey Krishna,bodegeykrishna@gmail.com,+919618229280,017/E/P,Lane 03 - Plot 014 to 019 and Plot 041 to 047,✅ Active,Owner,OwnerDetails
+094,Laxmi Narayan,sutharipavank@gmail.com,+919963172959,158 159,Lane 14 - Plot 158 to 174,✅ Active,Proxy (Husband),ProxyDetails
+097,Kurapati Krishna,kdanny.eclat@gmail.com,+919246346379,073,Lane 10 - Plot 071 to 077,✅ Active,Proxy (),ProxyDetails
+098,T. Kishore Kumar,kishore.1462@gmail.com,+919622248129,011/N/P 011/S/P 012/N/P,Lane 02 - Plot 004 to 013,✅ Active,Owner,OwnerDetails
+101,Bonthakarla Hemanth Kumar,b.hemanthkumar1@gmail.com,+919392231288,007/E/P,Lane 02 - Plot 004 to 013,✅ Active,Owner,OwnerDetails
+105,Katikala Anand Kumar,anandmudhiraj5273@gmail.com,+918317516546,106/P,Lane 11 - Plot 078 to 107,✅ Active,Owner,OwnerDetails
+108,Virula Karuna Sagar,virulasagar2006@gmail.com,+919985457646,012/S/P,Lane 02 - Plot 004 to 013,✅ Active,Owner,OwnerDetails
+109,K. Adithya Viswanath,adithya.kethari@gmail.com,+919160616854,010/1,Lane 02 - Plot 004 to 013,✅ Active,Owner,OwnerDetails
+111,Raavi Yadagiri Reddy,yadagirireddyravi@gmail.com,+919440097850,170/P,Lane 14 - Plot 158 to 174,✅ Active,Owner,OwnerDetails
+118,Vamshi Krishna Reddy,reddy66663@gmail.com,+918297059969,001,Lane 01 - Plot 001 to 003,✅ Active,Proxy (),ProxyDetails
+120,Kondamuri Sarvarayudu,itzmenyna@gmail.com,919494423554,120,Lane 12 - Plot 108 to 133,✅ Active,Owner,OwnerDetails
+124,Ulligadda Vijay Kumar,uvijayk1969@gmail.com,+919844890017,139,Lane 13 - Plot 134 to 157,✅ Active,Owner,OwnerDetails
+125,Sandeep Kudrimoti,sanjaykumar1972@gmail.com,+12036505849,119,Lane 12 - Plot 108 to 133,✅ Active,Proxy (),ProxyDetails
+126,Gandam Narasimha Rao,nsraog@gmail.com,+919440572327,041,Lane 03 - Plot 014 to 019 and Plot 041 to 047,✅ Active,Owner,OwnerDetails
+129,A. Jyothi,gnaneshwar6210@gmail.com,,069,Lane 09 - Plot 059 to 070,✅ Active,Owner,OwnerDetails
+133,Sangam Yadagiri,giri9sangem@gmail.com,+917032708770,056,Lane 08 - Plot 050 to 058,✅ Active,Owner,OwnerDetails
+141,Racha Prem Kumar,rprem1982@gmail.com,+919866212614,164,Lane 14 - Plot 158 to 174,✅ Active,Owner,OwnerDetails
+144,Burra Premika,venkateshgoudburra@gmail.com,+447770514033,107/P,Lane 11 - Plot 078 to 107,✅ Active,Owner,OwnerDetails
+144,Burra Premika,premikakatta1@gmail.com,+917286944257,107/P,Lane 11 - Plot 078 to 107,✅ Active,Proxy (Wife),ProxyDetails
+150,Anantha Saibaba,bilsaibaba@gmail.com,+919885357701,066,Lane 09 - Plot 059 to 070,✅ Active,Proxy (Husband),ProxyDetails
+152,Syed Abbas Ali Razvi,abbasrazvi04@gmail.com,+919133995555,177/A/E/P,Lane 15 - Plot 175 to 178,🔄 Transferred,Owner,OwnerDetails
+154,Bobbepalli V Revathi,revathi60695@gmail.com,+919000567737,138.0,Lane 13 - Plot 134 to 157,✅ Active,Owner,OwnerDetails
+159,A. Arun Kumar,arunkumar.anantha@gmail.com,+919700224433,075,Lane 10 - Plot 071 to 077,✅ Active,Owner,OwnerDetails
+162,Mahesh Rapole,mahesh.rapole97@gmail.com,+919246539324,057,Lane 08 - Plot 050 to 058,✅ Active,Proxy (),ProxyDetails
+170,Sardar Ekvinder Singh,ekvinder@gmail.com,+919441274085,031,Lane 05 - Plot 027 to 031,✅ Active,Owner,OwnerDetails
+170,Vijay Veer Singh,ekvinder@googlemail.com,+919989396846,031,Lane 05 - Plot 027 to 031,✅ Active,Proxy (Son),ProxyDetails
+171,D. Jaya Lakshmi,dvramanareddy51@gmail.com,+919440471260,008,Lane 02 - Plot 004 to 013,✅ Active,Owner,OwnerDetails
+198,Tiruchirapally Hemanth Kumar,hemanth.kumar291@gmail.com,+919959807846,065/E/P,Lane 09 - Plot 059 to 070,✅ Active,Owner,OwnerDetails
+199,Kurakula Raju,raju793k@gmail.com,+918095701585,065/W/P,Lane 09 - Plot 059 to 070,✅ Active,Owner,OwnerDetails
+210,Bommena Suresh Yadav,yadavs786@gmail.com,+919849021462,109/N/P,Lane 12 - Plot 108 to 133,✅ Active,Owner,OwnerDetails
+221,Thotakura Vijaya Sekhar,vsthota55@gmail.com,+919849061460,037,Lane 06 - Plot 032 to 040,✅ Active,Owner,OwnerDetails

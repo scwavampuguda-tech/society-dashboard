@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;}
+.wrap{max-width:580px;margin:30px auto;background:white;border-radius:14px;overflow:hidden;
+    box-shadow:0 4px 20px rgba(0,0,0,.12);}
+.header{background:linear-gradient(135deg,#1e3c72,#2a5298);color:white;padding:30px 35px;text-align:center;}
+.header h1{font-size:22px;margin:0 0 6px;font-weight:900;}
+.header h2{font-size:13px;font-weight:400;opacity:.85;margin:0;}
+.badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);
+    border-radius:20px;padding:5px 14px;font-size:11px;margin-top:10px;}
+.body{padding:28px 35px;}
+.greeting{font-size:15px;color:#1a1a1a;margin-bottom:16px;}
+.invite-card{background:linear-gradient(135deg,#f0f6ff,#e8f0ff);border:2px solid #2a5298;
+    border-radius:12px;padding:20px 24px;margin:16px 0;}
+.invite-card h3{font-size:16px;color:#1e3c72;margin:0 0 14px;font-weight:900;}
+.row{display:flex;align-items:flex-start;margin-bottom:10px;}
+.row .icon{font-size:18px;margin-right:12px;min-width:24px;}
+.row .lbl{font-size:10px;color:#888;text-transform:uppercase;font-weight:700;}
+.row .val{font-size:13px;color:#222;font-weight:600;}
+.cal-btn{display:block;width:100%;text-align:center;background:linear-gradient(135deg,#1e3c72,#2a5298);
+    color:white;font-weight:800;font-size:14px;padding:14px 20px;border-radius:10px;
+    text-decoration:none;margin:20px 0;letter-spacing:.3px;}
+.info{background:#fff8e7;border-left:4px solid #f39c12;border-radius:6px;padding:12px 16px;
+    font-size:11px;color:#7d5a00;margin:14px 0;}
+.footer{background:#f7f9fc;padding:16px 35px;text-align:center;font-size:10px;color:#888;
+    border-top:1px solid #eee;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>🏘️ SCRWA General Body Meeting</h1>
+    <h2>Senior Citizens Residential Welfare Association</h2>
+    <span class="badge">📅 Sunday, 14 June 2026 · 10:00 AM</span>
+  </div>
+  <div class="body">
+    <p class="greeting">Dear <strong>{{NAME}}</strong>,</p>
+    <p style="font-size:13px;color:#444;line-height:1.7;">
+      You are cordially invited to the <strong>SCRWA General Body Meeting</strong> scheduled for tomorrow.
+      Your presence is important to discuss society matters and future plans.
+    </p>
+
+    <div class="invite-card">
+      <h3>📋 Meeting Details</h3>
+      <div class="row"><span class="icon">📅</span><div><div class="lbl">Date</div>
+          <div class="val">Sunday, 14 June 2026</div></div></div>
+      <div class="row"><span class="icon">⏰</span><div><div class="lbl">Time</div>
+          <div class="val">10:00 AM – 12:00 PM IST</div></div></div>
+      <div class="row"><span class="icon">📍</span><div><div class="lbl">Venue</div>
+          <div class="val">Community Hall, Vampuguda, Hyderabad</div></div></div>
+      <div class="row"><span class="icon">🏠</span><div><div class="lbl">Your Property</div>
+          <div class="val">{{HOUSE}} · {{LANE}}</div></div></div>
+    </div>
+
+    <a href="mailto:scwa.vampuguda@gmail.com?subject=RSVP - SCRWA Meeting 14 June" class="cal-btn">
+      ✅ Confirm Attendance
+    </a>
+
+    <div class="info">
+      📎 <strong>Calendar Invite:</strong> A .ics calendar file is attached to this email.
+      Open it to automatically block your Google / Outlook calendar for the meeting.
+    </div>
+
+    <p style="font-size:12px;color:#555;line-height:1.8;">
+      <strong>Note:</strong> The calendar invite will set a reminder <strong>1 hour before</strong>
+      and <strong>1 day before</strong> the meeting. Agenda details will be shared at the meeting.
+    </p>
+  </div>
+  <div class="footer">
+    Senior Citizens Residential Welfare Association (SCRWA) · Vampuguda, Hyderabad<br>
+    Regd. No. 2240/2006 · <a href="mailto:scwa.vampuguda@gmail.com">scwa.vampuguda@gmail.com</a><br>
+    UPI: seniorcitizensreside.82265756@hdfcbank
+  </div>
+</div>
+</body>
+</html>

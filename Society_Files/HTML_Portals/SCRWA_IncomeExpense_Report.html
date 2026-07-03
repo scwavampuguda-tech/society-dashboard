@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCRWA — Income &amp; Expense Report</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:Arial, sans-serif; font-size:11.5px; color:#222; background:#fff; }
+
+  @page { size:A4 landscape; margin:10mm 8mm 10mm 8mm; }
+  @media print {
+    .no-print { display:none !important; }
+    body    { font-size:10px; }
+    #page1  { page-break-after:always; }
+    #page2  { page-break-before:always; page-break-after:always; }
+    #page3  { page-break-before:always; page-break-after:always; }
+    #page4  { page-break-before:always; }
+    thead   { display:table-header-group; }
+    tfoot   { display:table-footer-group; }
+  }
+
+  .rpt-hdr { text-align:center; padding:8px 0 5px; border-bottom:2.5px solid #1a3a6b; margin-bottom:7px; }
+  .rpt-hdr h1 { font-size:15px; color:#1a3a6b; font-weight:bold; }
+  .rpt-hdr h2 { font-size:12px; color:#333; margin-top:3px; }
+  .rpt-hdr .meta { font-size:10px; color:#666; margin-top:3px; }
+
+  .kpi-bar { display:flex; gap:8px; margin:7px 0; flex-wrap:wrap; }
+  .kpi { flex:1; min-width:110px; background:#f4f6fb; border:1px solid #d0d7e8; border-radius:6px; padding:6px 8px; text-align:center; }
+  .kpi .lbl { font-size:9px; color:#666; text-transform:uppercase; letter-spacing:.5px; }
+  .kpi .val { font-size:13px; font-weight:bold; color:#1a3a6b; margin-top:2px; }
+  .kpi.green .val { color:#1a7a3c; }
+  .kpi.red   .val { color:#c0392b; }
+  @media print { .kpi { padding:4px 6px; } .kpi .val { font-size:11px; } .kpi .lbl { font-size:8px; } }
+
+  .sec-title { font-size:12px; font-weight:bold; color:#1a3a6b; margin:7px 0 4px; border-bottom:1px solid #1a3a6b; padding-bottom:3px; }
+
+  table { width:100%; border-collapse:collapse; }
+  thead th { background:#1a3a6b; color:#fff; font-size:10.5px; padding:6px 5px; white-space:nowrap; text-align:center; }
+  thead th.tl { text-align:left; padding-left:8px; }
+  thead th.tr { text-align:right; padding-right:6px; }
+  tfoot td { background:#1a3a6b; color:#fff; font-weight:bold; font-size:11px; padding:6px 5px; }
+  tbody tr:nth-child(even) td { background:#f8f9fc; }
+  tbody tr:hover td { background:#edf2ff; }
+  td { padding:4px 5px; border-bottom:1px solid #e4e8f0; vertical-align:middle; }
+  .tc { text-align:center; } .tr { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .tl { text-align:left; } .fw { font-weight:bold; }
+  .ok { color:#1a7a3c; } .hi { color:#c0392b; } .nil { color:#bbb; }
+
+  .fy-hdr td { background:#dce4f5 !important; color:#1a3a6b; font-weight:bold; font-size:11px; padding:5px 8px; border-top:2px solid #1a3a6b; border-bottom:1px solid #a0b0d0; }
+  .fy-meta { font-weight:normal; font-size:10px; color:#444; margin-left:10px; }
+  .head-hdr td { background:#eef2fa !important; border-top:1.5px solid #c0cce8; }
+
+  .narrative { border:1px solid #c8d8f0; border-radius:6px; padding:8px 12px; background:#f7faff; font-size:10px; line-height:1.6; margin-top:8px; }
+  .narrative h3 { font-size:11px; color:#1a3a6b; margin-bottom:5px; border-bottom:1px solid #c8d8f0; padding-bottom:3px; }
+  .n-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 20px; }
+  .n-block b { color:#1a3a6b; }
+  @media print { .narrative { font-size:9.5px; padding:6px 10px; } }
+
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+  .btn { display:inline-block; padding:7px 16px; border-radius:5px; border:none; font-size:12px; cursor:pointer; font-family:Arial; margin-right:6px; }
+  .btn-blue { background:#1a3a6b; color:#fff; }
+  .btn-blue:hover { background:#2a5aab; }
+
+  .rpt-footer { margin-top:10px; font-size:9px; color:#888; text-align:center; border-top:1px solid #ddd; padding-top:5px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ PAGE 1 : SUMMARY ═══════════════════════ -->
+<div id="page1">
+
+  <!-- A ── Report Header -->
+  <div class="rpt-hdr">
+    <h1>🏛️ SCRWA — Senior Citizens Residential Welfare Association</h1>
+    <h2>Income &amp; Expense Report — Financial Year Summary</h2>
+    <div class="meta">Regd. No: 2240/2006 &nbsp;|&nbsp; Vampuguda, Hyderabad &nbsp;|&nbsp; Generated: Saturday, 13 Jun 2026, 10:07 PM IST</div>
+  </div>
+
+  <!-- B ── Print Button (screen only) -->
+  <div class="no-print" style="margin:5px 0 6px;">
+    <button class="btn btn-blue" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <span style="font-size:10px; color:#666;">Landscape · Minimum margins · 4 pages total</span>
+  </div>
+
+  <!-- C ── KPI Cards -->
+  <div class="kpi-bar">
+    <div class="kpi green"><div class="lbl">Total Income</div>    <div class="val">₹460,843</div></div>
+    <div class="kpi red">  <div class="lbl">Total Expense</div>   <div class="val">₹333,086</div></div>
+    <div class="kpi green"><div class="lbl">Closing Balance</div> <div class="val">₹127,757</div></div>
+    <div class="kpi">      <div class="lbl">Financial Years</div> <div class="val">3</div></div>
+    <div class="kpi">      <div class="lbl">Saving Rate</div>     <div class="val">27.7%</div></div>
+  </div>
+
+  <!-- D ── FY Table (left 52%) + Bar Chart (right 46%) -->
+  <div style="display:grid; grid-template-columns:52% 46%; gap:10px; margin-top:7px; align-items:start;">
+
+    <div>
+      <div class="sec-title">📊 Year-wise Cash Flow</div>
+      <table>
+        <thead>
+          <tr>
+            <th class="tl" style="width:115px;">Financial Year</th>
+            <th class="tr" style="width:85px;">Inflow</th>
+            <th class="tr" style="width:85px;">Outflow</th>
+            <th class="tr" style="width:85px;">Net (FY)</th>
+            <th class="tr" style="width:90px;">Closing Bal.</th>
+          </tr>
+        </thead>
+        <tbody>
+      <tr style="">
+        <td class="tc fw" style="padding:5px 8px;">FY 2024-25</td>
+        <td class="tr ok fw">₹192,660</td>
+        <td class="tr hi fw">₹129,520</td>
+        <td class="tr fw" style="color:#1a7a3c;">+₹63,140</td>
+        <td class="tr fw" style="color:#1a7a3c;">₹63,140</td>
+      </tr>
+      <tr style="">
+        <td class="tc fw" style="padding:5px 8px;">FY 2025-26</td>
+        <td class="tr ok fw">₹207,683</td>
+        <td class="tr hi fw">₹194,341</td>
+        <td class="tr fw" style="color:#1a7a3c;">+₹13,342</td>
+        <td class="tr fw" style="color:#1a7a3c;">₹76,482</td>
+      </tr>
+      <tr style="background:#eef3ff;">
+        <td class="tc fw" style="padding:5px 8px;">FY 2026-27<span style="font-size:9px;color:#e67e22;font-weight:normal;"> (YTD)</span></td>
+        <td class="tr ok fw">₹60,500</td>
+        <td class="tr hi fw">₹9,225</td>
+        <td class="tr fw" style="color:#1a7a3c;">+₹51,275</td>
+        <td class="tr fw" style="color:#1a7a3c;">₹127,757</td>
+      </tr></tbody>
+        <tfoot>
+          <tr>
+            <td class="tl" style="padding-left:8px;">TOTAL</td>
+            <td class="tr">₹460,843</td>
+            <td class="tr">₹333,086</td>
+            <td class="tr" style="color:#aaffcc;">+₹127,757</td>
+            <td class="tr" style="color:#aaffcc;">₹127,757</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div style="background:#f7faff; border:1px solid #d0daea; border-radius:7px; padding:8px 6px; text-align:center;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" style="font-family:Arial,sans-serif;">
+<line x1="58" y1="148.0" x2="390" y2="148.0" stroke="#e8ebf4" stroke-width="1"/>
+<text x="54" y="151.0" text-anchor="end" font-size="8" fill="#777">0</text>
+<line x1="58" y1="122.8" x2="390" y2="122.8" stroke="#e8ebf4" stroke-width="1"/>
+<text x="54" y="125.8" text-anchor="end" font-size="8" fill="#777">₹50K</text>
+<line x1="58" y1="97.6" x2="390" y2="97.6" stroke="#e8ebf4" stroke-width="1"/>
+<text x="54" y="100.6" text-anchor="end" font-size="8" fill="#777">₹100K</text>
+<line x1="58" y1="72.4" x2="390" y2="72.4" stroke="#e8ebf4" stroke-width="1"/>
+<text x="54" y="75.4" text-anchor="end" font-size="8" fill="#777">₹150K</text>
+<line x1="58" y1="47.2" x2="390" y2="47.2" stroke="#e8ebf4" stroke-width="1"/>
+<text x="54" y="50.2" text-anchor="end" font-size="8" fill="#777">₹200K</text>
+<line x1="58" y1="22.0" x2="390" y2="22.0" stroke="#e8ebf4" stroke-width="1"/>
+<text x="54" y="25.0" text-anchor="end" font-size="8" fill="#777">₹250K</text>
+<line x1="58" y1="22" x2="58" y2="148" stroke="#bbb" stroke-width="1"/>
+<line x1="58" y1="148" x2="390" y2="148" stroke="#bbb" stroke-width="1"/>
+<rect x="69.1" y="50.9" width="24.3" height="97.1" fill="#1a7a3c" rx="2" opacity="0.9"/>
+<text x="81.2" y="48.9" text-anchor="middle" font-size="7" fill="#1a7a3c" font-weight="bold">₹192K</text>
+<rect x="96.7" y="82.7" width="24.3" height="65.3" fill="#c0392b" rx="2" opacity="0.9"/>
+<text x="108.9" y="80.7" text-anchor="middle" font-size="7" fill="#c0392b" font-weight="bold">₹129K</text>
+<rect x="124.4" y="116.2" width="24.3" height="31.8" fill="#1a3a6b" rx="2" opacity="0.9"/>
+<text x="136.6" y="114.2" text-anchor="middle" font-size="7" fill="#1a3a6b" font-weight="bold">₹63K</text>
+<text x="108.9" y="160" text-anchor="middle" font-size="8.5" fill="#333" font-weight="bold">FY 2024-25</text>
+<rect x="179.7" y="43.3" width="24.3" height="104.7" fill="#1a7a3c" rx="2" opacity="0.9"/>
+<text x="191.9" y="41.3" text-anchor="middle" font-size="7" fill="#1a7a3c" font-weight="bold">₹207K</text>
+<rect x="207.4" y="50.1" width="24.3" height="97.9" fill="#c0392b" rx="2" opacity="0.9"/>
+<text x="219.6" y="48.1" text-anchor="middle" font-size="7" fill="#c0392b" font-weight="bold">₹194K</text>
+<rect x="235.1" y="109.5" width="24.3" height="38.5" fill="#1a3a6b" rx="2" opacity="0.9"/>
+<text x="247.2" y="107.5" text-anchor="middle" font-size="7" fill="#1a3a6b" font-weight="bold">₹76K</text>
+<text x="219.6" y="160" text-anchor="middle" font-size="8.5" fill="#333" font-weight="bold">FY 2025-26</text>
+<rect x="290.4" y="117.5" width="24.3" height="30.5" fill="#1a7a3c" rx="2" opacity="0.9"/>
+<text x="302.6" y="115.5" text-anchor="middle" font-size="7" fill="#1a7a3c" font-weight="bold">₹60K</text>
+<rect x="318.1" y="143.4" width="24.3" height="4.6" fill="#c0392b" rx="2" opacity="0.9"/>
+<text x="330.2" y="141.4" text-anchor="middle" font-size="7" fill="#c0392b" font-weight="bold">₹9K</text>
+<rect x="345.7" y="83.6" width="24.3" height="64.4" fill="#1a3a6b" rx="2" opacity="0.9"/>
+<text x="357.9" y="81.6" text-anchor="middle" font-size="7" fill="#1a3a6b" font-weight="bold">₹127K</text>
+<text x="330.2" y="160" text-anchor="middle" font-size="8.5" fill="#333" font-weight="bold">FY 2026-27</text>
+<text x="330.2" y="170" text-anchor="middle" font-size="7.5" fill="#e67e22">(YTD)</text>
+<rect x="63" y="186" width="9" height="8" fill="#1a7a3c" rx="1"/>
+<text x="75" y="194" font-size="8" fill="#444">Inflow</text>
+<rect x="125" y="186" width="9" height="8" fill="#c0392b" rx="1"/>
+<text x="137" y="194" font-size="8" fill="#444">Outflow</text>
+<rect x="187" y="186" width="9" height="8" fill="#1a3a6b" rx="1"/>
+<text x="199" y="194" font-size="8" fill="#444">Balance</text>
+<text x="200" y="13" text-anchor="middle" font-size="10" fill="#1a3a6b" font-weight="bold">FY-wise Cash Flow</text>
+</svg>
+    </div>
+
+  </div><!-- /D -->
+
+  <!-- E ── Income Donut (left) + Expense Donut (right) -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; align-items:start;">
+
+    <div style="background:#f7faff; border:1px solid #d0daea; border-radius:7px; padding:8px; text-align:center;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="250" height="315" style="font-family:Arial,sans-serif;">
+<text x="125" y="13" text-anchor="middle" font-size="10" fill="#1a3a6b" font-weight="bold">📥 Income Breakdown</text>
+<path d="M 125.00 37.00 A 88 88 0 0 1 178.49 194.88 L 154.18 163.11 A 48 48 0 0 0 125.00 77.00 Z" fill="#1a7a3c" stroke="#fff" stroke-width="2"><title>Maintenance Charg...: ₹182,501 (40%)</title></path>
+<line x1="210.2" y1="96.1" x2="217.8" y2="93.6" stroke="#1a7a3c" stroke-width="1.2"/>
+<text x="221.6" y="92.3" text-anchor="start" font-size="8" fill="#333" font-weight="bold">40%</text>
+<path d="M 178.49 194.88 A 88 88 0 0 1 38.82 142.79 L 77.99 134.70 A 48 48 0 0 0 154.18 163.11 Z" fill="#2ecc71" stroke="#fff" stroke-width="2"><title>Festival Donation...: ₹148,204 (32%)</title></path>
+<line x1="93.6" y1="209.3" x2="90.8" y2="216.8" stroke="#2ecc71" stroke-width="1.2"/>
+<text x="89.4" y="220.6" text-anchor="end" font-size="8" fill="#333" font-weight="bold">32%</text>
+<path d="M 38.82 142.79 A 88 88 0 0 1 115.28 37.54 L 119.70 77.29 A 48 48 0 0 0 77.99 134.70 Z" fill="#27ae60" stroke="#fff" stroke-width="2"><title>Initial Deposits: ₹122,022 (26%)</title></path>
+<line x1="52.2" y1="72.1" x2="45.7" y2="67.4" stroke="#27ae60" stroke-width="1.2"/>
+<text x="42.5" y="65.0" text-anchor="end" font-size="8" fill="#333" font-weight="bold">26%</text>
+<path d="M 115.28 37.54 A 88 88 0 0 1 125.00 37.00 L 125.00 77.00 A 48 48 0 0 0 119.70 77.29 Z" fill="#52be80" stroke="#fff" stroke-width="2"><title>Construction Depo...: ₹8,116 (2%)</title></path>
+<text x="125" y="120" text-anchor="middle" font-size="9.5" fill="#1a3a6b" font-weight="bold">₹460,843</text>
+<text x="125" y="133" text-anchor="middle" font-size="8" fill="#777">Total</text>
+<rect x="6" y="248" width="8" height="8" fill="#1a7a3c" rx="1"/>
+<text x="17" y="256" font-size="7.5" fill="#444">Maintenance Char...</text>
+<rect x="131" y="248" width="8" height="8" fill="#2ecc71" rx="1"/>
+<text x="142" y="256" font-size="7.5" fill="#444">Festival Donatio...</text>
+<rect x="6" y="261" width="8" height="8" fill="#27ae60" rx="1"/>
+<text x="17" y="269" font-size="7.5" fill="#444">Initial Deposits</text>
+<rect x="131" y="261" width="8" height="8" fill="#52be80" rx="1"/>
+<text x="142" y="269" font-size="7.5" fill="#444">Construction Dep...</text>
+</svg>
+    </div>
+
+    <div style="background:#f7faff; border:1px solid #d0daea; border-radius:7px; padding:8px; text-align:center;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="250" height="315" style="font-family:Arial,sans-serif;">
+<text x="125" y="13" text-anchor="middle" font-size="10" fill="#1a3a6b" font-weight="bold">📤 Expense Breakdown</text>
+<path d="M 125.00 37.00 A 88 88 0 0 1 211.68 109.83 L 172.28 116.73 A 48 48 0 0 0 125.00 77.00 Z" fill="#c0392b" stroke="#fff" stroke-width="2"><title>Other Miscellaneo...: ₹74,090 (22%)</title></path>
+<line x1="182.9" y1="56.1" x2="188.0" y2="50.0" stroke="#c0392b" stroke-width="1.2"/>
+<text x="190.6" y="46.9" text-anchor="start" font-size="8" fill="#333" font-weight="bold">22%</text>
+<path d="M 211.68 109.83 A 88 88 0 0 1 180.85 193.00 L 155.47 162.09 A 48 48 0 0 0 172.28 116.73 Z" fill="#e74c3c" stroke="#fff" stroke-width="2"><title>Music & Entertain...: ₹56,000 (17%)</title></path>
+<line x1="209.4" y1="156.3" x2="216.9" y2="159.1" stroke="#e74c3c" stroke-width="1.2"/>
+<text x="220.6" y="160.5" text-anchor="start" font-size="8" fill="#333" font-weight="bold">17%</text>
+<path d="M 180.85 193.00 A 88 88 0 0 1 107.77 211.30 L 115.60 172.07 A 48 48 0 0 0 155.47 162.09 Z" fill="#e67e22" stroke="#fff" stroke-width="2"><title>Road Repairs: ₹46,900 (14%)</title></path>
+<line x1="146.9" y1="212.3" x2="148.8" y2="220.1" stroke="#e67e22" stroke-width="1.2"/>
+<text x="149.8" y="223.9" text-anchor="start" font-size="8" fill="#333" font-weight="bold">14%</text>
+<path d="M 107.77 211.30 A 88 88 0 0 1 48.19 167.94 L 83.10 148.42 A 48 48 0 0 0 115.60 172.07 Z" fill="#d35400" stroke="#fff" stroke-width="2"><title>Venue Setup: ₹45,800 (14%)</title></path>
+<line x1="72.0" y1="197.8" x2="67.3" y2="204.2" stroke="#d35400" stroke-width="1.2"/>
+<text x="65.0" y="207.5" text-anchor="end" font-size="8" fill="#333" font-weight="bold">14%</text>
+<path d="M 48.19 167.94 A 88 88 0 0 1 42.34 94.82 L 79.91 108.54 A 48 48 0 0 0 83.10 148.42 Z" fill="#9b59b6" stroke="#fff" stroke-width="2"><title>Society Registrat...: ₹45,580 (14%)</title></path>
+<line x1="35.3" y1="132.2" x2="27.3" y2="132.8" stroke="#9b59b6" stroke-width="1.2"/>
+<text x="23.3" y="133.1" text-anchor="end" font-size="8" fill="#333" font-weight="bold">14%</text>
+<path d="M 42.34 94.82 A 88 88 0 0 1 81.30 48.62 L 101.16 83.34 A 48 48 0 0 0 79.91 108.54 Z" fill="#8e44ad" stroke="#fff" stroke-width="2"><title>Refreshments: ₹37,168 (11%)</title></path>
+<line x1="56.2" y1="67.0" x2="50.1" y2="61.8" stroke="#8e44ad" stroke-width="1.2"/>
+<text x="47.0" y="59.2" text-anchor="end" font-size="8" fill="#333" font-weight="bold">11%</text>
+<path d="M 81.30 48.62 A 88 88 0 0 1 125.00 37.00 L 125.00 77.00 A 48 48 0 0 0 101.16 83.34 Z" fill="#f39c12" stroke="#fff" stroke-width="2"><title>GHMC Charges: ₹27,548 (8%)</title></path>
+<line x1="101.9" y1="38.0" x2="99.8" y2="30.3" stroke="#f39c12" stroke-width="1.2"/>
+<text x="98.8" y="26.4" text-anchor="end" font-size="8" fill="#333" font-weight="bold">8%</text>
+<text x="125" y="120" text-anchor="middle" font-size="9.5" fill="#1a3a6b" font-weight="bold">₹333,086</text>
+<text x="125" y="133" text-anchor="middle" font-size="8" fill="#777">Total</text>
+<rect x="6" y="248" width="8" height="8" fill="#c0392b" rx="1"/>
+<text x="17" y="256" font-size="7.5" fill="#444">Other Miscellane...</text>
+<rect x="131" y="248" width="8" height="8" fill="#e74c3c" rx="1"/>
+<text x="142" y="256" font-size="7.5" fill="#444">Music & Entertai...</text>
+<rect x="6" y="261" width="8" height="8" fill="#e67e22" rx="1"/>
+<text x="17" y="269" font-size="7.5" fill="#444">Road Repairs</text>
+<rect x="131" y="261" width="8" height="8" fill="#d35400" rx="1"/>
+<text x="142" y="269" font-size="7.5" fill="#444">Venue Setup</text>
+<rect x="6" y="274" width="8" height="8" fill="#9b59b6" rx="1"/>
+<text x="17" y="282" font-size="7.5" fill="#444">Society Registra...</text>
+<rect x="131" y="274" width="8" height="8" fill="#8e44ad" rx="1"/>
+<text x="142" y="282" font-size="7.5" fill="#444">Refreshments</text>
+<rect x="6" y="287" width="8" height="8" fill="#f39c12" rx="1"/>
+<text x="17" y="295" font-size="7.5" fill="#444">GHMC Charges</text>
+</svg>
+    </div>
+
+  </div><!-- /E -->
+
+  <!-- F ── Narrative -->
+  <div class="narrative">
+    <h3>📊 Financial Analysis Narrative</h3>
+    <div class="n-grid">
+      <div class="n-block">
+        <b>💰 Overall Financial Position</b><br>
+        SCRWA has collected total income of <b class="ok">₹460,843</b> and incurred
+        expenses of <b class="hi">₹333,086</b> since inception.
+        The <b class="ok">closing balance of ₹127,757</b> reflects a healthy
+        saving rate of <b>27.7%</b>, with society funds growing year-on-year.
+      </div>
+      <div class="n-block">
+        <b>📅 Year-wise Performance</b><br>
+        <b>FY 2024-25:</b> Inflow <span class="ok">₹192,660</span> &nbsp;·&nbsp; Outflow <span class="hi">₹129,520</span> &nbsp;·&nbsp; Net <b style="color:#1a7a3c;">+₹63,140</b><br><b>FY 2025-26:</b> Inflow <span class="ok">₹207,683</span> &nbsp;·&nbsp; Outflow <span class="hi">₹194,341</span> &nbsp;·&nbsp; Net <b style="color:#1a7a3c;">+₹13,342</b><br><b>FY 2026-27 (YTD):</b> Inflow <span class="ok">₹60,500</span> &nbsp;·&nbsp; Outflow <span class="hi">₹9,225</span> &nbsp;·&nbsp; Net <b style="color:#1a7a3c;">+₹51,275</b><br>
+      </div>
+      <div class="n-block">
+        <b>📥 Income Sources</b><br>
+        <b>Maintenance Charges:</b> ₹182,501 <span style="color:#888;">(40%)</span><br><b>Festival Donations:</b> ₹148,204 <span style="color:#888;">(32%)</span><br><b>Initial Deposits:</b> ₹122,022 <span style="color:#888;">(26%)</span><br><b>Construction Deposits:</b> ₹8,116 <span style="color:#888;">(2%)</span><br>
+      </div>
+      <div class="n-block">
+        <b>📤 Top Expense Heads</b><br>
+        <b>Other Miscellaneous:</b> ₹74,090 <span style="color:#888;">(22%)</span><br><b>Music & Entertainment:</b> ₹56,000 <span style="color:#888;">(17%)</span><br><b>Road Repairs:</b> ₹46,900 <span style="color:#888;">(14%)</span><br><b>Venue Setup (Events):</b> ₹45,800 <span style="color:#888;">(14%)</span><br><b>Society Registration:</b> ₹45,580 <span style="color:#888;">(14%)</span><br>
+        <span style="color:#888; font-size:9px; font-style:italic;">+ 2 more — see Page 2 for full breakup</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- G ── Footer -->
+  <div class="rpt-footer">SCRWA Vampuguda &nbsp;|&nbsp; scwa.vampuguda@gmail.com &nbsp;|&nbsp; For internal use only.</div>
+
+</div><!-- /page1 -->
+
+
+<!-- ══════════════════════ PAGE 2 : HEAD-WISE ═══════════════════════ -->
+<div id="page2">
+  <div class="rpt-hdr">
+    <h1>🏛️ SCRWA — Senior Citizens Residential Welfare Association</h1>
+    <h2>Income &amp; Expense — Head-wise Breakup</h2>
+    <div class="meta">Regd. No: 2240/2006 &nbsp;|&nbsp; Generated: Saturday, 13 Jun 2026, 10:07 PM IST</div>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="sec-title">📥 Income Heads</div>
+      <table><thead><tr><th class="tl">Account Head</th><th class="tr" style="width:95px;">Amount</th><th class="tc" style="width:48px;">Share</th><th class="tl" style="width:110px;">Bar</th></tr></thead>
+      <tbody><tr><td style="padding:5px 8px;">Maintenance Charges</td><td class="tr ok fw">₹182,501</td><td class="tc">40%</td><td style="padding:4px 6px;"><div style="width:60px;height:8px;background:#1a7a3c;border-radius:3px;display:inline-block;"></div></td></tr><tr><td style="padding:5px 8px;">Festival Donations</td><td class="tr ok fw">₹148,204</td><td class="tc">32%</td><td style="padding:4px 6px;"><div style="width:48px;height:8px;background:#1a7a3c;border-radius:3px;display:inline-block;"></div></td></tr><tr><td style="padding:5px 8px;">Initial Deposits</td><td class="tr ok fw">₹122,022</td><td class="tc">26%</td><td style="padding:4px 6px;"><div style="width:39px;height:8px;background:#1a7a3c;border-radius:3px;display:inline-block;"></div></td></tr><tr><td style="padding:5px 8px;">Construction Deposits</td><td class="tr ok fw">₹8,116</td><td class="tc">2%</td><td style="padding:4px 6px;"><div style="width:3px;height:8px;background:#1a7a3c;border-radius:3px;display:inline-block;"></div></td></tr></tbody>
+      <tfoot><tr><td class="tl" style="padding-left:8px;">TOTAL</td><td class="tr">₹460,843</td><td class="tc">100%</td><td></td></tr></tfoot></table>
+    </div>
+    <div>
+      <div class="sec-title">📤 Expense Heads (with Misc. Sub-items)</div>
+      <table><thead><tr><th class="tl">Account Head / Sub-item</th><th class="tr" style="width:95px;">Amount</th><th class="tc" style="width:48px;">Share</th><th class="tl" style="width:110px;">Bar</th></tr></thead>
+      <tbody><tr class="head-hdr"><td style="padding:5px 8px;font-weight:bold;">Other Miscellaneous</td><td class="tr hi fw">₹74,090</td><td class="tc">22%</td><td style="padding:4px 6px;"><div style="width:33px;height:8px;background:#c0392b;border-radius:3px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">🪧 Signage & Boards (Notice Boards, Fabrication)</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹14,600</td><td class="tc" style="font-size:10px;color:#888;">20%</td><td style="padding:3px 6px;"><div style="width:6px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">🪔 Pooja Materials & Ritual Supplies</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹9,198</td><td class="tc" style="font-size:10px;color:#888;">12%</td><td style="padding:3px 6px;"><div style="width:4px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">📜 Legal Documentation (Me-Seva, Certified Copies)</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹7,710</td><td class="tc" style="font-size:10px;color:#888;">10%</td><td style="padding:3px 6px;"><div style="width:3px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">💡 Electrical Repairs (Transformer, Street Lights)</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹6,250</td><td class="tc" style="font-size:10px;color:#888;">8%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">🎨 Decoration (Flowers, Paint, Stationery, Flag Pole)</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹6,195</td><td class="tc" style="font-size:10px;color:#888;">8%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">📰 Newspaper Ads with Photos</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹6,000</td><td class="tc" style="font-size:10px;color:#888;">8%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">👷 Labour & Logistics (Electrician, Event Labour, Transport)</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹5,296</td><td class="tc" style="font-size:10px;color:#888;">7%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">🙏 Priest/Pandit Honorarium</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹5,000</td><td class="tc" style="font-size:10px;color:#888;">7%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">🛕 Temple Area Maintenance</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹4,435</td><td class="tc" style="font-size:10px;color:#888;">6%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">🗿 Idol Purchase & Transport</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹2,200</td><td class="tc" style="font-size:10px;color:#888;">3%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">🎁 Gifts & Mementos for Guests</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹1,660</td><td class="tc" style="font-size:10px;color:#888;">2%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">⛽ Fuel & Vehicle Charges</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹1,500</td><td class="tc" style="font-size:10px;color:#888;">2%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">🍵 Tea & Refreshments during Official Visits</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹1,440</td><td class="tc" style="font-size:10px;color:#888;">2%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">🗂️ Office Supplies (Files, Folders, Stationery)</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹869</td><td class="tc" style="font-size:10px;color:#888;">1%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">📄 PAN & Tax Registration</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹507</td><td class="tc" style="font-size:10px;color:#888;">1%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">🏦 Bank Charges & Fees</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹500</td><td class="tc" style="font-size:10px;color:#888;">1%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">🤝 GHMC Staff Gratification/Tips</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹400</td><td class="tc" style="font-size:10px;color:#888;">1%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:3px 8px 3px 22px;font-size:10.5px;color:#444;">📋 Franking & Stamp Duty</td><td class="tr" style="font-size:10.5px;color:#c0392b;">₹330</td><td class="tc" style="font-size:10px;color:#888;">0%</td><td style="padding:3px 6px;"><div style="width:2px;height:5px;background:#e57373;border-radius:2px;display:inline-block;"></div></td></tr><tr><td style="padding:5px 8px;">Music & Entertainment</td><td class="tr hi fw">₹56,000</td><td class="tc">17%</td><td style="padding:4px 6px;"><div style="width:25px;height:8px;background:#c0392b;border-radius:3px;display:inline-block;"></div></td></tr><tr><td style="padding:5px 8px;">Road Repairs</td><td class="tr hi fw">₹46,900</td><td class="tc">14%</td><td style="padding:4px 6px;"><div style="width:21px;height:8px;background:#c0392b;border-radius:3px;display:inline-block;"></div></td></tr><tr><td style="padding:5px 8px;">Venue Setup (Events)</td><td class="tr hi fw">₹45,800</td><td class="tc">14%</td><td style="padding:4px 6px;"><div style="width:21px;height:8px;background:#c0392b;border-radius:3px;display:inline-block;"></div></td></tr><tr><td style="padding:5px 8px;">Society Registration</td><td class="tr hi fw">₹45,580</td><td class="tc">14%</td><td style="padding:4px 6px;"><div style="width:21px;height:8px;background:#c0392b;border-radius:3px;display:inline-block;"></div></td></tr><tr><td style="padding:5px 8px;">Refreshments (Events)</td><td class="tr hi fw">₹37,168</td><td class="tc">11%</td><td style="padding:4px 6px;"><div style="width:16px;height:8px;background:#c0392b;border-radius:3px;display:inline-block;"></div></td></tr><tr><td style="padding:5px 8px;">GHMC Charges</td><td class="tr hi fw">₹27,548</td><td class="tc">8%</td><td style="padding:4px 6px;"><div style="width:12px;height:8px;background:#c0392b;border-radius:3px;display:inline-block;"></div></td></tr></tbody>
+      <tfoot><tr><td class="tl" style="padding-left:8px;">TOTAL</td><td class="tr">₹333,086</td><td class="tc">100%</td><td></td></tr></tfoot></table>
+    </div>
+  </div>
+  <div class="rpt-footer">SCRWA Vampuguda &nbsp;|&nbsp; scwa.vampuguda@gmail.com &nbsp;|&nbsp; For internal use only.</div>
+</div><!-- /page2 -->
+
+
+<!-- ══════════════════════ PAGE 3 : INTERNAL ORDERS ═══════════════════ -->
+<div id="page3">
+  <div class="rpt-hdr">
+    <h1>🏛️ SCRWA — Senior Citizens Residential Welfare Association</h1>
+    <h2>Internal Order-wise Income &amp; Expense Detail</h2>
+    <div class="meta">Regd. No: 2240/2006 &nbsp;|&nbsp; Generated: Saturday, 13 Jun 2026, 10:07 PM IST</div>
+  </div>
+  <div class="sec-title">🗂️ Internal Order Summary — Society · Festival · Other</div>
+  <table>
+    <thead><tr><th class="tc" style="width:80px;">Code</th><th class="tl" style="width:240px;">Order Name</th><th class="tr" style="width:120px;">Income</th><th class="tr" style="width:120px;">Expense</th><th class="tr" style="width:120px;">Net</th></tr></thead>
+    <tbody><tr class="fy-hdr"><td colspan="5">📂 FESTIVAL<span class="fy-meta">Income: ₹148,204 &nbsp;·&nbsp; Expense: ₹131,975 &nbsp;·&nbsp; <span style="color:#1a7a3c;font-weight:bold;">Net: +₹16,229</span></span></td></tr><tr><td class="tc" style="font-size:10px;color:#888;">GNHCD01</td><td style="padding:4px 6px;font-size:10.5px;">Ganesh Pooja</td><td class="tr ok">₹128,883</td><td class="tr hi">₹115,775</td><td class="tr fw" style="color:#1a7a3c;">+₹13,108</td></tr><tr><td class="tc" style="font-size:10px;color:#888;">BNUCD01</td><td style="padding:4px 6px;font-size:10.5px;">Bonnalu Pooja</td><td class="tr ok">₹19,321</td><td class="tr hi">₹16,200</td><td class="tr fw" style="color:#1a7a3c;">+₹3,121</td></tr><tr class="fy-hdr"><td colspan="5">📂 SOCIETY<span class="fy-meta">Income: ₹312,639 &nbsp;·&nbsp; Expense: ₹201,111 &nbsp;·&nbsp; <span style="color:#1a7a3c;font-weight:bold;">Net: +₹111,528</span></span></td></tr><tr><td class="tc" style="font-size:10px;color:#888;">SOCEX01</td><td style="padding:4px 6px;font-size:10.5px;">Society Expense</td><td class="tr ok"><span class=nil>—</span></td><td class="tr hi">₹197,704</td><td class="tr fw" style="color:#c0392b;">₹-197,704</td></tr><tr><td class="tc" style="font-size:10px;color:#888;">MOMEN01</td><td style="padding:4px 6px;font-size:10.5px;">Maintenance Charges</td><td class="tr ok">₹182,501</td><td class="tr hi"><span class=nil>—</span></td><td class="tr fw" style="color:#1a7a3c;">+₹182,501</td></tr><tr><td class="tc" style="font-size:10px;color:#888;">INDPE01</td><td style="padding:4px 6px;font-size:10.5px;">Initial Deposit</td><td class="tr ok">₹122,022</td><td class="tr hi"><span class=nil>—</span></td><td class="tr fw" style="color:#1a7a3c;">+₹122,022</td></tr><tr><td class="tc" style="font-size:10px;color:#888;">CNDPE01</td><td style="padding:4px 6px;font-size:10.5px;">Construction Deposit</td><td class="tr ok">₹8,116</td><td class="tr hi"><span class=nil>—</span></td><td class="tr fw" style="color:#1a7a3c;">+₹8,116</td></tr><tr><td class="tc" style="font-size:10px;color:#888;">RPLEX01</td><td style="padding:4px 6px;font-size:10.5px;">Republic Day</td><td class="tr ok"><span class=nil>—</span></td><td class="tr hi">₹3,407</td><td class="tr fw" style="color:#c0392b;">₹-3,407</td></tr></tbody>
+    <tfoot><tr><td colspan="2" class="tl" style="padding-left:10px;">GRAND TOTAL</td><td class="tr">₹460,843</td><td class="tr">₹333,086</td><td class="tr" style="color:#aaffcc;">+₹127,757</td></tr></tfoot>
+  </table>
+  <div class="rpt-footer">SCRWA Vampuguda &nbsp;|&nbsp; scwa.vampuguda@gmail.com &nbsp;|&nbsp; For internal use only.</div>
+</div><!-- /page3 -->
+
+
+<!-- ══════════════════════ PAGE 4 : PERIOD DETAIL ══════════════════════ -->
+<div id="page4">
+  <div class="rpt-hdr">
+    <h1>🏛️ SCRWA — Senior Citizens Residential Welfare Association</h1>
+    <h2>Month-wise Income &amp; Expense — Period Detail with Account Head Breakup</h2>
+    <div class="meta">Regd. No: 2240/2006 &nbsp;|&nbsp;
+      📥 Income: Live from Google Sheet API (incl. Jun 2026) &nbsp;·&nbsp;
+      📤 Expense heads: Excel TransactionDetails (724 txns, up to May 2026)
+      &nbsp;|&nbsp; Generated: Saturday, 13 Jun 2026, 10:15 PM IST
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:5px 0 6px;font-size:10px;align-items:center;">
+    <span style="background:#e8f5e9;border:1px solid #1a7a3c;border-radius:4px;padding:2px 8px;color:#1a7a3c;">🟢 Income — 100% Live API</span>
+    <span style="background:#fdecea;border:1px solid #c0392b;border-radius:4px;padding:2px 8px;color:#c0392b;">🔴 Expense heads — Excel (up to May 2026)</span>
+    <span style="background:#f0f4ff;border:1px solid #1a3a6b;border-radius:4px;padding:2px 8px;color:#1a3a6b;">🔵 Running Balance — cumulative</span>
+    <span style="color:#e67e22;font-size:9px;"> * Jun 2026 expenses: ₹3,260 reflected in FY total (API) but not yet in Excel row — expense detail unavailable</span>
+  </div>
+
+  <div style="overflow-x:auto;">
+  <table style="font-size:10px;min-width:920px;">
+    <thead>
+      <tr>
+        <th class="tc" style="width:62px;" rowspan="2">Period</th>
+        <th class="tc" style="width:32px;" rowspan="2">Txns</th>
+        <th class="tr" style="width:76px;" rowspan="2">Income ●</th>
+        <th class="tr" style="width:76px;" rowspan="2">Expense</th>
+        <th class="tr" style="width:76px;" rowspan="2">Net</th>
+        <th class="tr" style="width:76px;" rowspan="2">Running Bal.</th>
+        <th class="tc" style="width:72px;" rowspan="2">Bar</th>
+        <th colspan="6" style="text-align:center;background:#2a4a8b;border-bottom:1px solid #99aacc;">
+          Expense Account Head Breakup (Excel)
+        </th>
+      </tr>
+      <tr><th class="tr" style="font-size:9px;min-width:65px;max-width:75px;white-space:normal;line-height:1.2;">Cultural & Eve...</th><th class="tr" style="font-size:9px;min-width:65px;max-width:75px;white-space:normal;line-height:1.2;">Infrastructure...</th><th class="tr" style="font-size:9px;min-width:65px;max-width:75px;white-space:normal;line-height:1.2;">Miscellaneous ...</th><th class="tr" style="font-size:9px;min-width:65px;max-width:75px;white-space:normal;line-height:1.2;">Advertisement ...</th><th class="tr" style="font-size:9px;min-width:65px;max-width:75px;white-space:normal;line-height:1.2;">Repairs & Main...</th><th class="tr" style="font-size:9px;min-width:65px;max-width:75px;white-space:normal;line-height:1.2;">Sanitation & W...</th></tr>
+    </thead>
+    <tbody><tr class="fy-hdr"><td colspan="2">📅 FY 2024-25</td><td class="tr">₹192,660</td><td class="tr">₹129,520</td><td class="tr" style="color:#1a7a3c;font-weight:bold;">+₹63,140</td><td></td><td></td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹78,452</td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹33,910</td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹1,008</td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹6,000</td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹10,150</td><td class="tr fw" style="font-size:9px;color:#888;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Jun 2024</td><td class="tc" style="font-size:9px;color:#888;">58</td><td class="tr ok fw">₹57,005</td><td class="tr hi fw"><span class=nil>—</span></td><td class="tr fw" style="color:#1a7a3c;">+₹57,005</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹57,005</td><td style="padding:3px 5px;min-width:70px;"><div style="width:56px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div></td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Jul 2024</td><td class="tc" style="font-size:9px;color:#888;">61</td><td class="tr ok fw">₹56,001</td><td class="tr hi fw">₹34,250</td><td class="tr fw" style="color:#1a7a3c;">+₹21,751</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹78,756</td><td style="padding:3px 5px;min-width:70px;"><div style="width:55px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:37px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹25,000</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹9,250</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Aug 2024</td><td class="tc" style="font-size:9px;color:#888;">3</td><td class="tr ok fw"><span class=nil>—</span></td><td class="tr hi fw">₹16,200</td><td class="tr fw" style="color:#c0392b;">₹-16,200</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹62,556</td><td style="padding:3px 5px;min-width:70px;"><div style="width:17px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tr hi" style="font-size:9px;">₹16,200</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Sep 2024</td><td class="tc" style="font-size:9px;color:#888;">69</td><td class="tr ok fw">₹62,522</td><td class="tr hi fw">₹57,225</td><td class="tr fw" style="color:#1a7a3c;">+₹5,297</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹67,853</td><td style="padding:3px 5px;min-width:70px;"><div style="width:62px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:62px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tr hi" style="font-size:9px;">₹53,962</td><td class="tr hi" style="font-size:9px;">₹3,040</td><td class="tr hi" style="font-size:9px;">₹223</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Oct 2024</td><td class="tc" style="font-size:9px;color:#888;">2</td><td class="tr ok fw"><span class=nil>—</span></td><td class="tr hi fw">₹6,130</td><td class="tr fw" style="color:#c0392b;">₹-6,130</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹61,723</td><td style="padding:3px 5px;min-width:70px;"><div style="width:6px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹130</td><td class="tr hi" style="font-size:9px;">₹6,000</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Nov 2024</td><td class="tc" style="font-size:9px;color:#888;">8</td><td class="tr ok fw">₹5,000</td><td class="tr hi fw">₹3,170</td><td class="tr fw" style="color:#1a7a3c;">+₹1,830</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹63,553</td><td style="padding:3px 5px;min-width:70px;"><div style="width:4px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:3px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹3,170</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Jan 2025</td><td class="tc" style="font-size:9px;color:#888;">14</td><td class="tr ok fw">₹4,132</td><td class="tr hi fw">₹8,290</td><td class="tr fw" style="color:#c0392b;">₹-4,158</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹59,395</td><td style="padding:3px 5px;min-width:70px;"><div style="width:4px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:8px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tr hi" style="font-size:9px;">₹8,290</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Feb 2025</td><td class="tc" style="font-size:9px;color:#888;">11</td><td class="tr ok fw">₹8,000</td><td class="tr hi fw">₹3,055</td><td class="tr fw" style="color:#1a7a3c;">+₹4,945</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹64,340</td><td style="padding:3px 5px;min-width:70px;"><div style="width:7px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:3px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹1,500</td><td class="tr hi" style="font-size:9px;">₹655</td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹900</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Mar 2025</td><td class="tc" style="font-size:9px;color:#888;">1</td><td class="tr ok fw"><span class=nil>—</span></td><td class="tr hi fw">₹1,200</td><td class="tr fw" style="color:#c0392b;">₹-1,200</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹63,140</td><td style="padding:3px 5px;min-width:70px;"><div style="width:1px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹1,200</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr style="background:#dce4f5;font-weight:bold;font-size:10px;border-top:2px solid #1a3a6b;"><td class="tc" colspan="2">FY 2024-25 Total</td><td class="tr ok">₹192,660</td><td class="tr hi">₹129,520</td><td class="tr" style="color:#1a7a3c;">+₹63,140</td><td class="tr" style="color:#1a7a3c;">₹63,140</td><td></td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹78,452</td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹33,910</td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹1,008</td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹6,000</td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹10,150</td><td class="tr fw" style="font-size:9px;color:#c0392b;">—</td></tr><tr class="fy-hdr"><td colspan="2">📅 FY 2025-26</td><td class="tr">₹207,683</td><td class="tr">₹194,341</td><td class="tr" style="color:#1a7a3c;font-weight:bold;">+₹13,342</td><td></td><td></td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹89,740</td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹58,015</td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹1,186</td><td class="tr fw" style="font-size:9px;color:#888;">—</td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹43,200</td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹2,200</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Jul 2025</td><td class="tc" style="font-size:9px;color:#888;">49</td><td class="tr ok fw">₹43,837</td><td class="tr hi fw">₹24,500</td><td class="tr fw" style="color:#1a7a3c;">+₹19,337</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹82,477</td><td style="padding:3px 5px;min-width:70px;"><div style="width:62px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:30px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tr hi" style="font-size:9px;">₹10,200</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹14,300</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Aug 2025</td><td class="tc" style="font-size:9px;color:#888;">80</td><td class="tr ok fw">₹41,845</td><td class="tr hi fw">₹47,388</td><td class="tr fw" style="color:#c0392b;">₹-5,543</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹76,934</td><td style="padding:3px 5px;min-width:70px;"><div style="width:59px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:58px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tr hi" style="font-size:9px;">₹47,388</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Sep 2025</td><td class="tc" style="font-size:9px;color:#888;">13</td><td class="tr ok fw">₹1,000</td><td class="tr hi fw">₹36,555</td><td class="tr fw" style="color:#c0392b;">₹-35,555</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹41,379</td><td style="padding:3px 5px;min-width:70px;"><div style="width:1px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:44px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tr hi" style="font-size:9px;">₹18,700</td><td class="tr hi" style="font-size:9px;">₹1,500</td><td class="tr hi" style="font-size:9px;">₹655</td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹15,700</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Oct 2025</td><td class="tc" style="font-size:9px;color:#888;">40</td><td class="tr ok fw">₹16,501</td><td class="tr hi fw">₹14,000</td><td class="tr fw" style="color:#1a7a3c;">+₹2,501</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹43,880</td><td style="padding:3px 5px;min-width:70px;"><div style="width:23px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:17px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tr hi" style="font-size:9px;">₹1,000</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹13,000</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Nov 2025</td><td class="tc" style="font-size:9px;color:#888;">72</td><td class="tr ok fw">₹28,500</td><td class="tr hi fw">₹11,841</td><td class="tr fw" style="color:#1a7a3c;">+₹16,659</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹60,539</td><td style="padding:3px 5px;min-width:70px;"><div style="width:40px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:14px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tr hi" style="font-size:9px;">₹5,495</td><td class="tr hi" style="font-size:9px;">₹5,815</td><td class="tr hi" style="font-size:9px;">₹531</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Dec 2025</td><td class="tc" style="font-size:9px;color:#888;">57</td><td class="tr ok fw">₹23,000</td><td class="tr hi fw">₹50,550</td><td class="tr fw" style="color:#c0392b;">₹-27,550</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹32,989</td><td style="padding:3px 5px;min-width:70px;"><div style="width:32px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:62px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tr hi" style="font-size:9px;">₹3,550</td><td class="tr hi" style="font-size:9px;">₹47,000</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Jan 2026</td><td class="tc" style="font-size:9px;color:#888;">45</td><td class="tr ok fw">₹18,500</td><td class="tr hi fw">₹7,107</td><td class="tr fw" style="color:#1a7a3c;">+₹11,393</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹44,382</td><td style="padding:3px 5px;min-width:70px;"><div style="width:26px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:8px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tr hi" style="font-size:9px;">₹3,407</td><td class="tr hi" style="font-size:9px;">₹3,700</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Feb 2026</td><td class="tc" style="font-size:9px;color:#888;">31</td><td class="tr ok fw">₹15,000</td><td class="tr hi fw">₹1,000</td><td class="tr fw" style="color:#1a7a3c;">+₹14,000</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹58,382</td><td style="padding:3px 5px;min-width:70px;"><div style="width:21px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:1px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹1,000</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Mar 2026</td><td class="tc" style="font-size:9px;color:#888;">42</td><td class="tr ok fw">₹19,500</td><td class="tr hi fw">₹1,400</td><td class="tr fw" style="color:#1a7a3c;">+₹18,100</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹76,482</td><td style="padding:3px 5px;min-width:70px;"><div style="width:27px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:1px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹200</td><td class="tr hi" style="font-size:9px;">₹1,200</td></tr><tr style="background:#dce4f5;font-weight:bold;font-size:10px;border-top:2px solid #1a3a6b;"><td class="tc" colspan="2">FY 2025-26 Total</td><td class="tr ok">₹207,683</td><td class="tr hi">₹194,341</td><td class="tr" style="color:#1a7a3c;">+₹13,342</td><td class="tr" style="color:#1a7a3c;">₹76,482</td><td></td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹89,740</td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹58,015</td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹1,186</td><td class="tr fw" style="font-size:9px;color:#c0392b;">—</td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹43,200</td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹2,200</td></tr><tr class="fy-hdr"><td colspan="2">📅 FY 2026-27<span style="color:#e67e22;font-size:9px;"> (YTD)</span></td><td class="tr">₹60,500</td><td class="tr">₹9,225<span style='font-size:8px;color:#e67e22;'>*</span></td><td class="tr" style="color:#1a7a3c;font-weight:bold;">+₹51,275</td><td></td><td></td><td class="tr fw" style="font-size:9px;color:#888;">—</td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹4,308</td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹657</td><td class="tr fw" style="font-size:9px;color:#888;">—</td><td class="tr fw" style="font-size:9px;color:#888;">—</td><td class="tr fw" style="font-size:9px;color:#1a7a3c;">₹1,000</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Apr 2026</td><td class="tc" style="font-size:9px;color:#888;">29</td><td class="tr ok fw">₹14,500</td><td class="tr hi fw"><span class=nil>—</span></td><td class="tr fw" style="color:#1a7a3c;">+₹14,500</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹90,982</td><td style="padding:3px 5px;min-width:70px;"><div style="width:31px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div></td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">May 2026</td><td class="tc" style="font-size:9px;color:#888;">44</td><td class="tr ok fw">₹17,000</td><td class="tr hi fw">₹5,965</td><td class="tr fw" style="color:#1a7a3c;">+₹11,035</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹102,017</td><td style="padding:3px 5px;min-width:70px;"><div style="width:36px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div><div style="width:62px;height:5px;background:#c0392b;border-radius:2px;"></div></td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹4,308</td><td class="tr hi" style="font-size:9px;">₹657</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tr hi" style="font-size:9px;">₹1,000</td></tr><tr><td class="tc" style="font-size:10px;white-space:nowrap;">Jun 2026</td><td class="tc" style="font-size:9px;color:#888;">58</td><td class="tr ok fw">₹29,000</td><td class="tr hi fw"><span class=nil>—</span></td><td class="tr fw" style="color:#1a7a3c;">+₹29,000</td><td class="tr" style="color:#1a7a3c;font-size:10px;">₹131,017</td><td style="padding:3px 5px;min-width:70px;"><div style="width:62px;height:5px;background:#1a7a3c;border-radius:2px;margin-bottom:1px;"></div></td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td><td class="tc nil" style="font-size:9px;">—</td></tr><tr style="background:#dce4f5;font-weight:bold;font-size:10px;border-top:2px solid #1a3a6b;"><td class="tc" colspan="2">FY 2026-27 Total</td><td class="tr ok">₹60,500</td><td class="tr hi">₹9,225</td><td class="tr" style="color:#1a7a3c;">+₹51,275</td><td class="tr" style="color:#1a7a3c;">₹127,757</td><td></td><td class="tr fw" style="font-size:9px;color:#c0392b;">—</td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹4,308</td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹657</td><td class="tr fw" style="font-size:9px;color:#c0392b;">—</td><td class="tr fw" style="font-size:9px;color:#c0392b;">—</td><td class="tr fw" style="font-size:9px;color:#c0392b;">₹1,000</td></tr></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2" class="tl" style="padding-left:8px;">GRAND TOTAL</td>
+        <td class="tr">₹460,843</td>
+        <td class="tr">₹333,086</td>
+        <td class="tr" style="color:#aaffcc;">+₹127,757</td>
+        <td class="tr" style="color:#aaffcc;">₹127,757</td>
+        <td></td>
+        <td></td><td></td><td></td><td></td><td></td><td></td>
+      </tr>
+    </tfoot>
+  </table>
+  </div>
+
+  <div style="font-size:9px;color:#666;margin-top:6px;border-top:1px dashed #ccc;padding-top:4px;">
+    ● Income figures sourced live from Google Sheet API (member payment records across all 230 properties).<br>
+    Expense account head columns sourced from Excel TransactionDetails sheet (724 rows, up to May 2026).
+    FY totals in grey header rows use authoritative API figures.
+  </div>
+  <div class="rpt-footer">SCRWA Vampuguda &nbsp;|&nbsp; scwa.vampuguda@gmail.com &nbsp;|&nbsp; For internal use only.</div>
+</div><!-- /page4 -->
+
+</body>
+</html>
