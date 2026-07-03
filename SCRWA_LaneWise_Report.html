@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SCRWA — Lane-wise Outstanding Report</title>
+<title>SCRWA â Lane-wise Outstanding Report</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1a1a2e;font-size:13px;line-height:1.5}
@@ -39,7 +39,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1a1a2e;fo
 .sc-billed{background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff}
 .sc-paid  {background:linear-gradient(135deg,#15803d,#16a34a);color:#fff}
 .sc-due   {background:linear-gradient(135deg,#b91c1c,#dc2626);color:#fff}
-/* ── Search toolbar ──────────────────────────────────────── */
+/* ââ Search toolbar ââââââââââââââââââââââââââââââââââââââââ */
 .search-bar{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 32px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .search-wrap{position:relative;flex:1;max-width:480px}
 .search-wrap input{width:100%;padding:9px 36px 9px 38px;border:1.5px solid #cbd5e1;border-radius:22px;font-size:13px;color:#1a1a2e;background:#f8fafc;outline:none;transition:border-color .2s,box-shadow .2s}
@@ -51,7 +51,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1a1a2e;fo
 .search-count .sc-match{font-weight:700;color:#1a3c5e}
 .search-count .sc-none{font-weight:700;color:#dc2626}
 .search-hint{font-size:11px;color:#94a3b8;white-space:nowrap}
-/* ── No-results row ──────────────────────────────────────── */
+/* ââ No-results row ââââââââââââââââââââââââââââââââââââââââ */
 .no-results td{text-align:center;padding:18px;color:#94a3b8;font-style:italic}
 .sumtbl{table-layout:fixed}
 .sumtbl th{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:6px 8px}
@@ -60,7 +60,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1a1a2e;fo
 .sum-plots{font-size:12px;color:inherit;font-weight:400;margin-left:2px}
 /* highlight match */
 mark{background:#fef08a;color:#1a1a2e;border-radius:2px;padding:0 1px}
-/* ── Floating action buttons ─────────────────────────────── */
+/* ââ Floating action buttons âââââââââââââââââââââââââââââââ */
 .fab{position:fixed;right:28px;padding:12px 22px;border:none;border-radius:28px;font-size:13px;font-weight:600;cursor:pointer;transition:transform .2s,box-shadow .2s;z-index:200}
 .fab:hover{transform:translateY(-2px)}
 .refresh-btn{bottom:28px;background:linear-gradient(135deg,#1a3c5e,#0f3460);color:#fff;box-shadow:0 4px 18px rgba(26,60,94,.4)}
@@ -68,7 +68,7 @@ mark{background:#fef08a;color:#1a1a2e;border-radius:2px;padding:0 1px}
 .print-btn{bottom:80px;background:linear-gradient(135deg,#6b2737,#8b1a1a);color:#fff;box-shadow:0 4px 18px rgba(107,39,55,.4)}
 .print-btn:hover{box-shadow:0 7px 22px rgba(107,39,55,.5)}
 .print-btn:disabled{background:#aaa;cursor:not-allowed;box-shadow:none;transform:none}
-/* ── Section / table ─────────────────────────────────────── */
+/* ââ Section / table âââââââââââââââââââââââââââââââââââââââ */
 .sec{padding:22px 32px}
 .sec-t{font-size:15px;font-weight:700;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #e2e8f0}
 table{width:100%;table-layout:fixed;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07)}
@@ -82,7 +82,7 @@ tbody tr:hover td{background:#f8fafc}
 .lmeta{font-size:10px;font-weight:400;color:#555;margin-left:8px}
 .gt td{background:#1a3c5e;color:#fff;font-size:12px;font-weight:700;padding:5px 8px}
 .ftr{text-align:center;padding:20px;font-size:11px;color:#94a3b8;background:#fff;border-top:1px solid #e2e8f0;margin-top:24px}
-/* ── Cell role classes (colour/weight only — size set by td) */
+/* ââ Cell role classes (colour/weight only â size set by td) */
 .c-sno{color:#94a3b8;text-align:center}
 .c-pid{font-weight:700;color:#1a3a6b}
 .c-plot{color:#334155;white-space:nowrap}
@@ -98,11 +98,11 @@ tbody tr:hover td{background:#f8fafc}
 .pa{font-size:12px;font-weight:700;color:#d97706}
 .pu{font-size:12px;font-weight:700;color:#dc2626}
 .pn{font-size:12px;color:#94a3b8}
-/* ── Print header (hidden on screen) ────────────────────── */
+/* ââ Print header (hidden on screen) ââââââââââââââââââââââ */
 .print-hdr{display:none}
-/* ── Print media ─────────────────────────────────────────── */
+/* ââ Print media âââââââââââââââââââââââââââââââââââââââââââ */
 
-/* ── Action Buttons ───────────────────────── */
+/* ââ Action Buttons âââââââââââââââââââââââââ */
 .act-btns{display:flex;gap:3px;align-items:center;justify-content:flex-start}
 /* G/W/S fixed-slot action buttons */
 .c-act-wrap{width:86px;padding:3px 4px;vertical-align:middle;white-space:nowrap}
@@ -121,7 +121,7 @@ tbody tr:hover td{background:#f8fafc}
 .c-due   {color:#dc2626!important;font-weight:600}
 
 
-/* ── Admin Login ──────────────────────────────────────── */
+/* ââ Admin Login ââââââââââââââââââââââââââââââââââââââââ */
 .login-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%);
   display:flex;align-items:center;justify-content:center;z-index:2000}
 .login-box{background:#fff;border-radius:16px;padding:36px 40px;text-align:center;
@@ -145,10 +145,10 @@ tbody tr:hover td{background:#f8fafc}
 .c-btn-slot{width:26px;text-align:center;padding:4px 2px;color:#e2e8f0}
 .c-email{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#475569}
 
-/* ── Mobile Responsive ──────────────────────────────────────── */
+/* ââ Mobile Responsive ââââââââââââââââââââââââââââââââââââââââ */
 @media (max-width: 768px) {
 
-  /* Header — stack vertically, hide second logo */
+  /* Header â stack vertically, hide second logo */
   .hdr-inner { flex-direction:column; align-items:center; gap:8px; }
   .hdr-inner .hdr-logo-wrap:last-child { display:none; }
   .hdr-logo  { width:56px; height:56px; }
@@ -156,45 +156,45 @@ tbody tr:hover td{background:#f8fafc}
   .hdr .sub  { font-size:11px; }
   .hdr       { padding:12px 14px 10px; }
 
-  /* KPI cards — 2×2 grid */
+  /* KPI cards â 2Ã2 grid */
   .stats     { flex-wrap:wrap; }
   .sc        { flex:1 1 50%; min-width:50%; border-right:none !important;
                border-bottom:1px solid rgba(255,255,255,.15); }
   .sc .v     { font-size:17px; }
   .sc .l     { font-size:9px; }
 
-  /* Search bar — full width, compact */
+  /* Search bar â full width, compact */
   .search-bar  { padding:8px 10px; flex-wrap:wrap; gap:6px; }
   .search-wrap { max-width:100%; flex:1 1 100%; }
   .search-hint { display:none; }
   .search-count{ min-width:unset; font-size:10px; }
 
-  /* Section padding — tighter */
+  /* Section padding â tighter */
   .sec   { padding:10px 8px; }
   .sec-t { font-size:13px; margin-bottom:10px; }
 
-  /* Tables — horizontal scroll wrapper */
+  /* Tables â horizontal scroll wrapper */
   .sec { overflow-x:auto; -webkit-overflow-scrolling:touch; }
   table { min-width:600px; }
   .sumtbl { min-width:520px; }
 
-  /* Table font & padding — compact */
+  /* Table font & padding â compact */
   th { font-size:10px; padding:5px 5px; }
   td { font-size:11px; padding:3px 4px; }
   .lh td { font-size:11px; padding:5px 6px; }
 
-  /* Action buttons — bigger tap targets */
+  /* Action buttons â bigger tap targets */
   .c-act-wrap .btn-mail,
   .c-act-wrap .btn-wa,
   .c-act-wrap .btn-sms { width:26px; height:26px; font-size:11px; border-radius:6px; }
   .c-act-wrap { width:96px; }
 
-  /* FAB buttons — smaller, better positioned */
+  /* FAB buttons â smaller, better positioned */
   .fab         { padding:10px 14px; font-size:11px; }
   .refresh-btn { bottom:14px; right:14px; }
   .print-btn   { bottom:58px; right:14px; }
 
-  /* Login box — full width on mobile */
+  /* Login box â full width on mobile */
   .login-box { min-width:unset; width:88%; padding:24px 18px; }
   .login-box h2 { font-size:17px; }
 
@@ -202,14 +202,14 @@ tbody tr:hover td{background:#f8fafc}
   .c-name { white-space:normal; }
   .c-plot { white-space:normal; }
 
-  /* Lane meta info — hide on very small screens to save space */
+  /* Lane meta info â hide on very small screens to save space */
   .lmeta { display:none; }
 
   /* Footer */
   .ftr { font-size:10px; padding:14px 10px; }
 }
 
-/* ── Extra small phones (< 400px) ──────────────────────────── */
+/* ââ Extra small phones (< 400px) ââââââââââââââââââââââââââââ */
 @media (max-width: 400px) {
   .hdr h1  { font-size:12px; }
   .sc .v   { font-size:15px; }
@@ -264,7 +264,7 @@ tbody tr:hover td{background:#f8fafc}
 <div class="loading-overlay" id="loadingOverlay">
   <div class="loading-content">
     <div class="spinner"></div>
-    <h3 style="color:#1a3c5e;margin-bottom:8px">Loading Report…</h3>
+    <h3 style="color:#1a3c5e;margin-bottom:8px">Loading Reportâ¦</h3>
     <p style="color:#64748b;font-size:12px">Fetching from Google Sheets</p>
   </div>
 </div>
@@ -277,9 +277,9 @@ tbody tr:hover td{background:#f8fafc}
       <span class="hdr-regd">Regd No. 2240/2006</span>
     </div>
     <div class="hdr-text">
-      <h1>&#127963; SCRWA — Senior Citizens Residential Welfare Association</h1>
+      <h1>&#127963; SCRWA â Senior Citizens Residential Welfare Association</h1>
       <div class="sub">Lane-wise Outstanding Report &nbsp;|&nbsp; Vampuguda, Hyderabad</div>
-      <div><span class="live-pill loading" id="livePill">⏳ Loading data…</span></div>
+      <div><span class="live-pill loading" id="livePill">â³ Loading dataâ¦</span></div>
     </div>
     <div class="hdr-logo-wrap">
       <img src="icons/society_logo.png" class="hdr-logo" alt="SCRWA Logo" onerror="this.style.display='none'">
@@ -303,7 +303,7 @@ tbody tr:hover td{background:#f8fafc}
 <div class="search-bar">
   <div class="search-wrap">
     <span class="search-icon">&#128269;</span>
-    <input type="text" id="searchBox" placeholder="Search by name, plot number, prop ID, or lane…"
+    <input type="text" id="searchBox" placeholder="Search by name, plot number, prop ID, or laneâ¦"
            oninput="onSearchInput()" onkeydown="if(event.key==='Escape')clearSearch()">
     <button class="search-clear" id="searchClear" onclick="clearSearch()" title="Clear search">&#10005;</button>
   </div>
@@ -318,18 +318,18 @@ tbody tr:hover td{background:#f8fafc}
   <div class="sec-t">&#128203; Lane-wise Summary</div>
   <table class="sumtbl">
     <thead><tr>
-      <th style="width:34%;text-align:left">🏠 Lane</th>
+      <th style="width:34%;text-align:left">ð  Lane</th>
       <th style="width:5%;text-align:center">Props</th>
-      <th style="width:10%;text-align:right">💳 Billed</th>
-      <th style="width:10%;text-align:right">✅ Paid</th>
-      <th style="width:10%;text-align:right">💰 Due</th>
-      <th style="width:5%;text-align:right">🔁 Adv</th>
-      <th style="width:6%;text-align:center">✅ Paid</th>
-      <th style="width:6%;text-align:center">🔶 Part</th>
-      <th style="width:8%;text-align:center">❌ Unpaid</th>
-      <th style="width:6%;text-align:center">— N/A</th>
+      <th style="width:10%;text-align:right">ð³ Billed</th>
+      <th style="width:10%;text-align:right">â Paid</th>
+      <th style="width:10%;text-align:right">ð° Due</th>
+      <th style="width:5%;text-align:right">ð Adv</th>
+      <th style="width:6%;text-align:center">â Paid</th>
+      <th style="width:6%;text-align:center">ð¶ Part</th>
+      <th style="width:8%;text-align:center">â Unpaid</th>
+      <th style="width:6%;text-align:center">â N/A</th>
     </tr></thead>
-    <tbody id="summaryBody"><tr><td colspan="11" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr></tbody>
+    <tbody id="summaryBody"><tr><td colspan="11" style="text-align:center;padding:20px;color:#94a3b8">Loadingâ¦</td></tr></tbody>
   </table>
 </div>
 
@@ -339,18 +339,18 @@ tbody tr:hover td{background:#f8fafc}
   <table>
     <thead><tr>
       <th style="width:3%">#</th>
-      <th style="width:5%">🏷️ Prop ID</th>
-      <th style="width:14%;white-space:nowrap">📍 Plot No</th>
-      <th style="width:21%">👤 Owner Name</th>
-      <th style="width:9%">📋 Status</th>
-      <th style="width:9%">💳 Payment</th>
-      <th style="width:9%;text-align:right">💳 Billed</th>
-      <th style="width:8%;text-align:right">✅ Paid</th>
-      <th style="width:8%;text-align:right">🔴 Due</th>
-      <th style="width:6%;text-align:right">🔄 Advance</th>
-      <th style="width:8%;text-align:left">📨 Actions</th>
+      <th style="width:5%">ð·ï¸ Prop ID</th>
+      <th style="width:14%;white-space:nowrap">ð Plot No</th>
+      <th style="width:21%">ð¤ Owner Name</th>
+      <th style="width:9%">ð Status</th>
+      <th style="width:9%">ð³ Payment</th>
+      <th style="width:9%;text-align:right">ð³ Billed</th>
+      <th style="width:8%;text-align:right">â Paid</th>
+      <th style="width:8%;text-align:right">ð´ Due</th>
+      <th style="width:6%;text-align:right">ð Advance</th>
+      <th style="width:8%;text-align:left">ð¨ Actions</th>
     </tr></thead>
-    <tbody id="detailBody"><tr><td colspan="10" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr></tbody>
+    <tbody id="detailBody"><tr><td colspan="10" style="text-align:center;padding:20px;color:#94a3b8">Loadingâ¦</td></tr></tbody>
   </table>
 </div>
 
@@ -399,6 +399,12 @@ function ifmt(n) {
   return '\u20b9' + s.slice(0,-7) + ',' + s.slice(-7,-5) + ',' + s.slice(-5,-3) + ',' + s.slice(-3);
 }
 
+function ifmt0(n) {
+  n = Math.round(n);
+  if (n === 0) return '<span style="color:#94a3b8">\u20b90</span>';
+  return ifmt(n);
+}
+
 function getAmounts(prop) {
   let b = 0, p = 0;
   (prop.invoices || []).forEach(inv => { b += (inv.billAmount||0); p += (inv.paidAmount||0); });
@@ -415,18 +421,18 @@ function getAmounts(prop) {
 }
 
 function sbadge(st) {
-  if (st.includes('Active') && !st.includes('Inactive')) return '<span class="ba b-act">✅ Active</span>';
-  if (st.includes('Inactive')) return '<span class="ba b-ina">🚫 Inactive</span>';
-  if (st.includes('Exited'))   return '<span class="ba b-ext">💳 Exited</span>';
-  if (st.includes('Transfer')) return '<span class="ba b-tra">🔄 Transferred</span>';
+  if (st.includes('Active') && !st.includes('Inactive')) return '<span class="ba b-act">â Active</span>';
+  if (st.includes('Inactive')) return '<span class="ba b-ina">ð« Inactive</span>';
+  if (st.includes('Exited'))   return '<span class="ba b-ext">ð³ Exited</span>';
+  if (st.includes('Transfer')) return '<span class="ba b-tra">ð Transferred</span>';
   return '<span class="ba">' + st + '</span>';
 }
 
 function pbadge(ps) {
-  if (ps === 'paid')    return '<span class="pp">✅ Paid</span>';
-  if (ps === 'partial') return '<span class="pa">🔶 Partial</span>';
-  if (ps === 'unpaid')  return '<span class="pu">❌ Unpaid</span>';
-  return '<span class="pn">—</span>';
+  if (ps === 'paid')    return '<span class="pp">â Paid</span>';
+  if (ps === 'partial') return '<span class="pa">ð¶ Partial</span>';
+  if (ps === 'unpaid')  return '<span class="pu">â Unpaid</span>';
+  return '<span class="pn">â</span>';
 }
 
 function fmtTs(d) {
@@ -452,7 +458,7 @@ function printReport() {
   setTimeout(() => { document.title = 'SCRWA \u2014 Lane-wise Outstanding Report'; }, 1000);
 }
 
-// ── Search ────────────────────────────────────────────────
+// ââ Search ââââââââââââââââââââââââââââââââââââââââââââââââ
 let _searchTimer = null;
 
 function onSearchInput() {
@@ -500,14 +506,14 @@ function applySearch() {
       laneHits = 0;
       return;
     }
-    // Grand total row — always visible
+    // Grand total row â always visible
     if (row.classList.contains('gt')) {
       if (laneHdr) laneHdr.style.display = laneHits > 0 ? '' : 'none';
       laneHdr = null;
       row.style.display = '';
       return;
     }
-    // Property row — check cells: pid[1], plotNo[2], name[3]
+    // Property row â check cells: pid[1], plotNo[2], name[3]
     const cells = row.querySelectorAll('td');
     if (cells.length < 4) { row.style.display = 'none'; return; }
     const pid    = (cells[1].textContent || '').toLowerCase();
@@ -539,11 +545,11 @@ function applySearch() {
 }
 
 
-// ── Cache constants ────────────────────────────────────────
-const CACHE_VERSION  = '202607040031';          // bumped on every rebuild
+// ââ Cache constants ââââââââââââââââââââââââââââââââââââââââ
+const CACHE_VERSION  = '202607040043';          // bumped on every rebuild
 const CACHE_KEY      = 'scrwaReportData_'  + CACHE_VERSION;
 const CACHE_TIME_KEY = 'scrwaReportTime_'  + CACHE_VERSION;
-const CACHE_DURATION = 4 * 60 * 60 * 1000; // 4 hours — hard limit
+const CACHE_DURATION = 4 * 60 * 60 * 1000; // 4 hours â hard limit
 let   _autoRefreshTimer = null;
 
 // Auto-purge all OLD version keys on load
@@ -564,7 +570,7 @@ function showError(msg) {
   setLivePill('error');
   const div = document.createElement('div');
   div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:2px solid #dc2626;border-radius:12px;padding:24px 32px;text-align:center;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.2)';
-  div.innerHTML = '<div style="font-size:32px">❌</div><h3 style="color:#dc2626;margin:8px 0">Failed to load data</h3><p style="color:#64748b;font-size:13px">' + msg + '</p><button onclick="this.parentNode.remove();loadData(true)" style="margin-top:12px;padding:8px 20px;background:#1a3c5e;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">🔄 Retry</button>';
+  div.innerHTML = '<div style="font-size:32px">â</div><h3 style="color:#dc2626;margin:8px 0">Failed to load data</h3><p style="color:#64748b;font-size:13px">' + msg + '</p><button onclick="this.parentNode.remove();loadData(true)" style="margin-top:12px;padding:8px 20px;background:#1a3c5e;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">ð Retry</button>';
   document.body.appendChild(div);
 }
 
@@ -574,25 +580,25 @@ function setLivePill(mode, ts) {
   const t = ts ? new Date(ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true}) : '';
   if (mode === 'loading') {
     pill.className = 'live-pill loading';
-    pill.textContent = '⏳ Loading\u2026';
+    pill.textContent = 'â³ Loading\u2026';
   } else if (mode === 'live') {
     pill.className = 'live-pill live';
-    pill.textContent = '🟢 Live' + (t ? '  ·  Updated ' + t : '');
+    pill.textContent = 'ð¢ Live' + (t ? '  Â·  Updated ' + t : '');
   } else if (mode === 'cached') {
     const ageMs  = ts ? Date.now() - ts : 0;
     const ageHrs = ageMs / (60*60*1000);
     const stale  = ageHrs >= 3.5;
     pill.className = 'live-pill cached' + (stale ? ' stale' : '');
-    pill.innerHTML = (stale ? '🔴' : '🟡') + ' Cached' + (t ? ' · ' + t : '')
-      + (stale ? ' <span style="color:#dc2626;font-size:10px;font-weight:700">(Stale — refreshing...)</span>' : '')
-      + '  <button onclick="loadData(true)" '
+    pill.innerHTML = (stale ? 'ð´' : 'ð¡') + ' Cached' + (t ? ' Â· ' + t : '')
+      + (stale ? ' <span style="color:#dc2626;font-size:10px;font-weight:700">(Stale â refreshing...)</span>' : '')
+      + ' Â <button onclick="loadData(true)" '
       + 'style="background:#fff;color:#1a3c5e;border:1px solid #1a3c5e;border-radius:4px;'
       + 'padding:1px 8px;font-size:10px;font-weight:700;cursor:pointer;margin-left:4px">'
-      + '🔄 Refresh</button>';
+      + 'ð Refresh</button>';
     if (stale) setTimeout(() => loadData(true), 1500); // auto-trigger refresh if stale
   } else if (mode === 'error') {
     pill.className = 'live-pill error';
-    pill.textContent = '🔴 Error';
+    pill.textContent = 'ð´ Error';
   }
 }
 
@@ -601,10 +607,10 @@ function startAutoRefresh() {
   _autoRefreshTimer = setInterval(() => {
     const t = localStorage.getItem(CACHE_TIME_KEY);
     if (t && (Date.now() - parseInt(t)) >= CACHE_DURATION) {
-      console.log('SCRWA: Cache ≥ 4hrs — auto-refreshing...');
+      console.log('SCRWA: Cache â¥ 4hrs â auto-refreshing...');
       loadData(true);
     }
-  }, 60 * 1000); // check every 1 min — triggers at exactly 4hr mark
+  }, 60 * 1000); // check every 1 min â triggers at exactly 4hr mark
 }
 
 function loadData(forceRefresh) {
@@ -612,7 +618,7 @@ function loadData(forceRefresh) {
   if (overlay) overlay.style.display = 'flex';
   setLivePill('loading');
 
-  // ── Use localStorage cache if < 4 hours old ─────────────────────
+  // ââ Use localStorage cache if < 4 hours old âââââââââââââââââââââ
   if (!forceRefresh) {
     try {
       const cached  = localStorage.getItem(CACHE_KEY);
@@ -627,7 +633,7 @@ function loadData(forceRefresh) {
     } catch(e) { /* fall through to live fetch */ }
   }
 
-  // ── Fetch live from Google Apps Script ─────────────────────
+  // ââ Fetch live from Google Apps Script âââââââââââââââââââââ
   const API = 'https://script.google.com/macros/s/AKfycbxwEAILeFAdVPJGE1RnpSFb7TP48gp-JHHF6-gXx-vhD59P_gTxV9fxIuFCGS-JDfY/exec';
   fetch(API, { signal: AbortSignal.timeout(30000) })
     .then(r => r.ok ? r.json() : Promise.reject('HTTP ' + r.status))
@@ -667,7 +673,7 @@ function loadData(forceRefresh) {
     });
 }
 
-// ── Admin Auth ────────────────────────────────────────
+// ââ Admin Auth ââââââââââââââââââââââââââââââââââââââââ
 const ADMINS = {
   'parthok@gmail.com'       : 'Partho',
   'bilsaibaba@gmail.com'    : 'Saibaba',
@@ -680,7 +686,7 @@ function doLogin() {
   const err   = document.getElementById('loginErr');
 
   if (!email) {
-    err.textContent = '⚠️ Please enter your email address.';
+    err.textContent = 'â ï¸ Please enter your email address.';
     err.style.display = 'block';
     setTimeout(() => { err.style.display = 'none'; }, 3000);
     return;
@@ -691,7 +697,7 @@ function doLogin() {
     if (meta) meta.innerHTML += '<span class="admin-badge">&#128100; ' + ADMINS[email] + '</span>';
     loadData(true); // always fetch fresh on admin login
   } else {
-    err.textContent = '❌ Email not recognised. Access restricted to authorised admins only.';
+    err.textContent = 'â Email not recognised. Access restricted to authorised admins only.';
     err.style.display = 'block';
     document.getElementById('adminEmail').select();
     setTimeout(() => { err.style.display = 'none'; }, 3000);
@@ -750,13 +756,13 @@ function renderReport(raw) {
       + '<td style="text-align:left">\uD83C\uDFE0 ' + r.lane.name + ' (' + r.lane.plots + ')</td>'
       + '<td style="text-align:center">' + r.lane.pids.length + '</td>'
       + '<td class="c-amt" style="text-align:right">' + ifmt(r.bTot) + '</td>'
-      + '<td class="c-amt' + (r.pTot ? '' : ' c-dim') + '" style="text-align:right">' + ifmt(r.pTot) + '</td>'
+      + '<td class="c-amt" style="text-align:right">' + ifmt0(r.pTot) + '</td>'
       + '<td class="c-amt c-due" style="text-align:right">' + ifmt(r.due) + '</td>'
-      + '<td class="c-dim" style="text-align:right">—</td>'
-      + '<td style="text-align:center;color:#16a34a;font-weight:600">' + (r.pdCt || '<span class="c-dim">—</span>') + '</td>'
-      + '<td style="text-align:center;color:#d97706;font-weight:600">' + (r.ptCt || '<span class="c-dim">—</span>') + '</td>'
-      + '<td style="text-align:center;color:#dc2626;font-weight:600">' + (r.puCt || '<span class="c-dim">—</span>') + '</td>'
-      + '<td style="text-align:center;color:#94a3b8">'               + (r.naCt || '<span class="c-dim">—</span>') + '</td>'
+      + '<td class="c-dim" style="text-align:right">â</td>'
+      + '<td style="text-align:center;color:#16a34a;font-weight:600">' + (r.pdCt || '<span class="c-dim">â</span>') + '</td>'
+      + '<td style="text-align:center;color:#d97706;font-weight:600">' + (r.ptCt || '<span class="c-dim">â</span>') + '</td>'
+      + '<td style="text-align:center;color:#dc2626;font-weight:600">' + (r.puCt || '<span class="c-dim">â</span>') + '</td>'
+      + '<td style="text-align:center;color:#94a3b8">'               + (r.naCt || '<span class="c-dim">â</span>') + '</td>'
       + '</tr>';
   });
   sumHTML += '<tr class="gt">'
@@ -765,7 +771,7 @@ function renderReport(raw) {
     + '<td class="c-amt" style="text-align:right"><strong>' + ifmt(gtBilled) + '</strong></td>'
     + '<td class="c-amt" style="text-align:right"><strong>' + ifmt(gtPaid)   + '</strong></td>'
     + '<td class="c-amt c-due" style="text-align:right"><strong>' + ifmt(gtDue) + '</strong></td>'
-    + '<td class="c-dim" style="text-align:right">—</td>'
+    + '<td class="c-dim" style="text-align:right">â</td>'
     + '<td style="text-align:center;color:#16a34a"><strong>' + gtPd + '</strong></td>'
     + '<td style="text-align:center;color:#d97706"><strong>' + gtPt + '</strong></td>'
     + '<td style="text-align:center;color:#dc2626"><strong>' + gtPu + '</strong></td>'
@@ -781,14 +787,14 @@ function renderReport(raw) {
     if (r.pdCt) pills.push('\u2713 ' + r.pdCt + ' Paid');
     if (r.ptCt) pills.push('\u25c6 ' + r.ptCt + ' Partial');
     if (r.puCt) pills.push('\u2717 ' + r.puCt + ' Unpaid');
-    if (r.naCt) pills.push('— ' + r.naCt + ' No Data');
-    const pillStr  = pills.join('  ·  ');
-    const metaStr  = r.lane.pids.length + ' props  ·  Billed: ' + ifmt(r.bTot)
-                   + '  ·  Paid: ' + ifmt(r.pTot)
-                   + '  ·  Outstanding: ' + ifmt(r.due)
+    if (r.naCt) pills.push('â ' + r.naCt + ' No Data');
+    const pillStr  = pills.join('  Â·  ');
+    const metaStr  = r.lane.pids.length + ' props  Â·  Billed: ' + ifmt(r.bTot)
+                   + '  Â·  Paid: ' + ifmt(r.pTot)
+                   + '  Â·  Outstanding: ' + ifmt(r.due)
                    + (pillStr ? '   ' + pillStr : '');
     detHTML += '<tr class="lh" data-lane="' + r.lane.name + '">'
-             + '<td colspan="11">\uD83C\uDFE0 ' + r.lane.name + ' — ' + r.lane.plots
+             + '<td colspan="11">\uD83C\uDFE0 ' + r.lane.name + ' â ' + r.lane.plots
              + ' <span class="lmeta">' + metaStr + '</span></td></tr>';
 
     r.lane.pids.forEach(pid => {
@@ -798,10 +804,10 @@ function renderReport(raw) {
       const pst = prop.status || '';
       const amtCols = b > 0
         ? '<td class="c-amt" style="text-align:right">'       + ifmt(b) + '</td>'
-        + '<td class="c-amt' + (p ? '' : ' c-dim') + '" style="text-align:right">' + ifmt(p) + '</td>'
+        + '<td class="c-amt" style="text-align:right">' + ifmt0(p) + '</td>'
         + '<td class="c-amt c-due' + (d ? '' : ' c-dim') + '" style="text-align:right">' + ifmt(d) + '</td>'
-        + '<td class="c-dim" style="text-align:right">—</td>'
-        : '<td class="c-dim">—</td><td class="c-dim">—</td><td class="c-amt c-due c-dim">—</td><td class="c-dim">—</td>';
+        + '<td class="c-dim" style="text-align:right">â</td>'
+        : '<td class="c-dim">â</td><td class="c-dim">â</td><td class="c-amt c-due c-dim">â</td><td class="c-dim">â</td>';
 
       detHTML += '<tr data-pid="' + pid + '" data-lane="' + r.lane.name + '">'
         + '<td class="c-sno">' + sno + '</td>'
@@ -818,12 +824,12 @@ function renderReport(raw) {
 
   detHTML += '<tr class="gt">'
     + '<td colspan="5"><strong>GRAND TOTAL</strong></td>'
-    + '<td class="c-dim">—</td>'
+    + '<td class="c-dim">â</td>'
     + '<td class="c-amt" style="text-align:right"><strong>' + ifmt(gtBilled) + '</strong></td>'
     + '<td class="c-amt" style="text-align:right"><strong>' + ifmt(gtPaid)   + '</strong></td>'
     + '<td class="c-amt c-due" style="text-align:right"><strong>' + ifmt(gtDue) + '</strong></td>'
-    + '<td class="c-dim">—</td>'
-    + '<td class="c-dim">—</td>'
+    + '<td class="c-dim">â</td>'
+    + '<td class="c-dim">â</td>'
     + '</tr>';
   document.getElementById('detailBody').innerHTML = detHTML;
   _dataLoaded = true;
@@ -850,14 +856,14 @@ function rbadge(prop, pid, due) {
     const det =
         '\uD83C\uDFE0 Property ID  : ' + pid      + '\n'
       + '\uD83D\uDCCD Plot No      : ' + plotNo   + '\n'
-      + '\uD83D\uDEE3️ Lane         : ' + laneName + '\n'
-      + '\uD83D\uDCB0 Outstanding  : ₹' + due.toLocaleString('en-IN')
+      + '\uD83D\uDEE3ï¸ Lane         : ' + laneName + '\n'
+      + '\uD83D\uDCB0 Outstanding  : â¹' + due.toLocaleString('en-IN')
       + ' (' + months + ' month' + (months > 1 ? 's' : '') + ' pending)\n'
       + '\uD83D\uDCC5 As On        : ' + asOn
       + (proxy ? '\n\uD83D\uDC64 Proxy/Rep    : ' + proxy : '');
     const subj = encodeURIComponent(
-      '\uD83D\uDD14 Friendly Reminder – Outstanding ₹' + due.toLocaleString('en-IN')
-      + ' (' + months + ' month' + (months > 1 ? 's' : '') + ' pending) – Plot ' + plotNo
+      '\uD83D\uDD14 Friendly Reminder â Outstanding â¹' + due.toLocaleString('en-IN')
+      + ' (' + months + ' month' + (months > 1 ? 's' : '') + ' pending) â Plot ' + plotNo
     );
     const body = encodeURIComponent(
         'Dear ' + name + ',\n\n'
@@ -868,7 +874,7 @@ function rbadge(prop, pid, due) {
       + divider + '\n\n'
       + 'We kindly request you to clear the above dues at your earliest convenience.\n'
       + 'Your timely support helps maintain and improve our community for everyone.\n\n'
-      + '💳 Scan & Pay (UPI/GPay/PhonePe): https://scwavampuguda-tech.github.io/society-dashboard/Society_Files/HTML_Portals/payment_scanner.jpg\n\n'
+      + 'ð³ Scan & Pay (UPI/GPay/PhonePe): https://scwavampuguda-tech.github.io/society-dashboard/Society_Files/HTML_Portals/payment_scanner.jpg\n\n'
       + '\uD83D\uDD17 View Statement: https://scwavampuguda-tech.github.io/society-dashboard/Society_Portal.html\n'
       + '\uD83D\uDCE7 Queries: scwa.vampuguda@gmail.com\n\n'
       + 'Thank you for your cooperation.\n\n'
@@ -880,7 +886,7 @@ function rbadge(prop, pid, due) {
     const to = email + (proxy && prop.proxyEmail ? ',' + prop.proxyEmail : '');
     gBtn = '<a class="btn-mail" href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to='
       + encodeURIComponent(to) + '&su=' + subj + '&body=' + body
-      + '" target="_blank" title="Gmail — ' + email + '">G</a>';
+      + '" target="_blank" title="Gmail â ' + email + '">G</a>';
   }
   if (due > 0 && phone) {
     const wp = phone.replace(/[^0-9]/g, '');
@@ -907,8 +913,8 @@ function rbadge(prop, pid, due) {
     );
     const waNum = wp.length === 10 ? '91' + wp : wp;
     const waUrl = 'https://wa.me/' + waNum + '?text=' + wm;
-    wBtn = '<a class="btn-wa" href="' + waUrl + '" target="_blank" title="WhatsApp — ' + phone + '">W</a>';
-    sBtn = '<a class="btn-sms" href="sms:' + phone.replace(/[^0-9+]/g, '') + '" title="SMS — ' + phone + '">S</a>';
+    wBtn = '<a class="btn-wa" href="' + waUrl + '" target="_blank" title="WhatsApp â ' + phone + '">W</a>';
+    sBtn = '<a class="btn-sms" href="sms:' + phone.replace(/[^0-9+]/g, '') + '" title="SMS â ' + phone + '">S</a>';
   }
   return '<td class="c-act-wrap">' + gBtn + wBtn + sBtn + '</td>';
 }
