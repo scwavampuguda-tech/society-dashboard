@@ -803,7 +803,7 @@ function renderReport(raw) {
       const pst = prop.status || '';
       const amtCols = b > 0
         ? '<td class="c-amt" style="text-align:right">'       + ifmt(b) + '</td>'
-        + '<td class="c-amt" style="text-align:right">' + ifmt0(p) + '</td>'
+        + '<td class="c-amt' + (p ? '' : ' c-dim') + '" style="text-align:right">' + ifmt(p) + '</td>'
         + '<td class="c-amt c-due' + (d ? '' : ' c-dim') + '" style="text-align:right">' + ifmt(d) + '</td>'
         + '<td class="c-dim" style="text-align:right">—</td>'
         : '<td class="c-dim">—</td><td class="c-dim">—</td><td class="c-amt c-due c-dim">—</td><td class="c-dim">—</td>';
