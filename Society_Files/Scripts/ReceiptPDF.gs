@@ -111,6 +111,37 @@ var SOCIETY_REGD       = 'Regd. No: 2240/2006';
 var SOCIETY_EMAIL      = 'scwa.vampuguda@gmail.com';
 
 // ─── doPost — AppSheet webhook entry point ─────────────────────────
+function doGet(e) {
+  try {
+    var action    = (e.parameter.action    || '').trim();
+    var receiptNo = (e.parameter.receiptNo || '').trim();
+
+    // AppSheet action: ?action=generateReceipt&receiptNo=XXXXXX
+    if (action === 'generateReceipt' && receiptNo) {
+      var result = generateConsolidatedReceipt(receiptNo);
+      return ContentService
+        .createTextOutput(JSON.stringify(result))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Health check: ?action=ping
+    if (action === 'ping') {
+      return ContentService
+        .createTextOutput(JSON.stringify({ success: true, message: 'SCRWA Receipt API is live' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ success: false, message: 'Missing action or receiptNo' }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ success: false, message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
 function doPost(e) {
   try {
     var payload   = JSON.parse(e.postData.contents);
