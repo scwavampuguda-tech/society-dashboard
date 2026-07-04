@@ -41,6 +41,7 @@
  *    Col H [7]  Reconciled
  *    Col I [8]  ReceiptPDF      ← script writes PDF URL here
  *    Col J [9]  EmailSent       ← script writes timestamp when email sent
+ *    Col K [10] GeneratePDF     ← AppSheet sets YES → GAS generates PDF + clears
  *
  *  TransactionDetails (row 1=section label, row 2=headers, data row 3+):
  *    Col A [0]  TransactionID
@@ -927,6 +928,51 @@ function metaBox(label, value) {
 }
 
 
+
+// ═══════════════════════════════════════════════════════════════════
+//  PDF TRIGGER — watches BankDetails Col K (GeneratePDF = "YES")
+//  AppSheet sets Col K = "YES" silently via Data action
+//  This function runs every 1 min, picks it up, generates PDF
+// ═══════════════════════════════════════════════════════════════════
+function processPendingPDFs() {
+  var ss     = SpreadsheetApp.openById(SS_ID);
+  var bSheet = ss.getSheetByName('BankDetails');
+  if (!bSheet) return;
+
+  var lastRow = bSheet.getLastRow();
+  if (lastRow < 2) return;
+
+  // Read Col C (RefNo) and Col K (GeneratePDF) in one batch
+  var data = bSheet.getRange(2, 1, lastRow - 1, 11).getValues();  // cols A–K
+
+  var processed = 0;
+
+  for (var i = 0; i < data.length; i++) {
+    var refNo     = String(data[i][2]  || '').trim();   // Col C
+    var genFlag   = String(data[i][10] || '').trim();   // Col K GeneratePDF
+
+    if (genFlag.toUpperCase() !== 'YES') continue;
+    if (!refNo) continue;
+
+    Logger.log('processPendingPDFs: generating PDF for RefNo ' + refNo);
+
+    // Clear Col K immediately to prevent re-triggering
+    bSheet.getRange(i + 2, 11).setValue('');
+
+    try {
+      var result = generateConsolidatedReceipt(refNo);
+      Logger.log('processPendingPDFs: ' + JSON.stringify(result));
+      processed++;
+    } catch(err) {
+      Logger.log('processPendingPDFs ERROR for ' + refNo + ': ' + err.toString());
+    }
+
+    if (processed >= 5) break;  // safety limit per run
+  }
+
+  Logger.log('processPendingPDFs: done. Processed ' + processed + ' row(s).');
+}
+
 // ═══════════════════════════════════════════════════════════════════
 //  AUTO EMAIL TRIGGER — runs every 1 min via time-driven trigger
 //  Scans BankDetails for: Col I (PDF URL) filled + Col J (EmailSent) blank
@@ -1015,18 +1061,27 @@ function processUnsentEmails() {
 //  Menu: SCRWA → Setup Auto-Email Trigger
 // ═══════════════════════════════════════════════════════════════════
 function setupAutoEmailTrigger() {
-  // Remove any existing processUnsentEmails triggers first
+  // Remove existing triggers
   ScriptApp.getProjectTriggers().forEach(function(t) {
-    if (t.getHandlerFunction() === 'processUnsentEmails') {
+    if (t.getHandlerFunction() === 'processUnsentEmails' ||
+        t.getHandlerFunction() === 'processPendingPDFs') {
       ScriptApp.deleteTrigger(t);
     }
   });
-  // Install fresh 1-min trigger
+  // Install 1-min trigger for PDF generation
+  ScriptApp.newTrigger('processPendingPDFs')
+    .timeBased()
+    .everyMinutes(1)
+    .create();
+  // Install 1-min trigger for email sending
   ScriptApp.newTrigger('processUnsentEmails')
     .timeBased()
     .everyMinutes(1)
     .create();
-  SpreadsheetApp.getUi().alert('✅ Auto-Email Trigger installed!\nWill scan BankDetails every 1 minute.');
+  SpreadsheetApp.getUi().alert('✅ Auto Triggers installed!\n\n' +
+    '• processPendingPDFs — generates PDF when Col K = YES\n' +
+    '• processUnsentEmails — sends email when Col I filled + Col J blank\n\n' +
+    'Both run every 1 minute.');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1035,7 +1090,8 @@ function setupAutoEmailTrigger() {
 function removeAutoEmailTrigger() {
   var removed = 0;
   ScriptApp.getProjectTriggers().forEach(function(t) {
-    if (t.getHandlerFunction() === 'processUnsentEmails') {
+    if (t.getHandlerFunction() === 'processUnsentEmails' ||
+        t.getHandlerFunction() === 'processPendingPDFs') {
       ScriptApp.deleteTrigger(t);
       removed++;
     }
