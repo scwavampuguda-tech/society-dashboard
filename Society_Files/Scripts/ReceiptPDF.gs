@@ -493,42 +493,29 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
                   (isMulti ? ' (' + txRows.length + ' Properties)' : '') +
                   ' - ' + SOCIETY_SHORT;
 
-    // Plain narrative body — one paragraph per property
-    var propLines = info.entries.map(function(e) {
-      var tx = e.tx;
-      var mm = memberMap[tx.propertyId] || {};
-      var line = 'Property: ' + (mm.locationName || '') + ', Plot No. ' + (mm.plotNo || '-') +
-                 ' (Property ID: ' + tx.propertyId + ')' +
-                 ' | Purpose: ' + tx.ioName +
-                 ' | Amount: Rs.' + fINR(tx.amount) +
-                 ' | FY: ' + tx.fyYear;
-      return line;
-    }).join('\n');
-
+    // Plain narrative email body
     var body =
       'Dear ' + info.displayName + ',' +
       '\n\n' +
       'Thank you for your payment to ' + SOCIETY_SHORT + '.' +
       '\n\n' +
-      'We are pleased to confirm that your payment has been received and reconciled. ' +
-      'Please find attached the receipt for Receipt No. ' + receiptNo + ' dated ' + bankRow.displayDate + ' ' +
-      'for an amount of Rs.' + fINR(bankRow.amount) + '.' +
+      'We are pleased to confirm that your payment of Rs.' + fINR(bankRow.amount) + ' ' +
+      'has been received and reconciled against Receipt No. ' + receiptNo + ' dated ' + bankRow.displayDate + '.' +
       '\n\n' +
-      'Payment details:' +
-      '\n' + propLines +
+      'Please find the receipt PDF attached to this email. ' +
+      'You may also view or download it using the link below:\n' +
+      pdfUrl +
       '\n\n' +
-      'A copy of the receipt PDF is attached to this email. You may also view or download it using the link below:' +
-      '\n' + pdfUrl +
-      '\n\n' +
-      'Please retain this receipt for your records. For any queries, kindly quote Receipt No. ' + receiptNo + ' ' +
-      'in your communication with the Society office.' +
+      'Please retain this receipt for your records. For any queries, kindly quote ' +
+      'Receipt No. ' + receiptNo + ' in your communication with the Society office.' +
       '\n\n' +
       'Regards,' +
       '\nSCRWA Management Committee' +
       '\n' + SOCIETY_SHORT + ' | ' + SOCIETY_REGD +
       '\n' + SOCIETY_EMAIL +
       '\n\n' +
-      'Note: This is a system-generated email. Please do not reply to this message.';
+      'This is a system-generated email. Please do not reply to this message.';
+
 
 
     try {
