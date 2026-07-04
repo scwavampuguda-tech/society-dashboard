@@ -494,7 +494,7 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
                   ' - ' + SOCIETY_SHORT;
 
     // Email body — clean narrative, receipt no. once as clickable link
-    var receiptLink = '<a href="' + pdfUrl + '" style="color:#1a1a2e;font-weight:bold">' + receiptNo + '</a>';
+    var receiptLink = '<a href="' + pdfUrl + '" style="color:#1155cc;text-decoration:underline">' + receiptNo + '</a>';
     var portalLink  = '<a href="https://scwavampuguda-tech.github.io/society-dashboard/Society_Portal.html" style="color:#1e4d8c">Society Portal</a>';
     var body =
       '<div style="font-family:Arial,sans-serif;font-size:14px;color:#1a1a2e;line-height:1.8">' +
