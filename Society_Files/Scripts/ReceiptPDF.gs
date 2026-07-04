@@ -493,35 +493,33 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
                   (isMulti ? ' (' + txRows.length + ' Properties)' : '') +
                   ' - ' + SOCIETY_SHORT;
 
-    // Plain narrative email body
+    // Plain narrative email — minimal HTML for clickable receipt link
+    var receiptLink = '<a href="' + pdfUrl + '" style="color:#1a1a2e">' + receiptNo + '</a>';
     var body =
-      'Dear ' + info.displayName + ',' +
-      '\n\n' +
-      'Thank you for your payment to ' + SOCIETY_SHORT + '.' +
-      '\n\n' +
-      'We are pleased to confirm that your payment of Rs.' + fINR(bankRow.amount) + ' ' +
-      'has been received and reconciled against Receipt No. ' + receiptNo + ' dated ' + bankRow.displayDate + '.' +
-      '\n\n' +
-      'Please find the receipt PDF attached to this email. ' +
-      'You may also view or download it using the link below:\n' +
-      pdfUrl +
-      '\n\n' +
-      'Please retain this receipt for your records. For any queries, kindly quote ' +
-      'Receipt No. ' + receiptNo + ' in your communication with the Society office.' +
-      '\n\n' +
-      'Regards,' +
-      '\nSCRWA Management Committee' +
-      '\n' + SOCIETY_SHORT + ' | ' + SOCIETY_REGD +
-      '\n' + SOCIETY_EMAIL +
-      '\n\n' +
-      'This is a system-generated email. Please do not reply to this message.';
+      '<div style="font-family:Arial,sans-serif;font-size:14px;color:#1a1a2e;line-height:1.7">' +
+      '<p>Dear ' + info.displayName + ',</p>' +
+      '<p>Thank you for your payment to ' + SOCIETY_SHORT + '.</p>' +
+      '<p>We are pleased to confirm that your payment of Rs.' + fINR(bankRow.amount) + ' has been received ' +
+      'and reconciled against Receipt No. ' + receiptLink + ' dated ' + bankRow.displayDate + '.</p>' +
+      '<p>Please find the receipt PDF attached to this email. A copy is also available on Google Drive ' +
+      'under Receipt No. ' + receiptLink + '.</p>' +
+      '<p>Please retain this receipt for your records. For any queries, kindly quote ' +
+      'Receipt No. ' + receiptNo + ' in your communication with the Society office.</p>' +
+      '<p>Regards,<br>' +
+      'SCRWA Management Committee<br>' +
+      SOCIETY_SHORT + ' | ' + SOCIETY_REGD + '<br>' +
+      SOCIETY_EMAIL + '</p>' +
+      '<p style="font-size:11px;color:#94a3b8">This is a system-generated email. Please do not reply to this message.</p>' +
+      '</div>';
+
 
 
 
     try {
       GmailApp.sendEmail(TEST_EMAIL || addr, TEST_EMAIL ? '[TEST to: ' + addr + '] ' + subject : subject,
-        body,
+        'Please enable HTML to view this email.',
         {
+          htmlBody:    body,
           attachments: [pdfBlob.setName(fileName)],
           name:        SOCIETY_SHORT,
           replyTo:     SOCIETY_EMAIL
