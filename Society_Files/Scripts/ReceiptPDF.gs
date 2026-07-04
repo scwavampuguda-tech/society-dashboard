@@ -706,9 +706,9 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
   var html =
     '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' +
     '@import url(https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;600;700&display=swap);' +
-    '@page{size:A4 landscape;margin:12mm}' +
-    'body{font-family:Roboto,Arial,sans-serif;margin:0;padding:0;color:#1a1a2e;font-size:12px}' +
-    '.page{width:100%;max-width:1050px;margin:0 auto;padding:0}' +
+    '@page{size:A4 portrait;margin:10mm}' +
+    'body{font-family:Roboto,Arial,sans-serif;margin:0;padding:0;color:#1a1a2e;font-size:11px}' +
+    '.page{width:100%;max-width:750px;margin:0 auto;padding:0}' +
     'table{border-collapse:collapse}' +
     '</style></head><body><div class="page">' +
 
@@ -719,31 +719,29 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     '<div style="background:#c8a951;height:5px;width:100%"></div>' +
 
     // Header content: logo left, society name center, RECEIPT badge right
-    '<div style="padding:16px 20px;background:#0d2137;display:flex;justify-content:space-between;align-items:center">' +
+    '<table style="width:100%;background:#0d2137;border-collapse:collapse"><tr>' +
 
-    // Logo
-    '<div style="flex-shrink:0;margin-right:14px">' +
+    // Logo cell
+    '<td style="width:80px;padding:10px 10px 10px 14px;vertical-align:middle">' +
     '<img src="https://scwavampuguda-tech.github.io/society-dashboard/icons/society_logo.png" ' +
-    'width="70" height="70" style="display:block" alt="SCRWA"/>' +
-    '</div>' +
+    'width="65" height="65" alt="SCRWA"/>' +
+    '</td>' +
 
-    // Society name + tagline (center)
-    '<div style="flex:1;text-align:center;padding:0 16px">' +
+    // Society name cell
+    '<td style="text-align:center;padding:10px 8px;vertical-align:middle">' +
     '<div style="font-size:15px;font-weight:700;color:#800000;white-space:nowrap">' + SOCIETY_NAME + '</div>' +
-    '<div style="font-size:10px;color:#c8a951;margin-top:3px;letter-spacing:.8px;text-transform:uppercase">' +
+    '<div style="font-size:9px;color:#c8a951;margin-top:3px;letter-spacing:.8px;text-transform:uppercase">' +
       SOCIETY_REGD + ' &nbsp;·&nbsp; Vampuguda, Hyderabad' +
     '</div>' +
-    '<div style="font-size:10px;color:#93b4cc;margin-top:2px">' + SOCIETY_EMAIL + '</div>' +
-    '</div>' +
+    '<div style="font-size:9px;color:#93b4cc;margin-top:1px">' + SOCIETY_EMAIL + '</div>' +
+    '</td>' +
 
-    // RECEIPT badge (right)
-    '<div style="flex-shrink:0;text-align:right">' +
-    '<div style="background:#c8a951;color:#1a3c5e;padding:6px 18px;border-radius:6px;' +
-      'font-weight:700;font-size:14px;letter-spacing:1.5px">RECEIPT</div>' +
-
-    '</div>' +
-
-    '</div>' +
+    // RECEIPT badge cell
+    '<td style="width:90px;padding:10px 14px 10px 8px;vertical-align:middle;text-align:right">' +
+    '<div style="background:#c8a951;color:#1a3c5e;padding:5px 12px;border-radius:4px;' +
+      'font-weight:700;font-size:13px;letter-spacing:1.5px;display:inline-block">RECEIPT</div>' +
+    '</td>' +
+    '</tr></table>' +
 
     // Bottom accent bar
     '<div style="background:#c8a951;height:2px;width:100%"></div>' +
