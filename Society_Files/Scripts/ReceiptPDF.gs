@@ -17,8 +17,9 @@
  *
  *  WHO GETS WHATSAPP:
  *  ─────────────────
- *  OwnerDetails Col P [15] = IsWhatsApp  ("Y" / "" or "N")
- *  ProxyDetails Col G [6]  = IsWhatsApp  ("Y" / "" or "N")
+ *  OwnerDetails Col M [12] = IsWhatsApp  (existing column — Y/YES/TRUE = enabled)
+ *  OwnerDetails Col L [11] = PhoneNumber (existing — used as WA mobile)
+ *  ProxyDetails Col G [6]  = IsWhatsApp  (add if not present — Y/YES/TRUE = enabled)
  *
  *  Priority rule per property:
  *    1. If isProxy = "Yes" AND proxy has WhatsApp "Y" → use proxy mobile
@@ -322,7 +323,8 @@ function getTransactionRowsByReceiptNo(ss, receiptNo) {
 }
 
 // ─── GET MEMBER DATA ──────────────────────────────────────────────
-// Reads OwnerDetails (Col P [15] = IsWhatsApp) and ProxyDetails (Col G [6] = IsWhatsApp)
+// Reads OwnerDetails Col L [11]=PhoneNumber, Col M [12]=IsWhatsApp (existing)
+// Reads ProxyDetails Col F [5]=ProxyMobile,  Col G [6]=IsWhatsApp  (add if missing)
 function getMemberData(ss, propertyId) {
   if (!propertyId) return null;
   var member = {
@@ -337,7 +339,7 @@ function getMemberData(ss, propertyId) {
     mobile:        '',
     status:        '',
     isProxy:       false,
-    isWhatsApp:    false,   // owner WhatsApp flag (Col P)
+    isWhatsApp:    false,   // Col M [12] IsWhatsApp — existing column
     proxyName:     '',
     proxyMobile:   '',
     proxyEmail:    '',
@@ -355,11 +357,12 @@ function getMemberData(ss, propertyId) {
       member.name2      = String(owData[i][5]  || '').trim();
       member.laneNo     = String(owData[i][7]  || '').trim();
       member.status     = String(owData[i][9]  || '').trim();
-      member.email      = String(owData[i][10] || '').trim();
-      member.mobile     = String(owData[i][11] || '').trim();
+      member.email      = String(owData[i][10] || '').trim();  // Col K [10]
+      member.mobile     = String(owData[i][11] || '').trim();  // Col L [11] PhoneNumber
       member.isProxy    = String(owData[i][14] || '').trim().toLowerCase() === 'yes';
-      // Col P [15] = IsWhatsApp
-      member.isWhatsApp = String(owData[i][15] || '').trim().toUpperCase() === 'Y';
+      // Col M [12] = IsWhatsApp (existing column — TRUE / Y = WA enabled)
+      // Col L [11] = PhoneNumber — used as mobile for WA
+      member.isWhatsApp = isWAEnabled(owData[i][12]);
       member.fullName   = member.name + (member.name2 ? ' & ' + member.name2 : '');
       break;
     }
@@ -375,8 +378,8 @@ function getMemberData(ss, propertyId) {
         member.proxyName   = String(prData[j][1] || '').trim();
         member.proxyMobile = String(prData[j][5] || '').trim();
         member.proxyEmail  = String(prData[j][4] || '').trim();
-        // Col G [6] = IsWhatsApp for proxy
-        member.proxyWA     = String(prData[j][6] || '').trim().toUpperCase() === 'Y';
+        // Col G [6] = IsWhatsApp for proxy (add this column to ProxyDetails if not present)
+        member.proxyWA = isWAEnabled(prData[j][6]);
         break;
       }
     }
@@ -842,6 +845,16 @@ function buildConsolidatedPdf(receiptNo, bankRow, txRows, memberMap, tz) {
 }
 
 // ─── HELPERS ─────────────────────────────────────────────────────
+// ─── isWAEnabled ─────────────────────────────────────────────────
+// Accepts any truthy value AppSheet / sheet might store:
+//   "Y", "y", "YES", "yes", "TRUE", "true", TRUE (boolean), "1", 1
+// Everything else → false
+function isWAEnabled(val) {
+  if (!val) return false;
+  var s = String(val).trim().toUpperCase();
+  return s === 'Y' || s === 'YES' || s === 'TRUE' || s === '1';
+}
+
 function fINR(n) {
   return Math.round(n || 0).toLocaleString('en-IN');
 }
