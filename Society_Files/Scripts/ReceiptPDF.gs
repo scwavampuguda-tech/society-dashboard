@@ -242,7 +242,7 @@ function getTransactionRow(ss, txId) {
       billId:        String(row[10] || '').trim(),
       remarks:       String(row[11] || '').trim(),
       description:   description,
-      currentPdfUrl: String(row[13] || '').trim(),   // Col N — existing PDF if any
+      currentPdfUrl: String(row[15] || '').trim(),   // Col P [15] — existing ReceiptPDF URL if already generated
       fyYear:        fyYear
     };
   }
@@ -554,7 +554,11 @@ function getOrCreateReceiptFolder(dateStr) {
 function writeReceiptUrlToSheet(ss, sheetRow, url) {
   var sheet = ss.getSheetByName('TransactionDetails');
   if (!sheet) return;
-  sheet.getRange(sheetRow, 15).setValue(url); // Col O = column 15 (Attachments — Image type in AppSheet)
+  // Col P = column 16 = ReceiptPDF (new dedicated column — NOT Attachments)
+  // Col N [13] = Attachments = manual voucher/bill proof — DO NOT TOUCH
+  // Col O [14] = FY Year
+  // Col P [15] = ReceiptPDF  ← PDF URL written here
+  sheet.getRange(sheetRow, 16).setValue(url);
 }
 
 function logReceipt(ss, tx, member, fileName, pdfUrl) {
