@@ -729,7 +729,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
     // Society name + tagline (center)
     '<div style="flex:1;text-align:center;padding:0 16px">' +
-    '<div style="font-size:14px;font-weight:700;color:#ffffff;letter-spacing:.3px;text-shadow:0 1px 3px rgba(0,0,0,.4);white-space:nowrap">' + SOCIETY_NAME + '</div>' +
+    '<div style="font-size:15px;font-weight:700;color:#800000;white-space:nowrap">' + SOCIETY_NAME + '</div>' +
     '<div style="font-size:10px;color:#c8a951;margin-top:3px;letter-spacing:.8px;text-transform:uppercase">' +
       SOCIETY_REGD + ' &nbsp;·&nbsp; Vampuguda, Hyderabad' +
     '</div>' +
