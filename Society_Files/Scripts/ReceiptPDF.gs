@@ -722,9 +722,9 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     '<div style="padding:16px 20px;background:#0d2137;display:flex;justify-content:space-between;align-items:center">' +
 
     // Logo
-    '<div style="width:70px;height:70px;flex-shrink:0">' +
-    '<img src="https://scwavampuguda-tech.github.io/society-dashboard/icons/society_logo.png" width="70" height="70" ' +
-    'style="border-radius:50%;border:2px solid #c8a951;object-fit:cover" alt="SCRWA"/>' +
+    '<div style="flex-shrink:0;margin-right:14px">' +
+    '<img src="https://scwavampuguda-tech.github.io/society-dashboard/icons/society_logo.png" ' +
+    'width="70" height="70" style="display:block" alt="SCRWA"/>' +
     '</div>' +
 
     // Society name + tagline (center)
