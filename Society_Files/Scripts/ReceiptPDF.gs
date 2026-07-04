@@ -499,9 +499,12 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
     var body =
       '<div style="font-family:Arial,sans-serif;font-size:14px;color:#1a1a2e;line-height:1.8">' +
       '<p>Dear ' + info.displayName + ',</p>' +
-      '<p>Thank you for your payment of <strong>Rs.' + fINR(bankRow.amount) + '</strong> to ' + SOCIETY_SHORT + '. ' +
-      'Your payment dated ' + bankRow.displayDate + ' has been received and reconciled. ' +
-      'Receipt No. #' + receiptLink + ' is attached to this email and also available on Google Drive via the same link.</p>' +
+      '<p>Thank you for your contribution to <strong>' + SOCIETY_SHORT + '</strong>. ' +
+      'Your timely payments help us maintain and improve the quality of life in our community. ' +
+      'We sincerely appreciate your continued support and trust in the Management Committee.</p>' +
+      '<p>Your payment of <strong>Rs.' + fINR(bankRow.amount) + '</strong> dated ' + bankRow.displayDate + ' ' +
+      'has been received and reconciled. Receipt No. #' + receiptLink + ' is attached to this email ' +
+      'and also available on Google Drive via the same link.</p>' +
       '<p>To view your current outstanding dues, please check your ' + portalLink + '.</p>' +
       '<p>For any queries, please quote the receipt number in your communication with the Society office.</p>' +
       '<p>Regards,<br>' +
