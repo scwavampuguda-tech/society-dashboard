@@ -547,14 +547,11 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
 
         '<table style="width:100%;border-collapse:collapse;margin-bottom:0">' +
 
-        // ── Row 1: LocationName · Plot No · PropertyID ───────────
+        // ── Row 1: Plot No · PropertyID ─────────────────────────
         '<tr style="background:#0f2744;color:#fff">' +
-        '<td style="padding:6px 12px;font-size:12px;font-weight:700">' +
-          (mm.locationName || 'Property') +
-        '</td>' +
-        '<td style="padding:6px 12px;font-size:11px;opacity:.8;text-align:right">' +
-          'Plot No: ' + (mm.plotNo || '—') +
-          ' &nbsp;|&nbsp; Property ID: ' + tx.propertyId +
+        '<td style="padding:6px 12px;font-size:11px;font-weight:700">' +
+          'Property ID: ' + tx.propertyId +
+          ' &nbsp;|&nbsp; Plot No: ' + (mm.plotNo || '—') +
         '</td>' +
         '</tr>' +
 
@@ -735,7 +732,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     var jointBadge = m.ownerType === '👥 Joint' || m.ownerType === 'Joint'
       ? ' <span style="background:#dbeafe;color:#1e40af;font-size:9px;padding:1px 5px;border-radius:6px">Joint</span>' : '';
     var proxyNote = (m.isProxy && m.proxyName)
-      ? ' <span style="font-size:10px;color:#475569">| Rep: ' + m.proxyName + '</span>' : '';
+      ? ' <span style="font-size:10px;color:#475569">| Represented By: ' + m.proxyName + '</span>' : '';
 
     // Title bar
     return '<div style="border:1px solid #d1dce8;border-radius:6px;margin-bottom:8px;background:' + bg + ';overflow:hidden">' +
@@ -746,13 +743,6 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
         (m.fullName || '-') + jointBadge +
       '</div>' +
       proxyNote +
-      '</div>' +
-
-      // ── Property ID + Location row ────────────────────────────────
-      '<div style="background:#1a3c5e;color:#c8a951;padding:4px 14px;font-size:9px">' +
-        'Property ID: <strong>' + (txList[0] ? txList[0].propertyId : '') + '</strong>' +
-        (m.plotNo       ? ' &nbsp;|&nbsp; Plot No: <strong>' + m.plotNo + '</strong>' : '') +
-        (m.locationName ? ' &nbsp;|&nbsp; ' + m.locationName : '') +
       '</div>' +
 
       // ── Owner + IO + Amount bar ─────────────────────────────────
