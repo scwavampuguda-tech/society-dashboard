@@ -646,32 +646,28 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
       ? ' <span style="font-size:10px;color:#475569">| Rep: ' + m.proxyName + '</span>' : '';
 
     // Title bar
-    return '<div style="border:1px solid #d1dce8;border-radius:8px;margin-bottom:12px;background:' + bg + ';overflow:hidden">' +
+    return '<div style="border:1px solid #d1dce8;border-radius:6px;margin-bottom:8px;background:' + bg + ';overflow:hidden">' +
 
-      // ── Title bar: owner name only ───────────────────────────
-      '<div style="background:#0d2137;color:#ffffff;padding:7px 14px">' +
-      '<div style="font-size:12px;font-weight:700;color:#ffffff">' +
-        (m.fullName || '-') +
+      // ── Title bar: owner name ───────────────────────────────
+      '<div style="background:#0d2137;color:#ffffff;padding:6px 14px">' +
+      '<div style="font-size:14px;font-weight:700;color:#ffffff;letter-spacing:.2px">' +
+        (m.fullName || '-') + jointBadge +
       '</div>' +
+      proxyNote +
       '</div>' +
 
       // ── Owner + IO + Amount bar ─────────────────────────────────
-      '<div style="background:#f8fafc;color:#1a1a2e;padding:8px 14px;border-bottom:1px solid #e2e8f0;' +
+      '<div style="background:#f0f4f8;color:#1a1a2e;padding:5px 14px;border-bottom:1px solid #d1dce8;' +
         'display:flex;justify-content:space-between;align-items:center">' +
-      '<div>' +
-      jointBadge + proxyNote +
       '<div style="font-size:12px;font-weight:700;color:#1a1a2e">' +
         ioLabel +
         ' <span style="font-weight:400;color:#64748b;font-size:10px">(' + grp.internalOrder + ')</span>' +
       '</div>' +
-      '</div>' +
-      '<div style="text-align:right">' +
       '<div style="font-size:20px;font-weight:700;color:#15803d">&#8377;' + fINR(groupAmt) + '</div>' +
-      '</div>' +
       '</div>' +
 
       // ── Invoice table ───────────────────────────────────────────
-      '<div style="padding:8px 12px">' +
+      '<div style="padding:4px 8px">' +
       '<table style="width:100%;border-collapse:collapse">' +
       '<tr style="background:#e8f0fe">' +
       (isMerged
