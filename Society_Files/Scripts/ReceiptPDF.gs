@@ -508,7 +508,7 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
       'SCRWA Management Committee<br>' +
       SOCIETY_SHORT + ' | ' + SOCIETY_REGD + '<br>' +
       SOCIETY_EMAIL + '</p>' +
-      '<p style="font-size:12px;color:#475569">Follow us on <a href="https://www.facebook.com/share/18VXdkVAQn/" style="color:#1877f2">Facebook</a></p>' +
+      '<p style="font-size:12px;color:#475569"><a href="https://www.facebook.com/share/18VXdkVAQn/" style="color:#1877f2;text-decoration:none;display:inline-flex;align-items:center;gap:6px"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/600px-Facebook_Logo_%282019%29.png" width="18" height="18" alt="Facebook" style="vertical-align:middle;border-radius:4px"> Follow us on Facebook</a></p>' +
       '<p style="font-size:11px;color:#94a3b8">This is a system-generated email. Please do not reply to this message.</p>' +
       '</div>';
 
