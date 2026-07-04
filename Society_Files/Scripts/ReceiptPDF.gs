@@ -483,10 +483,10 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
         '</td></tr>';
     }).join('');
 
-    var subject = '🧾 Receipt #' + receiptNo +
-                  ' — ₹' + fINR(bankRow.amount) +
+    var subject = 'Payment Receipt No. ' + receiptNo +
+                  ' - Rs.' + fINR(bankRow.amount) +
                   (isMulti ? ' (' + txRows.length + ' Properties)' : '') +
-                  ' | ' + SOCIETY_SHORT;
+                  ' - ' + SOCIETY_SHORT;
 
     var body =
       '<div style="font-family:Arial,sans-serif;max-width:620px;color:#1a1a2e">' +
@@ -495,7 +495,7 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
       '<div style="background:linear-gradient(135deg,#0f2744,#1e4d8c);color:#fff;' +
         'padding:16px 22px;border-radius:8px 8px 0 0;display:flex;' +
         'justify-content:space-between;align-items:center">' +
-      '<div><h2 style="margin:0;font-size:15px">🏘️ ' + SOCIETY_SHORT + '</h2>' +
+      '<div><h2 style="margin:0;font-size:15px">' + SOCIETY_SHORT + '</h2>' +
       '<p style="margin:3px 0 0;font-size:11px;opacity:.8">' + SOCIETY_REGD + '</p></div>' +
       '<div style="background:#FFD700;color:#0f2744;padding:4px 14px;border-radius:16px;' +
         'font-weight:700;font-size:13px">RECEIPT</div>' +
@@ -504,7 +504,7 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
       '<div style="border:1px solid #d1dce8;border-top:none;padding:20px 22px;' +
         'border-radius:0 0 8px 8px">' +
       '<p>Dear <strong>' + info.displayName + '</strong>,</p>' +
-      '<p>Your payment has been received and reconciled. ✅ Details below.</p>' +
+      '<p>This is to confirm that your payment has been received and reconciled. Details are provided below.</p>' +
 
       // Summary row
       '<table style="width:100%;border-collapse:collapse;font-size:13px;margin:10px 0">' +
@@ -529,16 +529,16 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
       // PDF links
       '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;' +
         'padding:12px 16px;margin:14px 0">' +
-      '<p style="margin:0 0 6px;font-weight:700;font-size:12px">📄 Receipt PDF</p>' +
-      '<p style="margin:0 0 4px;font-size:12px">Attached to this email — save for your records.</p>' +
-      '<p style="margin:0;font-size:12px">🔗 <a href="' + pdfUrl +
+      '<p style="margin:0 0 6px;font-weight:700;font-size:12px">Receipt PDF</p>' +
+      '<p style="margin:0 0 4px;font-size:12px">The receipt PDF is attached to this email. Please save it for your records.</p>' +
+      '<p style="margin:0;font-size:12px"><a href="' + pdfUrl +
         '" style="color:#1e4d8c">View / Download online (Google Drive)</a></p>' +
       '</div>' +
 
       '<hr style="border:none;border-top:1px solid #e2e8f0;margin:14px 0">' +
       '<p style="font-size:11px;color:#64748b;margin:0">' +
-        'System-generated · Do not reply to this email<br>' +
-        '📧 ' + SOCIETY_EMAIL + ' · ' + SOCIETY_REGD + '</p>' +
+        'This is a system-generated email. Please do not reply to this message.<br>' +
+        SOCIETY_EMAIL + ' | ' + SOCIETY_REGD + '</p>' +
       '</div></div>';
 
     try {
@@ -618,9 +618,9 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
       'background:' + bg + ';overflow:hidden">' +
 
       // ── Block title bar: LocationName · Plot No · PropertyID ────
-      '<div style="background:#0f2744;color:#fff;padding:7px 14px;' +
+      '<div style="background:#0f2744;color:#ffffff;padding:7px 14px;' +
         'display:flex;justify-content:space-between;align-items:center">' +
-      '<div style="font-size:12px;font-weight:700;letter-spacing:.3px">' +
+      '<div style="font-size:12px;font-weight:700;letter-spacing:.3px;color:#ffffff">' +
         (m.locationName || 'Property') +
       '</div>' +
       '<div style="font-size:11px;opacity:.8">' +
@@ -630,10 +630,10 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
       '</div>' +
 
       // ── Owner + Purpose + Amount bar ────────────────────────────
-      '<div style="background:#1e4d8c;color:#fff;padding:9px 14px;' +
+      '<div style="background:#1e4d8c;color:#ffffff;padding:9px 14px;' +
         'display:flex;justify-content:space-between;align-items:flex-start">' +
       '<div>' +
-      '<div style="font-size:13px;font-weight:700">' + (m.fullName || '—') + jointBadge + '</div>' +
+      '<div style="font-size:13px;font-weight:700;color:#ffffff">' + (m.fullName || '-') + jointBadge + '</div>' +
       proxyNote +
       '<div style="font-size:12px;margin-top:4px;font-weight:600;opacity:.95">' +
         ioLabel +
@@ -687,7 +687,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
       'padding:16px 20px;border-radius:10px 10px 0 0;' +
       'display:flex;justify-content:space-between;align-items:center">' +
     '<div>' +
-    '<h1 style="margin:0;font-size:15px;font-weight:700">🏘️ ' + SOCIETY_NAME + '</h1>' +
+    '<h1 style="margin:0;font-size:15px;font-weight:700;color:#ffffff">' + SOCIETY_NAME + '</h1>' +
     '<p style="margin:3px 0 0;font-size:11px;opacity:.8">' + SOCIETY_REGD + ' · Vampuguda, Hyderabad</p>' +
     '</div>' +
     '<div style="background:#FFD700;color:#0f2744;padding:5px 18px;' +
@@ -701,7 +701,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     (isMulti
       ? '<div style="display:inline-block;background:#fef3c7;color:#92400e;font-size:11px;' +
         'padding:3px 12px;border-radius:10px;margin-bottom:12px;font-weight:600">' +
-        '⚡ Consolidated Payment — ' + txRows.length + ' Properties</div>'
+        'Consolidated Payment - ' + txRows.length + ' Properties</div>'
       : '') +
 
     // ── HEADER: Bank transaction data only ──────────────────────
@@ -738,8 +738,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     // Section label
     '<div style="font-weight:700;font-size:11px;color:#0f2744;margin:0 0 10px;padding:4px 10px;' +
       'background:#f0f5ff;border-left:3px solid #1e4d8c;border-radius:0 4px 4px 0;' +
-      'text-transform:uppercase;letter-spacing:.5px">📋 ' +
-      (isMulti ? 'Properties &amp; Invoice Detail' : 'Invoice Detail') + '</div>' +
+      'text-transform:uppercase;letter-spacing:.5px'>' + (isMulti ? 'Properties and Invoice Detail' : 'Invoice Detail') + '</div>' +
 
     // Property blocks
     propBlocks +
@@ -751,15 +750,15 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     '<div style="text-align:right;margin-bottom:16px">' +
     '<span style="display:inline-block;border:2.5px solid #15803d;color:#15803d;' +
       'padding:5px 20px;border-radius:4px;font-weight:700;font-size:13px;' +
-      'transform:rotate(-8deg);display:inline-block">✓ RECEIVED</span>' +
+      'transform:rotate(-8deg);display:inline-block">RECEIVED</span>' +
     '</div>' +
 
     // Footer
     '<div style="text-align:center;font-size:11px;color:#94a3b8;' +
       'border-top:1px solid #e2e8f0;padding-top:12px;line-height:1.9">' +
-    'System-generated receipt · No signature required<br>' +
+    'This is a system-generated receipt. No signature is required.<br>' +
     SOCIETY_NAME + ' · ' + SOCIETY_REGD + '<br>' +
-    '📧 ' + SOCIETY_EMAIL + '<br>' +
+    SOCIETY_EMAIL + '<br>' +
     '<span style="font-size:10px;color:#cbd5e1">Generated: ' +
     Utilities.formatDate(new Date(), tz, "dd MMM yyyy 'at' HH:mm") + ' IST</span>' +
     '</div>' +
