@@ -765,7 +765,6 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
   return Utilities.newBlob(html, 'text/html', 'receipt.html').getAs('application/pdf');
 }
-}
 
 function metaBox(label, value) {
   return '<div style="background:#f8fafc;border-radius:6px;padding:8px 10px">' +
