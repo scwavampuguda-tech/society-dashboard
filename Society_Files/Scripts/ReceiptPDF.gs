@@ -15,7 +15,7 @@
  *  5. Builds ONE consolidated PDF with full invoice detail per property
  *  6. Saves PDF → Drive → SCRWA_Receipts/YYYY-MM/RCPT-{receiptNo}.pdf
  *  7. Writes PDF URL to:
- *       BankDetails Col J      [9]  ReceiptPDF
+ *       BankDetails Col I      [8]  ReceiptPDF
  *       TransactionDetails Col P [15] ReceiptPDF
  *  8. Sends email (PDF attached) to:
  *       OwnerDetails Col K  (EmailID)   — for every tagged PropertyID
@@ -39,8 +39,7 @@
  *    Col F [5]  Deposit
  *    Col G [6]  Balance
  *    Col H [7]  Reconciled
- *    Col I [8]  Source
- *    Col J [9]  ReceiptPDF      ← script writes PDF URL here
+ *    Col I [8]  ReceiptPDF      ← script writes PDF URL here      ← script writes PDF URL here
  *
  *  TransactionDetails (row 1=section label, row 2=headers, data row 3+):
  *    Col A [0]  TransactionID
@@ -375,7 +374,7 @@ function getMemberData(ss, propertyId) {
 // ─── Write PDF URL to sheets ──────────────────────────────────────
 function writePdfUrl(ss, bankSheetRow, txRows, pdfUrl) {
   var bSheet = ss.getSheetByName('BankDetails');
-  if (bSheet) bSheet.getRange(bankSheetRow, 10).setValue(pdfUrl);   // Col J
+  if (bSheet) bSheet.getRange(bankSheetRow, 9).setValue(pdfUrl);    // Col I ReceiptPDF
   var tSheet = ss.getSheetByName('TransactionDetails');
   if (tSheet) txRows.forEach(function(tx){
     tSheet.getRange(tx.sheetRow, 16).setValue(pdfUrl);               // Col P
