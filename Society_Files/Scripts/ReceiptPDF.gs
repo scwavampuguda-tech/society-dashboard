@@ -814,7 +814,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
 function metaBox(label, value) {
   return '<div>' +
-    '<div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px">' + label + '</div>' +
+    '<div style="font-size:9px;color:#800000;font-weight:700;text-transform:uppercase;letter-spacing:.5px">' + label + '</div>' +
     '<div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-top:1px">' + value + '</div>' +
     '</div>';
 }
