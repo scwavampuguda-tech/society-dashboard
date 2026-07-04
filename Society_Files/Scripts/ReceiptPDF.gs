@@ -495,21 +495,22 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
 
     // Email body — clean narrative, receipt no. once as clickable link
     var receiptLink = '<a href="' + pdfUrl + '" style="color:#1155cc;text-decoration:underline">' + receiptNo + '</a>';
-    var portalLink  = '<a href="https://scwavampuguda-tech.github.io/society-dashboard/Society_Portal.html" style="color:#1e4d8c">Society Portal</a>';
+    var portalLink  = '<a href="https://scwavampuguda-tech.github.io/society-dashboard/Society_Portal.html" style="color:#1e4d8c">Outstanding Report</a>';
     var body =
       '<div style="font-family:Arial,sans-serif;font-size:14px;color:#1a1a2e;line-height:1.8">' +
       '<p>Dear ' + info.displayName + ',</p>' +
       '<p>Thank you for your payment of <strong>Rs.' + fINR(bankRow.amount) + '</strong> to ' + SOCIETY_SHORT + '. ' +
       'Your payment dated ' + bankRow.displayDate + ' has been received and reconciled. ' +
-      'The receipt (No. ' + receiptLink + ') is attached to this email and also available on Google Drive via the same link.</p>' +
-      '<p>To view your current outstanding dues, please visit the ' + portalLink + '.</p>' +
+      'Receipt No. #' + receiptLink + ' is attached to this email and also available on Google Drive via the same link.</p>' +
+      '<p>To view your current outstanding dues, please check your ' + portalLink + '.</p>' +
       '<p>For any queries, please quote the receipt number in your communication with the Society office.</p>' +
       '<p>Regards,<br>' +
       'SCRWA Management Committee<br>' +
       SOCIETY_SHORT + ' | ' + SOCIETY_REGD + '<br>' +
       SOCIETY_EMAIL + '</p>' +
       '<p style="font-size:12px;color:#475569;margin-top:8px"><a href="https://www.facebook.com/share/18VXdkVAQn/" style="display:inline-block;background:#1877f2;color:#ffffff;font-size:12px;font-weight:600;padding:4px 12px;border-radius:4px;text-decoration:none">f&nbsp;&nbsp;Follow us on Facebook</a></p>' +
-      '<p style="font-size:11px;color:#94a3b8">This is a system-generated email. Please do not reply to this message.</p>' +
+      '<hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0">' +
+      '<p style="font-size:10px;color:#94a3b8;line-height:1.6">&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;<br>This e-Mail may contain proprietary and confidential information and is sent for the intended recipient(s) only. If, by an addressing or transmission error, this mail has been misdirected to you, you are requested to delete this mail immediately. You are also hereby notified that any use, any form of reproduction, dissemination, copying, disclosure, modification, distribution and/or publication of this e-mail message, contents or its attachment(s) other than by its intended recipient(s) is strictly prohibited. Any opinions expressed in this email are those of the individual and not necessarily of the organization. Before opening attachment(s), please scan for viruses.<br>&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;</p>' +
       '</div>';
 
 
