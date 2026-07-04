@@ -444,8 +444,8 @@ function getOrCreateFolder(dateStr) {
 function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, fileName) {
   var results  = [];
 
-  // ── TEST MODE: set to "" to send to real addresses ──────────
-  var TEST_EMAIL = 'parthok@gmail.com';
+  // ── TEST MODE: set to email to redirect all mail, "" for live ──
+  var TEST_EMAIL = '';
   // ────────────────────────────────────────────────────────────
 
   var emailMap = {};   // lowercase addr → { displayName, entries[] }
