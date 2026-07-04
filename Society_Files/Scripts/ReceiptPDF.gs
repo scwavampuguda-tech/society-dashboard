@@ -646,30 +646,30 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
       ? ' <span style="font-size:10px;color:#475569">| Rep: ' + m.proxyName + '</span>' : '';
 
     // Title bar
-    var titleContent = isMerged
-      ? 'Properties ' + txList.map(function(t){ return t.propertyId; }).join(', ') + ' &nbsp;·&nbsp; ' + txList.length + ' blocks'
-      : 'Plot No: ' + (m.plotNo || '-') + ' &nbsp;·&nbsp; ID: ' + txList[0].propertyId;
+    // Plot info for title bar
+    var plotInfo = isMerged
+      ? txList.map(function(t){ var tm=memberMap[t.propertyId]||{}; return 'Plot '+(tm.plotNo||'-')+' · ID:'+t.propertyId; }).join(' &nbsp;|&nbsp; ')
+      : 'Plot No: ' + (m.plotNo || '-') + ' &nbsp;·&nbsp; Property ID: ' + txList[0].propertyId;
 
     return '<div style="border:1px solid #d1dce8;border-radius:8px;margin-bottom:12px;background:' + bg + ';overflow:hidden">' +
 
-      // ── Title bar ──────────────────────────────────────────────
+      // ── Title bar: dark bg, owner name left, plot info right ───
       '<div style="background:#0d2137;color:#ffffff;padding:7px 14px;' +
         'display:flex;justify-content:space-between;align-items:center">' +
       '<div style="font-size:12px;font-weight:700;color:#ffffff">' +
-        (isMerged ? 'Consolidated Block' : 'Property Block') +
+        (m.fullName || '-') +
       '</div>' +
-      '<div style="font-size:11px;color:#c8a951;font-weight:600">' + titleContent + '</div>' +
+      '<div style="font-size:10px;color:#c8a951;font-weight:600">' + plotInfo + '</div>' +
       '</div>' +
 
       // ── Owner + IO + Amount bar ─────────────────────────────────
-      '<div style="background:#ffffff;color:#1a1a2e;padding:9px 14px;border-bottom:1px solid #e2e8f0;' +
-        'display:flex;justify-content:space-between;align-items:flex-start">' +
+      '<div style="background:#f8fafc;color:#1a1a2e;padding:8px 14px;border-bottom:1px solid #e2e8f0;' +
+        'display:flex;justify-content:space-between;align-items:center">' +
       '<div>' +
-      '<div style="font-size:13px;font-weight:700;color:#1a1a2e">' + (m.fullName || '-') + jointBadge + '</div>' +
-      proxyNote +
-      '<div style="font-size:12px;margin-top:3px;font-weight:600;color:#1a1a2e">' +
+      jointBadge + proxyNote +
+      '<div style="font-size:12px;font-weight:700;color:#1a1a2e">' +
         ioLabel +
-        ' <span style="font-weight:400;color:#475569;font-size:10px">(' + grp.internalOrder + ')</span>' +
+        ' <span style="font-weight:400;color:#64748b;font-size:10px">(' + grp.internalOrder + ')</span>' +
       '</div>' +
       '</div>' +
       '<div style="text-align:right">' +
@@ -740,7 +740,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
     // Society name + tagline (center)
     '<div style="flex:1;text-align:center;padding:0 16px">' +
-    '<div style="font-size:15px;font-weight:700;color:#ffffff;letter-spacing:.4px;text-shadow:0 1px 3px rgba(0,0,0,.4)">' + SOCIETY_NAME + '</div>' +
+    '<div style="font-size:14px;font-weight:700;color:#ffffff;letter-spacing:.3px;text-shadow:0 1px 3px rgba(0,0,0,.4);white-space:nowrap">' + SOCIETY_NAME + '</div>' +
     '<div style="font-size:10px;color:#c8a951;margin-top:3px;letter-spacing:.8px;text-transform:uppercase">' +
       SOCIETY_REGD + ' &nbsp;·&nbsp; Vampuguda, Hyderabad' +
     '</div>' +
@@ -751,9 +751,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     '<div style="flex-shrink:0;text-align:right">' +
     '<div style="background:#c8a951;color:#1a3c5e;padding:6px 18px;border-radius:6px;' +
       'font-weight:700;font-size:14px;letter-spacing:1.5px">RECEIPT</div>' +
-    (isMulti
-      ? '<div style="font-size:10px;color:#93b4cc;margin-top:5px">Consolidated · ' + txRows.length + ' Properties</div>'
-      : '') +
+
     '</div>' +
 
     '</div>' +
