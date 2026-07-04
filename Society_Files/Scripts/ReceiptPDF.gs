@@ -359,7 +359,8 @@ function getMemberData(ss, propertyId) {
       member.status     = String(owData[i][9]  || '').trim();
       member.email      = String(owData[i][10] || '').trim();  // Col K [10]
       member.mobile     = String(owData[i][11] || '').trim();  // Col L [11] PhoneNumber
-      member.isProxy    = String(owData[i][14] || '').trim().toLowerCase() === 'yes';
+      var isProxyRaw = String(owData[i][14] || '').trim().toLowerCase();
+      member.isProxy = isProxyRaw === 'yes' || isProxyRaw === 'y' || isProxyRaw === 'true';
       // Col M [12] = IsWhatsApp (existing column — TRUE / Y = WA enabled)
       // Col L [11] = PhoneNumber — used as mobile for WA
       member.isWhatsApp = isWAEnabled(owData[i][12]);
@@ -375,11 +376,15 @@ function getMemberData(ss, propertyId) {
       var prData = prSheet.getDataRange().getValues();
       for (var j = 2; j < prData.length; j++) {
         if (String(prData[j][0]).trim() !== propertyId) continue;
-        member.proxyName   = String(prData[j][1] || '').trim();
-        member.proxyMobile = String(prData[j][5] || '').trim();
-        member.proxyEmail  = String(prData[j][4] || '').trim();
-        // Col G [6] = IsWhatsApp for proxy (add this column to ProxyDetails if not present)
-        member.proxyWA = isWAEnabled(prData[j][6]);
+        member.proxyName   = String(prData[j][1] || '').trim();  // Col B RepresentedBy
+        member.proxyEmail  = String(prData[j][4] || '').trim();  // Col E ProxyEmail
+        member.proxyMobile = String(prData[j][5] || '').trim();  // Col F ProxyMobile (kept for fallback)
+        // Col G [6] = RPhonenumber  ← dedicated WA-ready phone for proxy
+        // Col H [7] = RIsWhatsapp   ← Y/YES/TRUE if proxy is on WhatsApp
+        var rPhone = String(prData[j][6] || '').trim();
+        var rWA    = isWAEnabled(prData[j][7]);
+        member.proxyMobile = rPhone || member.proxyMobile;  // prefer RPhonenumber if present
+        member.proxyWA     = rWA;
         break;
       }
     }
