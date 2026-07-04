@@ -487,34 +487,42 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
   var TEST_EMAIL = '';
   // ────────────────────────────────────────────────────────────
 
-  // Build per-property send list: one email per property, owner=To, proxy=CC
-  // Groups txRows by propertyId so multi-property receipts send ONE email per property
-  var propertyEmailMap = {};  // propertyId → { toAddr, toName, ccAddr, ccName, entries[] }
+  // Build ONE email for the entire receipt:
+  //   To:  owner email (dedupe across all properties)
+  //   CC:  all unique proxy emails (dedupe, exclude owner)
+  //   Body: all properties listed in one email
+  var toSet  = {};   // unique owner emails
+  var ccSet  = {};   // unique proxy emails
+  var toName = '';
 
   txRows.forEach(function(tx) {
     var m = memberMap[tx.propertyId];
     if (!m) return;
-    var toAddr = String(m.email      || '').trim().toLowerCase();
-    var ccAddr = String(m.proxyEmail || '').trim().toLowerCase();
-    if (!toAddr || toAddr.indexOf('@') < 1) return;  // no valid owner email — skip
-    var key = tx.propertyId;
-    if (!propertyEmailMap[key]) {
-      propertyEmailMap[key] = {
-        toAddr:  toAddr,
-        toName:  m.fullName || toAddr,
-        ccAddr:  (ccAddr && ccAddr.indexOf('@') > 0 && ccAddr !== toAddr) ? ccAddr : '',
-        ccName:  m.proxyName || '',
-        entries: []
-      };
+    var ownerEmail = String(m.email      || '').trim().toLowerCase();
+    var proxyEmail = String(m.proxyEmail || '').trim().toLowerCase();
+    if (ownerEmail && ownerEmail.indexOf('@') > 0) {
+      toSet[ownerEmail] = m.fullName || ownerEmail;
+      if (!toName) toName = m.fullName || ownerEmail;
     }
-    propertyEmailMap[key].entries.push({ tx: tx, member: m });
+    if (proxyEmail && proxyEmail.indexOf('@') > 0 && !toSet[proxyEmail]) {
+      ccSet[proxyEmail] = m.proxyName || proxyEmail;
+    }
   });
+
+  var toAddrs = Object.keys(toSet);
+  var ccAddrs = Object.keys(ccSet).filter(function(a){ return !toSet[a]; }); // exclude if already in To
 
   var isMulti = txRows.length > 1;
 
-  Object.keys(propertyEmailMap).forEach(function(propId) {
-    var info = propertyEmailMap[propId];
-    var addr = info.toAddr;
+  // Build single combined entries list (all txRows)
+  var allEntries = txRows.map(function(tx) {
+    return { tx: tx, member: memberMap[tx.propertyId] || {} };
+  });
+
+  // Wrap in single-iteration array so existing forEach body works unchanged
+  [{ toAddr: toAddrs.join(','), toName: toName, ccAddrs: ccAddrs, entries: allEntries }]
+  .forEach(function(info) {
+    var addr = toAddrs[0] || '';
     var propRowsHtml = info.entries.map(function(e) {
       var tx = e.tx;
       var mm = memberMap[tx.propertyId] || {};
@@ -615,19 +623,21 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
 
     try {
       var sendTo   = TEST_EMAIL || info.toAddr;
-      var sendSubj = TEST_EMAIL ? '[TEST to: ' + info.toAddr + (info.ccAddr ? ', CC: ' + info.ccAddr : '') + '] ' + subject : subject;
+      var ccStr    = info.ccAddrs && info.ccAddrs.length ? info.ccAddrs.join(',') : '';
+      var sendSubj = TEST_EMAIL
+        ? '[TEST to: ' + info.toAddr + (ccStr ? ', CC: ' + ccStr : '') + '] ' + subject
+        : subject;
       var mailOpts = {
         htmlBody:    body,
         attachments: [pdfBlob.setName(fileName)],
         name:        SOCIETY_SHORT,
         replyTo:     SOCIETY_EMAIL
       };
-      // Add CC only if proxy email exists and is different from owner
-      if (!TEST_EMAIL && info.ccAddr) mailOpts.cc = info.ccAddr;
+      if (!TEST_EMAIL && ccStr) mailOpts.cc = ccStr;
       GmailApp.sendEmail(sendTo, sendSubj, 'Please enable HTML to view this email.', mailOpts);
-      var logTo = info.toAddr + (info.ccAddr ? ' (CC: ' + info.ccAddr + ')' : '');
+      var logTo = info.toAddr + (ccStr ? ' (CC: ' + ccStr + ')' : '');
       results.push({ to: logTo, name: info.toName, sent: true });
-      Logger.log('✅ Email → To:' + info.toAddr + (info.ccAddr ? ' CC:' + info.ccAddr : ''));
+      Logger.log('✅ Email → To:' + info.toAddr + (ccStr ? ' | CC:' + ccStr : ''));
     } catch(err) {
       results.push({ to: info.toAddr, name: info.toName, sent: false, error: err.toString() });
       Logger.log('❌ Email failed → ' + addr + ' | ' + err.toString());
