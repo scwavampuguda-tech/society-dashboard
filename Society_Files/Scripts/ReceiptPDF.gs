@@ -487,26 +487,34 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
   var TEST_EMAIL = '';
   // ────────────────────────────────────────────────────────────
 
-  var emailMap = {};   // lowercase addr → { displayName, entries[] }
-
-  function addAddr(addr, displayName, tx, member) {
-    var a = String(addr || '').trim().toLowerCase();
-    if (!a || a.indexOf('@') < 1) return;
-    if (!emailMap[a]) emailMap[a] = { displayName: displayName, entries: [] };
-    emailMap[a].entries.push({ tx: tx, member: member });
-  }
+  // Build per-property send list: one email per property, owner=To, proxy=CC
+  // Groups txRows by propertyId so multi-property receipts send ONE email per property
+  var propertyEmailMap = {};  // propertyId → { toAddr, toName, ccAddr, ccName, entries[] }
 
   txRows.forEach(function(tx) {
     var m = memberMap[tx.propertyId];
     if (!m) return;
-    addAddr(m.email,       m.fullName,                       tx, m);   // owner email
-    addAddr(m.proxyEmail,  m.proxyName || m.fullName,        tx, m);   // proxy email
+    var toAddr = String(m.email      || '').trim().toLowerCase();
+    var ccAddr = String(m.proxyEmail || '').trim().toLowerCase();
+    if (!toAddr || toAddr.indexOf('@') < 1) return;  // no valid owner email — skip
+    var key = tx.propertyId;
+    if (!propertyEmailMap[key]) {
+      propertyEmailMap[key] = {
+        toAddr:  toAddr,
+        toName:  m.fullName || toAddr,
+        ccAddr:  (ccAddr && ccAddr.indexOf('@') > 0 && ccAddr !== toAddr) ? ccAddr : '',
+        ccName:  m.proxyName || '',
+        entries: []
+      };
+    }
+    propertyEmailMap[key].entries.push({ tx: tx, member: m });
   });
 
   var isMulti = txRows.length > 1;
 
-  Object.keys(emailMap).forEach(function(addr) {
-    var info = emailMap[addr];
+  Object.keys(propertyEmailMap).forEach(function(propId) {
+    var info = propertyEmailMap[propId];
+    var addr = info.toAddr;
     var propRowsHtml = info.entries.map(function(e) {
       var tx = e.tx;
       var mm = memberMap[tx.propertyId] || {};
@@ -606,18 +614,22 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
 
 
     try {
-      GmailApp.sendEmail(TEST_EMAIL || addr, TEST_EMAIL ? '[TEST to: ' + addr + '] ' + subject : subject,
-        'Please enable HTML to view this email.',
-        {
-          htmlBody:    body,
-          attachments: [pdfBlob.setName(fileName)],
-          name:        SOCIETY_SHORT,
-          replyTo:     SOCIETY_EMAIL
-        });
-      results.push({ to: addr, name: info.displayName, sent: true });
-      Logger.log('✅ Email → ' + addr);
+      var sendTo   = TEST_EMAIL || info.toAddr;
+      var sendSubj = TEST_EMAIL ? '[TEST to: ' + info.toAddr + (info.ccAddr ? ', CC: ' + info.ccAddr : '') + '] ' + subject : subject;
+      var mailOpts = {
+        htmlBody:    body,
+        attachments: [pdfBlob.setName(fileName)],
+        name:        SOCIETY_SHORT,
+        replyTo:     SOCIETY_EMAIL
+      };
+      // Add CC only if proxy email exists and is different from owner
+      if (!TEST_EMAIL && info.ccAddr) mailOpts.cc = info.ccAddr;
+      GmailApp.sendEmail(sendTo, sendSubj, 'Please enable HTML to view this email.', mailOpts);
+      var logTo = info.toAddr + (info.ccAddr ? ' (CC: ' + info.ccAddr + ')' : '');
+      results.push({ to: logTo, name: info.toName, sent: true });
+      Logger.log('✅ Email → To:' + info.toAddr + (info.ccAddr ? ' CC:' + info.ccAddr : ''));
     } catch(err) {
-      results.push({ to: addr, name: info.displayName, sent: false, error: err.toString() });
+      results.push({ to: info.toAddr, name: info.toName, sent: false, error: err.toString() });
       Logger.log('❌ Email failed → ' + addr + ' | ' + err.toString());
     }
   });
