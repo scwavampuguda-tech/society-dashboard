@@ -476,8 +476,7 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
         '</td>' +
         '<td style="padding:8px 12px;text-align:right">' +
           '<div style="font-size:18px;font-weight:700">₹' + fINR(tx.amount) + '</div>' +
-          '<div style="font-size:10px;opacity:.75;margin-top:2px">FY: ' + tx.fyYear + '</div>' +
-        '</td>' +
+                  '</td>' +
         '</tr>' +
 
         '</table>' +
@@ -611,26 +610,24 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
       '<div style="font-size:12px;font-weight:700;letter-spacing:.3px;color:#ffffff">' +
         (m.locationName || 'Property') +
       '</div>' +
-      '<div style="font-size:11px;color:#93b4cc">' +
-        'Plot No: ' + (m.plotNo || '-') +
-        ' &nbsp;|&nbsp; Property ID: ' + tx.propertyId +
-      '</div>' +
       '</div>' +
 
       // ── Owner + Purpose + Amount bar ────────────────────────────
-      '<div style="background:#1a4a7a;color:#ffffff;padding:10px 14px;' +
+      '<div style="background:#ffffff;color:#1a1a2e;padding:10px 14px;border-bottom:1px solid #e2e8f0;' +
         'display:flex;justify-content:space-between;align-items:flex-start">' +
       '<div>' +
-      '<div style="font-size:13px;font-weight:700;color:#ffffff;text-shadow:0 1px 2px rgba(0,0,0,.3)">' + (m.fullName || '-') + jointBadge + '</div>' +
+      '<div style="font-size:13px;font-weight:700;color:#1a1a2e">' + (m.fullName || '-') + jointBadge + '</div>' +
       proxyNote +
-      '<div style="font-size:12px;margin-top:4px;font-weight:700;color:#ffffff">' +
+      '<div style="font-size:12px;margin-top:4px;font-weight:600;color:#1a1a2e">' +
         ioLabel +
-        ' <span style="font-weight:400;color:#b3d4f0;font-size:10px">(' + tx.internalOrder + ')</span>' +
+        ' <span style="font-weight:400;color:#475569;font-size:10px">(' + tx.internalOrder + ')</span>' +
+      '</div>' +
+      '<div style="font-size:10px;margin-top:3px;color:#475569">' +
+        'Plot No: ' + (m.plotNo || '-') + ' &nbsp;|&nbsp; Property ID: ' + tx.propertyId +
       '</div>' +
       '</div>' +
       '<div style="text-align:right">' +
-      '<div style="font-size:20px;font-weight:700;color:#ffffff">&#8377;' + fINR(tx.amount) + '</div>' +
-      '<div style="font-size:10px;margin-top:2px;color:#b3d4f0">FY: ' + tx.fyYear + '</div>' +
+      '<div style="font-size:20px;font-weight:700;color:#15803d">&#8377;' + fINR(tx.amount) + '</div>' +
       '</div>' +
       '</div>' +
 
