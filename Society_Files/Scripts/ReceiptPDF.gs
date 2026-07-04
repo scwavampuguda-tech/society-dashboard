@@ -889,6 +889,123 @@ function metaBox(label, value) {
     '</div>';
 }
 
+
+// ═══════════════════════════════════════════════════════════════════
+//  AUTO EMAIL TRIGGER — runs every 1 min via time-driven trigger
+//  Scans BankDetails for: Col I (PDF URL) filled + Col J (EmailSent) blank
+//  Sends receipt email + stamps Col J with timestamp
+// ═══════════════════════════════════════════════════════════════════
+function processUnsentEmails() {
+  var ss     = SpreadsheetApp.openById(SS_ID);
+  var bSheet = ss.getSheetByName('BankDetails');
+  if (!bSheet) { Logger.log('processUnsentEmails: BankDetails not found'); return; }
+
+  var lastRow = bSheet.getLastRow();
+  if (lastRow < 2) { Logger.log('processUnsentEmails: no data rows'); return; }
+
+  // Read Col C (RefNo), Col I (ReceiptPDF), Col J (EmailSent) in one batch
+  var data = bSheet.getRange(2, 1, lastRow - 1, 10).getValues();  // cols A–J
+
+  var processed = 0;
+
+  for (var i = 0; i < data.length; i++) {
+    var refNo     = String(data[i][2] || '').trim();   // Col C [2]
+    var pdfUrl    = String(data[i][8] || '').trim();   // Col I [8]
+    var emailSent = String(data[i][9] || '').trim();   // Col J [9]
+
+    // Skip if no PDF URL or email already sent
+    if (!pdfUrl || emailSent) continue;
+    if (!refNo)  continue;
+
+    Logger.log('processUnsentEmails: processing RefNo ' + refNo);
+
+    try {
+      var tz      = Session.getScriptTimeZone();
+      var bankRow = getBankRow(ss, refNo);
+      if (!bankRow) { Logger.log('No bankRow for ' + refNo); continue; }
+
+      var txRows = getTransactionRows(ss, refNo);
+      if (!txRows.length) { Logger.log('No txRows for ' + refNo); continue; }
+
+      // Build member map
+      var memberMap = {};
+      txRows.forEach(function(tx) {
+        if (tx.propertyId && !memberMap[tx.propertyId])
+          memberMap[tx.propertyId] = getMemberData(ss, tx.propertyId);
+      });
+
+      // Build IO map + invoices
+      var ioMap = getInternalOrderMap(ss);
+      txRows.forEach(function(tx) {
+        tx.ioName   = ioMap[tx.internalOrder] || tx.internalOrder || '—';
+        tx.invoices = tx.billId
+          ? getInvoicesByBillIds(ss, tx.billId.split(',').map(function(b){ return b.trim(); }).filter(Boolean))
+          : [];
+      });
+
+      // Rebuild PDF blob for attachment
+      var pdfBlob = buildPdf(refNo, bankRow, txRows, memberMap, ioMap, tz);
+
+      // Extract filename from URL or build it
+      var fileName = 'RCPT-' + refNo.replace(/[\/\:*?"<>|]/g,'') + '.pdf';
+
+      // Send email
+      var emailResults = sendEmails(refNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, fileName);
+
+      // Stamp Col J with sent timestamp
+      var sentStamp = Utilities.formatDate(new Date(), tz, 'dd-MMM-yyyy HH:mm');
+      bSheet.getRange(i + 2, 10).setValue(sentStamp);   // Col J, row i+2 (1-indexed, +1 for header)
+
+      Logger.log('processUnsentEmails: email sent for ' + refNo + ' → ' + sentStamp + ' (' + emailResults.length + ' recipients)');
+      processed++;
+
+      // Safety: max 5 per run to avoid GAS timeout
+      if (processed >= 5) {
+        Logger.log('processUnsentEmails: reached 5-row limit, will continue next run');
+        break;
+      }
+
+    } catch(err) {
+      Logger.log('processUnsentEmails ERROR for ' + refNo + ': ' + err.toString());
+    }
+  }
+
+  Logger.log('processUnsentEmails: done. Processed ' + processed + ' row(s).');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  SETUP TRIGGER — run once manually to install the 1-min trigger
+//  Menu: SCRWA → Setup Auto-Email Trigger
+// ═══════════════════════════════════════════════════════════════════
+function setupAutoEmailTrigger() {
+  // Remove any existing processUnsentEmails triggers first
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    if (t.getHandlerFunction() === 'processUnsentEmails') {
+      ScriptApp.deleteTrigger(t);
+    }
+  });
+  // Install fresh 1-min trigger
+  ScriptApp.newTrigger('processUnsentEmails')
+    .timeBased()
+    .everyMinutes(1)
+    .create();
+  SpreadsheetApp.getUi().alert('✅ Auto-Email Trigger installed!\nWill scan BankDetails every 1 minute.');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  REMOVE TRIGGER — stop the auto-email (run manually if needed)
+// ═══════════════════════════════════════════════════════════════════
+function removeAutoEmailTrigger() {
+  var removed = 0;
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    if (t.getHandlerFunction() === 'processUnsentEmails') {
+      ScriptApp.deleteTrigger(t);
+      removed++;
+    }
+  });
+  SpreadsheetApp.getUi().alert('Auto-Email Trigger removed (' + removed + ' trigger(s) deleted).');
+}
+
 // ═══════════════════════════════════════════════════════════════════
 //  LOG
 // ═══════════════════════════════════════════════════════════════════
@@ -950,6 +1067,9 @@ function onOpen() {
     .addItem('Send Receipt Email — Selected Row',   'sendReceiptEmailFromMenu')
     .addSeparator()
     .addItem('Open Receipts Log', 'openLog')
+    .addSeparator()
+    .addItem('⚙️ Setup Auto-Email Trigger (1 min)', 'setupAutoEmailTrigger')
+    .addItem('🛑 Remove Auto-Email Trigger',        'removeAutoEmailTrigger')
     .addToUi();
 }
 
