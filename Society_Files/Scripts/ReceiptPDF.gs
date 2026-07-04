@@ -303,7 +303,7 @@ function getBankRow(ss, receiptNo) {
       deposit:     deposit,
       withdrawal:  withdrawal,
       amount:      deposit || withdrawal,
-      reconciled:  String(data[i][7]).trim().toUpperCase() === 'TRUE'
+      reconciled:  (function(v){ return ['TRUE','YES','Y','1','RECONCILED'].indexOf(v) >= 0; })(String(data[i][7]).trim().toUpperCase())
     };
   }
   return null;
@@ -939,7 +939,9 @@ function processPendingPDFs() {
     var pdfVal   = String(data[i][8] || '').trim();   // Col I ReceiptPDF
 
     // Only process rows where Col I = 'YES' (AppSheet trigger)
-    if (pdfVal.toUpperCase() !== 'YES') continue;
+    var pdfTrimmed = pdfVal.toUpperCase().trim();
+    Logger.log('Row ' + (i+2) + ': RefNo=' + refNo + ' ColI=' + pdfVal);
+    if (pdfTrimmed !== 'YES') continue;
     if (!refNo) continue;
 
     Logger.log('processPendingPDFs: generating PDF for RefNo ' + refNo);
