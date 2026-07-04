@@ -1072,20 +1072,3 @@ function testSendEmail() {
     Logger.log('=== EMAIL EXCEPTION: ' + err.toString() + ' ===');
   }
 }
-  if (!pdfUrl) { Logger.log('No PDF URL in Col I — run testReceiptGeneration first'); return; }
-  var txRows    = getTransactionRows(ss, receiptNo);
-  var ioMap     = getInternalOrderMap(ss);
-  var memberMap = {};
-  txRows.forEach(function(tx) {
-    tx.ioName   = ioMap[tx.internalOrder] || tx.internalOrder || '-';
-    tx.invoices = tx.billId
-      ? getInvoicesByBillIds(ss, tx.billId.split(',').map(function(b){ return b.trim(); }).filter(Boolean))
-      : [];
-    if (tx.propertyId && !memberMap[tx.propertyId])
-      memberMap[tx.propertyId] = getMemberData(ss, tx.propertyId);
-  });
-  var fileId  = pdfUrl.replace('https://drive.google.com/file/d/','').replace('/view','');
-  var pdfBlob = DriveApp.getFileById(fileId).getBlob().setContentType('application/pdf');
-  var results = sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, 'RCPT-' + receiptNo + '.pdf');
-  Logger.log('Email results: ' + JSON.stringify(results));
-}
