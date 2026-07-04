@@ -992,34 +992,89 @@ function openLog() {
 // ═══════════════════════════════════════════════════════════════════
 //  TEST — run from Apps Script editor dropdown
 // ═══════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════════
+//  TEST FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════
 function testReceiptGeneration() {
-  // Change receiptNo below to any reconciled receipt in BankDetails
-  var receiptNo = '120808133356';   // Multi-property test
-  Logger.log('Testing receipt: ' + receiptNo);
-  var result = generateConsolidatedReceipt(receiptNo);
-  Logger.log(JSON.stringify(result, null, 2));
-  if (result.success) {
-    Logger.log('PDF URL: ' + result.pdfUrl);
-    Logger.log('Properties: ' + result.properties.join(', '));
-    Logger.log('Amount: Rs.' + result.totalAmount);
-  } else {
-    Logger.log('FAILED: ' + result.message);
+  // Change receiptNo to test different receipts
+  // Single property : 111862041743
+  // Multi-property  : 120808133356
+  var receiptNo = '120808133356';
+  try {
+    Logger.log('=== TEST START: ' + receiptNo + ' ===');
+    var ss = SpreadsheetApp.openById(SS_ID);
+
+    // Check bank row exists
+    var bankRow = getBankRow(ss, receiptNo);
+    Logger.log('BankRow: ' + JSON.stringify(bankRow));
+    if (!bankRow) { Logger.log('FAIL: No bank row found'); return; }
+    if (!bankRow.reconciled) { Logger.log('FAIL: Not reconciled — Col H value must be TRUE'); return; }
+
+    // Check tx rows
+    var txRows = getTransactionRows(ss, receiptNo);
+    Logger.log('TxRows found: ' + txRows.length);
+    if (!txRows.length) { Logger.log('FAIL: No transaction rows for this receipt'); return; }
+    txRows.forEach(function(tx, i) {
+      Logger.log('  TX['+i+']: PID='+tx.propertyId+' Amount='+tx.amount+' IO='+tx.internalOrder+' BillID='+tx.billId);
+    });
+
+    // Run full generation
+    var result = generateConsolidatedReceipt(receiptNo);
+    Logger.log('RESULT: ' + JSON.stringify(result));
+
+    if (result.success) {
+      Logger.log('=== SUCCESS ===');
+      Logger.log('PDF URL: ' + result.pdfUrl);
+      Logger.log('Properties: ' + result.properties.join(', '));
+      Logger.log('Amount: Rs.' + result.totalAmount);
+    } else {
+      Logger.log('=== FAILED: ' + result.message + ' ===');
+    }
+  } catch(err) {
+    Logger.log('=== EXCEPTION: ' + err.toString() + ' ===');
+    Logger.log('Stack: ' + err.stack);
   }
 }
 
 function testSendEmail() {
-  // Run this AFTER testReceiptGeneration has written the PDF URL to Col I
-  // It will send to parthok@gmail.com (TEST_EMAIL is set)
   var receiptNo = '120808133356';
-  var ss        = SpreadsheetApp.openById(SS_ID);
-  var bankRow   = getBankRow(ss, receiptNo);
-  if (!bankRow) { Logger.log('Bank row not found'); return; }
-  var pdfUrl    = '';
-  var bSheet    = ss.getSheetByName('BankDetails');
-  var data      = bSheet.getDataRange().getValues();
-  for (var i = 1; i < data.length; i++) {
-    if (String(data[i][2]).trim() === receiptNo) { pdfUrl = String(data[i][8]).trim(); break; }
+  try {
+    Logger.log('=== TEST EMAIL START: ' + receiptNo + ' ===');
+    var ss      = SpreadsheetApp.openById(SS_ID);
+    var bankRow = getBankRow(ss, receiptNo);
+    if (!bankRow) { Logger.log('FAIL: No bank row'); return; }
+
+    // Get PDF URL from Col I
+    var bSheet = ss.getSheetByName('BankDetails');
+    var data   = bSheet.getDataRange().getValues();
+    var pdfUrl = '';
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][2]).trim() === receiptNo) { pdfUrl = String(data[i][8]).trim(); break; }
+    }
+    if (!pdfUrl) { Logger.log('FAIL: No PDF URL in Col I — run testReceiptGeneration first'); return; }
+    Logger.log('PDF URL: ' + pdfUrl);
+
+    var txRows    = getTransactionRows(ss, receiptNo);
+    var ioMap     = getInternalOrderMap(ss);
+    var memberMap = {};
+    txRows.forEach(function(tx) {
+      tx.ioName   = ioMap[tx.internalOrder] || tx.internalOrder || '-';
+      tx.invoices = tx.billId
+        ? getInvoicesByBillIds(ss, tx.billId.split(',').map(function(b){ return b.trim(); }).filter(Boolean))
+        : [];
+      if (tx.propertyId && !memberMap[tx.propertyId])
+        memberMap[tx.propertyId] = getMemberData(ss, tx.propertyId);
+    });
+
+    var fileId  = pdfUrl.replace('https://drive.google.com/file/d/','').replace('/view','');
+    var pdfBlob = DriveApp.getFileById(fileId).getBlob().setContentType('application/pdf');
+    var results = sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, 'RCPT-' + receiptNo + '.pdf');
+    Logger.log('Email results: ' + JSON.stringify(results));
+  } catch(err) {
+    Logger.log('=== EMAIL EXCEPTION: ' + err.toString() + ' ===');
   }
+}
   if (!pdfUrl) { Logger.log('No PDF URL in Col I — run testReceiptGeneration first'); return; }
   var txRows    = getTransactionRows(ss, receiptNo);
   var ioMap     = getInternalOrderMap(ss);
