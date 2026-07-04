@@ -564,99 +564,143 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
   var fyYear   = txRows.length > 0 ? txRows[0].fyYear : '';
   var mode     = txRows.length > 0 ? txRows[0].mode   : 'UPI / Online';
 
-  // ── Per-property blocks ─────────────────────────────────────────
-  var propBlocks = txRows.map(function(tx, idx) {
-    var m        = memberMap[tx.propertyId] || {};
-    var ioLabel  = tx.ioName || tx.internalOrder || '—';
-    var bg       = idx % 2 === 0 ? '#ffffff' : '#f8faff';
+  // ── Group txRows by owner+IO for merged blocks ─────────────────
+  var groups = [];
+  var groupMap = {};
+  txRows.forEach(function(tx) {
+    var m   = memberMap[tx.propertyId] || {};
+    var key = (m.fullName || '') + '||' + (tx.internalOrder || '');
+    if (!groupMap[key]) {
+      groupMap[key] = { key: key, txList: [], m: m, ioLabel: tx.ioName || tx.internalOrder || '—', internalOrder: tx.internalOrder };
+      groups.push(groupMap[key]);
+    }
+    groupMap[key].txList.push(tx);
+  });
 
-    // Invoice breakup rows
+  // ── Per-group blocks ──────────────────────────────────────────
+  var propBlocks = groups.map(function(grp, idx) {
+    var txList = grp.txList;
+    var m      = grp.m;
+    var ioLabel = grp.ioLabel;
+    var isMerged = txList.length > 1;
+    var bg     = idx % 2 === 0 ? '#ffffff' : '#f8faff';
+
+    // ── Merged invoice table (multiple properties, same owner+IO) ─
     var invRows = '';
     var invSubtotal = { bill: 0, paid: 0, bal: 0 };
-    if (tx.invoices && tx.invoices.length > 0) {
-      tx.invoices.forEach(function(inv) {
-        invSubtotal.bill += inv.billAmt;
-        invSubtotal.paid += inv.paidAmt;
-        invSubtotal.bal  += inv.balance;
+
+    txList.forEach(function(tx) {
+      var txMember = memberMap[tx.propertyId] || {};
+      var propPrefix = isMerged
+        ? '<td style="padding:4px 8px;font-size:10px;font-weight:700;color:#0d2137;border-bottom:1px solid #f1f5f9">' + tx.propertyId + '</td>' +
+          '<td style="padding:4px 8px;font-size:10px;color:#475569;border-bottom:1px solid #f1f5f9">' + (txMember.plotNo || '-') + '</td>'
+        : '';
+
+      if (tx.invoices && tx.invoices.length > 0) {
+        tx.invoices.forEach(function(inv) {
+          invSubtotal.bill += inv.billAmt;
+          invSubtotal.paid += inv.paidAmt;
+          invSubtotal.bal  += inv.balance;
+          invRows += '<tr>' +
+            propPrefix +
+            '<td style="padding:4px 8px;font-size:10px;color:#1a3c5e;font-weight:600;border-bottom:1px solid #f1f5f9">' + inv.billId + '</td>' +
+            '<td style="padding:4px 8px;font-size:10px;color:#475569;border-bottom:1px solid #f1f5f9">' + (inv.billDate || '-') + '</td>' +
+            '<td style="padding:4px 8px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.period + '</td>' +
+            '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9">&#8377;' + fINR(inv.billAmt) + '</td>' +
+            '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:#15803d">&#8377;' + fINR(inv.paidAmt) + '</td>' +
+            '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:' +
+              (inv.balance > 0 ? '#dc2626' : '#64748b') + '">' +
+              (inv.balance > 0 ? '&#8377;'+fINR(inv.balance) : '&#8377;0') + '</td>' +
+            '<td style="padding:4px 8px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.status + '</td>' +
+            '</tr>';
+        });
+      } else {
+        // No invoices — show one row with direct payment note
         invRows += '<tr>' +
-          '<td style="padding:4px 8px;font-size:10px;color:#1a3c5e;font-weight:600;border-bottom:1px solid #f1f5f9">' + inv.billId + '</td>' +
-          '<td style="padding:4px 8px;font-size:10px;color:#475569;border-bottom:1px solid #f1f5f9">' + (inv.billDate || '-') + '</td>' +
-          '<td style="padding:4px 8px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.period + '</td>' +
-          '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9">&#8377;' + fINR(inv.billAmt) + '</td>' +
-          '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:#15803d">&#8377;' + fINR(inv.paidAmt) + '</td>' +
-          '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:' +
-            (inv.balance > 0 ? '#dc2626' : '#64748b') + '">' +
-            (inv.balance > 0 ? '&#8377;'+fINR(inv.balance) : '&#8377;0') + '</td>' +
-          '<td style="padding:4px 8px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.status + '</td>' +
-          '</tr>';
-      });
-      // Subtotal row (only if multiple invoices)
-      if (tx.invoices.length > 1) {
-        invRows += '<tr style="background:#f0fdf4;font-weight:700">' +
-          '<td colspan="2" style="padding:5px 8px;font-size:11px">Sub-total</td>' +
-          '<td style="padding:5px 8px;font-size:11px;text-align:right">₹' + fINR(invSubtotal.bill) + '</td>' +
-          '<td style="padding:5px 8px;font-size:11px;text-align:right;color:#15803d">₹' + fINR(invSubtotal.paid) + '</td>' +
-          '<td style="padding:5px 8px;font-size:11px;text-align:right;color:' +
-            (invSubtotal.bal > 0 ? '#dc2626' : '#64748b') + '">' +
-            (invSubtotal.bal > 0 ? '₹'+fINR(invSubtotal.bal) : '₹0') + '</td>' +
-          '<td></td></tr>';
+          propPrefix +
+          '<td colspan="7" style="padding:4px 8px;font-size:11px;color:#94a3b8;border-bottom:1px solid #f1f5f9">' +
+          (tx.notes || tx.remarks || 'Direct payment — no invoice linked') + '</td></tr>';
       }
+    });
+
+    // Subtotal row (if multiple invoices total)
+    var totalInvoices = txList.reduce(function(s,t){ return s + (t.invoices ? t.invoices.length : 0); }, 0);
+    if (totalInvoices > 1) {
+      invRows += '<tr style="background:#f0fdf4;font-weight:700">' +
+        (isMerged ? '<td colspan="2" style="padding:4px 8px;font-size:11px"></td>' : '') +
+        '<td colspan="3" style="padding:4px 8px;font-size:11px">Sub-total</td>' +
+        '<td style="padding:4px 8px;font-size:11px;text-align:right">&#8377;' + fINR(invSubtotal.bill) + '</td>' +
+        '<td style="padding:4px 8px;font-size:11px;text-align:right;color:#15803d">&#8377;' + fINR(invSubtotal.paid) + '</td>' +
+        '<td style="padding:4px 8px;font-size:11px;text-align:right;color:' +
+          (invSubtotal.bal > 0 ? '#dc2626' : '#64748b') + '">' +
+          (invSubtotal.bal > 0 ? '&#8377;'+fINR(invSubtotal.bal) : '&#8377;0') + '</td>' +
+        '<td></td></tr>';
     }
 
+    // Merged amount = sum of all tx in group
+    var groupAmt = txList.reduce(function(s, t){ return s + (t.amount || 0); }, 0);
+
     var jointBadge = m.ownerType === '👥 Joint' || m.ownerType === 'Joint'
-      ? ' <span style="background:rgba(219,234,254,.3);color:#bfdbfe;font-size:9px;' +
-        'padding:1px 5px;border-radius:6px">Joint</span>' : '';
+      ? ' <span style="background:#dbeafe;color:#1e40af;font-size:9px;padding:1px 5px;border-radius:6px">Joint</span>' : '';
     var proxyNote = (m.isProxy && m.proxyName)
-      ? ' <span style="font-size:10px;opacity:.8">| Rep: ' + m.proxyName + '</span>' : '';
+      ? ' <span style="font-size:10px;color:#475569">| Rep: ' + m.proxyName + '</span>' : '';
 
-    return '<div style="border:1px solid #d1dce8;border-radius:8px;margin-bottom:14px;' +
-      'background:' + bg + ';overflow:hidden">' +
+    // Title bar
+    var titleContent = isMerged
+      ? 'Properties ' + txList.map(function(t){ return t.propertyId; }).join(', ') + ' &nbsp;·&nbsp; ' + txList.length + ' blocks'
+      : 'Plot No: ' + (m.plotNo || '-') + ' &nbsp;·&nbsp; ID: ' + txList[0].propertyId;
 
-      // ── Block title bar: LocationName · Plot No · PropertyID ────
+    return '<div style="border:1px solid #d1dce8;border-radius:8px;margin-bottom:12px;background:' + bg + ';overflow:hidden">' +
+
+      // ── Title bar ──────────────────────────────────────────────
       '<div style="background:#0d2137;color:#ffffff;padding:7px 14px;' +
         'display:flex;justify-content:space-between;align-items:center">' +
-      '<div style="font-size:12px;font-weight:700;letter-spacing:.3px;color:#ffffff">' +
-        'Property ' + (idx + 1) + ' of ' + txRows.length +
+      '<div style="font-size:12px;font-weight:700;color:#ffffff">' +
+        (isMerged ? 'Consolidated Block' : 'Property Block') +
       '</div>' +
-      '<div style="font-size:11px;color:#c8a951;font-weight:600">' +
-        'Plot No: ' + (m.plotNo || '-') + ' &nbsp;·&nbsp; ID: ' + tx.propertyId +
-      '</div>' +
+      '<div style="font-size:11px;color:#c8a951;font-weight:600">' + titleContent + '</div>' +
       '</div>' +
 
-      // ── Owner + Purpose + Amount bar ────────────────────────────
-      '<div style="background:#ffffff;color:#1a1a2e;padding:10px 14px;border-bottom:1px solid #e2e8f0;' +
+      // ── Owner + IO + Amount bar ─────────────────────────────────
+      '<div style="background:#ffffff;color:#1a1a2e;padding:9px 14px;border-bottom:1px solid #e2e8f0;' +
         'display:flex;justify-content:space-between;align-items:flex-start">' +
       '<div>' +
       '<div style="font-size:13px;font-weight:700;color:#1a1a2e">' + (m.fullName || '-') + jointBadge + '</div>' +
       proxyNote +
-      '<div style="font-size:12px;margin-top:4px;font-weight:600;color:#1a1a2e">' +
+      '<div style="font-size:12px;margin-top:3px;font-weight:600;color:#1a1a2e">' +
         ioLabel +
-        ' <span style="font-weight:400;color:#475569;font-size:10px">(' + tx.internalOrder + ')</span>' +
+        ' <span style="font-weight:400;color:#475569;font-size:10px">(' + grp.internalOrder + ')</span>' +
       '</div>' +
       '</div>' +
       '<div style="text-align:right">' +
-      '<div style="font-size:20px;font-weight:700;color:#15803d">&#8377;' + fINR(tx.amount) + '</div>' +
+      '<div style="font-size:20px;font-weight:700;color:#15803d">&#8377;' + fINR(groupAmt) + '</div>' +
       '</div>' +
       '</div>' +
 
-      // Invoice breakup
-      (invRows
-        ? '<div style="padding:8px 12px">' +
-          '<table style="width:100%;border-collapse:collapse">' +
-          '<tr style="background:#e8f0fe">' +
-          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Bill ID</th>' +
-          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Bill Date</th>' +
-          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Period</th>' +
-          '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Bill Amt</th>' +
-          '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Paid</th>' +
-          '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Balance</th>' +
-          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Status</th>' +
-          '</tr>' + invRows + '</table></div>'
-        : '<div style="padding:8px 12px;font-size:11px;color:#94a3b8">' +
-          (tx.notes || tx.remarks ? (tx.notes || tx.remarks) : 'Direct payment — no invoice linked') +
-          '</div>') +
+      // ── Invoice table ───────────────────────────────────────────
+      '<div style="padding:8px 12px">' +
+      '<table style="width:100%;border-collapse:collapse">' +
+      '<tr style="background:#e8f0fe">' +
+      (isMerged
+        ? '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Prop ID</th>' +
+          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Plot No</th>'
+        : '') +
+      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Bill ID</th>' +
+      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Bill Date</th>' +
+      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Period</th>' +
+      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Bill Amt</th>' +
+      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Paid</th>' +
+      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Balance</th>' +
+      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Status</th>' +
+      '</tr>' + invRows + '</table></div>' +
+
       '</div>';
   }).join('');
+
+  // dummy to satisfy old variable references (tx, idx used above in groups loop)
+  var _unused = null;
+  if (false) { var tx = {}; var idx = 0; var m = {}; }
+
 
   // ── Grand total row (multi-property only) ────────────────────────
   var grandTotal = isMulti
