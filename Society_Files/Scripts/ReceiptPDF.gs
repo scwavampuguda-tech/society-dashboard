@@ -39,7 +39,8 @@
  *    Col F [5]  Deposit
  *    Col G [6]  Balance
  *    Col H [7]  Reconciled
- *    Col I [8]  ReceiptPDF      ← script writes PDF URL here      ← script writes PDF URL here
+ *    Col I [8]  ReceiptPDF      ← script writes PDF URL here
+ *    Col J [9]  EmailSent       ← script writes timestamp when email sent
  *
  *  TransactionDetails (row 1=section label, row 2=headers, data row 3+):
  *    Col A [0]  TransactionID
@@ -223,8 +224,40 @@ function generateConsolidatedReceipt(receiptNo) {
   // 8. Write URL to BankDetails Col J + TransactionDetails Col P
   writePdfUrl(ss, bankRow.sheetRow, txRows, pdfUrl);
 
-  // 9. Log (email NOT sent here — treasurer sends manually via menu)
-  logReceipt(ss, receiptNo, bankRow, txRows, memberMap, fileName, pdfUrl, []);
+  // 9. Duplicate email guard — check Col J EmailSent
+  var bSheet       = ss.getSheetByName('BankDetails');
+  var emailSentVal = bSheet ? String(bSheet.getRange(bankRow.sheetRow, 10).getValue()).trim() : '';
+
+  if (emailSentVal) {
+    // Already sent — return info, skip email
+    logReceipt(ss, receiptNo, bankRow, txRows, memberMap, fileName, pdfUrl, []);
+    return {
+      success:    true,
+      receiptNo:  receiptNo,
+      pdfUrl:     pdfUrl,
+      fileName:   fileName,
+      emailSent:  false,
+      message:    'PDF already generated. Email was already sent on ' + emailSentVal + '. No duplicate sent.'
+    };
+  }
+
+  // 10. Send email (first time only)
+  Logger.log('Step 10: sending email...');
+  var emailResults = [];
+  try {
+    emailResults = sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, fileName);
+    Logger.log('Step 10: email sent OK');
+  } catch(mailErr) {
+    Logger.log('Step 10 WARNING: email failed: ' + mailErr.toString());
+  }
+
+  // 11. Write EmailSent timestamp to Col J
+  var tz        = Session.getScriptTimeZone();
+  var sentStamp = Utilities.formatDate(new Date(), tz, 'dd-MMM-yyyy HH:mm');
+  writePdfUrl(ss, bankRow.sheetRow, txRows, pdfUrl, sentStamp);
+
+  // 12. Log
+  logReceipt(ss, receiptNo, bankRow, txRows, memberMap, fileName, pdfUrl, emailResults);
 
   return {
     success:      true,
@@ -234,8 +267,9 @@ function generateConsolidatedReceipt(receiptNo) {
     txCount:      txRows.length,
     properties:   txRows.map(function(t){ return t.propertyId; }),
     totalAmount:  bankRow.amount,
-    emailSent:    false,
-    message:      'PDF generated. Use "Send Receipt Email" to email the owner.'
+    emailSent:    emailResults.length > 0,
+    emailCount:   emailResults.length,
+    message:      'PDF generated and email sent to ' + emailResults.length + ' recipient(s).'
   };
 }
 
@@ -417,9 +451,14 @@ function getMemberData(ss, propertyId) {
 }
 
 // ─── Write PDF URL to sheets ──────────────────────────────────────
-function writePdfUrl(ss, bankSheetRow, txRows, pdfUrl) {
+function writePdfUrl(ss, bankSheetRow, txRows, pdfUrl, emailSentStamp) {
   var bSheet = ss.getSheetByName('BankDetails');
-  if (bSheet) bSheet.getRange(bankSheetRow, 9).setValue(pdfUrl);    // Col I ReceiptPDF
+  if (bSheet) {
+    bSheet.getRange(bankSheetRow, 9).setValue(pdfUrl);               // Col I ReceiptPDF
+    if (emailSentStamp) {
+      bSheet.getRange(bankSheetRow, 10).setValue(emailSentStamp);    // Col J EmailSent
+    }
+  }
   var tSheet = ss.getSheetByName('TransactionDetails');
   if (tSheet) txRows.forEach(function(tx){
     tSheet.getRange(tx.sheetRow, 16).setValue(pdfUrl);               // Col P
@@ -979,6 +1018,17 @@ function sendReceiptEmailFromMenu() {
   }
   if (!pdfUrl) {
     ui.alert('No PDF found for this row.\nPlease run "Generate Receipt PDF" first.'); return;
+  }
+  // Duplicate guard — check Col J
+  var emailSentVal = String(sheet.getRange(row, 10).getValue()).trim();
+  if (emailSentVal) {
+    var resp = ui.alert(
+      '⚠️ Email Already Sent',
+      'An email was already sent for this receipt on:\n' + emailSentVal +
+      '\n\nSend AGAIN to owner? (This may cause duplicate emails)',
+      ui.ButtonSet.YES_NO
+    );
+    if (resp !== ui.Button.YES) return;
   }
 
   var ss        = SpreadsheetApp.openById(SS_ID);
