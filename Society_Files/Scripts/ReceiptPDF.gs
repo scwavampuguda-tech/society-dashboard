@@ -751,26 +751,26 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
     // ── BODY ────────────────────────────────────────────────────
     '<div style="border:1px solid #d1dce8;border-top:none;border-radius:0 0 10px 10px;' +
-      'padding:14px 18px;background:#fff">' +
+      'padding:10px 14px;background:#fff">' +
 
     // Receipt meta: 3 columns
-    '<table style="width:100%;border-collapse:collapse;margin-bottom:14px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">' +
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:8px;border:1px solid #d1dce8">' +
     '<tr>' +
-    '<td style="width:33.3%;padding:10px 14px;border-right:1px solid #e2e8f0;vertical-align:top">' + metaBox('Receipt No', receiptNo) + '</td>' +
-    '<td style="width:33.3%;padding:10px 14px;border-right:1px solid #e2e8f0;vertical-align:top">' + metaBox('Date', bankRow.displayDate) + '</td>' +
-    '<td style="width:33.3%;padding:10px 14px;vertical-align:top">' + metaBox('Payment Mode', mode) + '</td>' +
+    '<td style="width:33.3%;padding:5px 12px;border-right:1px solid #d1dce8;vertical-align:middle">' + metaBox('Receipt No', receiptNo) + '</td>' +
+    '<td style="width:33.3%;padding:5px 12px;border-right:1px solid #d1dce8;vertical-align:middle">' + metaBox('Date', bankRow.displayDate) + '</td>' +
+    '<td style="width:33.3%;padding:5px 12px;vertical-align:middle">' + metaBox('Payment Mode', mode) + '</td>' +
     '</tr></table>' +
 
     // Narration row
     '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;' +
-      'padding:8px 14px;font-size:12px;margin-bottom:14px;color:#475569">' +
+      'padding:5px 12px;font-size:11px;margin-bottom:8px;color:#475569">' +
     '<span style="font-weight:600;color:#1a3c5e">Narration: </span>' + bankRow.narration +
     '</div>' +
 
     // Amount box
     '<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #16a34a;' +
-      'border-radius:8px;padding:12px 18px;display:flex;justify-content:space-between;' +
-      'align-items:center;margin-bottom:16px">' +
+      'padding:7px 14px;display:flex;justify-content:space-between;' +
+      'align-items:center;margin-bottom:10px">' +
     '<div>' +
     '<div style="font-size:11px;color:#166534;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Total Amount Received</div>' +
     '<div style="font-size:11px;color:#166534;font-style:italic;margin-top:3px">' +
@@ -815,10 +815,9 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 }
 
 function metaBox(label, value) {
-  return '<div style="background:#f8fafc;border-radius:6px;padding:8px 10px">' +
-    '<div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;' +
-      'letter-spacing:.4px">' + label + '</div>' +
-    '<div style="font-size:13px;font-weight:600;color:#1a1a2e;margin-top:3px">' + value + '</div>' +
+  return '<div>' +
+    '<div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px">' + label + '</div>' +
+    '<div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-top:1px">' + value + '</div>' +
     '</div>';
 }
 
