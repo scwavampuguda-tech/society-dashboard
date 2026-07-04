@@ -646,20 +646,13 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
       ? ' <span style="font-size:10px;color:#475569">| Rep: ' + m.proxyName + '</span>' : '';
 
     // Title bar
-    // Plot info for title bar
-    var plotInfo = isMerged
-      ? txList.map(function(t){ var tm=memberMap[t.propertyId]||{}; return 'Plot '+(tm.plotNo||'-')+' · ID:'+t.propertyId; }).join(' &nbsp;|&nbsp; ')
-      : 'Plot No: ' + (m.plotNo || '-') + ' &nbsp;·&nbsp; Property ID: ' + txList[0].propertyId;
-
     return '<div style="border:1px solid #d1dce8;border-radius:8px;margin-bottom:12px;background:' + bg + ';overflow:hidden">' +
 
-      // ── Title bar: dark bg, owner name left, plot info right ───
-      '<div style="background:#0d2137;color:#ffffff;padding:7px 14px;' +
-        'display:flex;justify-content:space-between;align-items:center">' +
+      // ── Title bar: owner name only ───────────────────────────
+      '<div style="background:#0d2137;color:#ffffff;padding:7px 14px">' +
       '<div style="font-size:12px;font-weight:700;color:#ffffff">' +
         (m.fullName || '-') +
       '</div>' +
-      '<div style="font-size:10px;color:#c8a951;font-weight:600">' + plotInfo + '</div>' +
       '</div>' +
 
       // ── Owner + IO + Amount bar ─────────────────────────────────
