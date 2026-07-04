@@ -183,11 +183,8 @@ function generateConsolidatedReceipt(receiptNo) {
   // 8. Write URL to BankDetails Col J + TransactionDetails Col P
   writePdfUrl(ss, bankRow.sheetRow, txRows, pdfUrl);
 
-  // 9. Send emails
-  var emailResults = sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, fileName);
-
-  // 10. Log
-  logReceipt(ss, receiptNo, bankRow, txRows, memberMap, fileName, pdfUrl, emailResults);
+  // 9. Log (email NOT sent here — treasurer sends manually via menu)
+  logReceipt(ss, receiptNo, bankRow, txRows, memberMap, fileName, pdfUrl, []);
 
   return {
     success:      true,
@@ -197,7 +194,8 @@ function generateConsolidatedReceipt(receiptNo) {
     txCount:      txRows.length,
     properties:   txRows.map(function(t){ return t.propertyId; }),
     totalAmount:  bankRow.amount,
-    emailResults: emailResults
+    emailSent:    false,
+    message:      'PDF generated. Use "Send Receipt Email" to email the owner.'
   };
 }
 
@@ -834,64 +832,200 @@ function numberToWords(n) {
 // ═══════════════════════════════════════════════════════════════════
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu('🧾 SCRWA Receipts')
-    .addItem('📄 Generate Receipt — Selected Row', 'generateFromMenu')
+    .createMenu('SCRWA Receipts')
+    .addItem('Generate Receipt PDF — Selected Row', 'generateFromMenu')
+    .addItem('Send Receipt Email — Selected Row',   'sendReceiptEmailFromMenu')
     .addSeparator()
-    .addItem('📋 Open Receipts Log', 'openLog')
+    .addItem('Open Receipts Log', 'openLog')
     .addToUi();
 }
 
+// ── Generate PDF only (no email) ────────────────────────────────────
 function generateFromMenu() {
   var ui    = SpreadsheetApp.getUi();
   var sheet = SpreadsheetApp.getActiveSheet();
   var row   = sheet.getActiveCell().getRow();
   if (sheet.getName() !== 'BankDetails') {
-    ui.alert('⚠️ Please select a row in BankDetails sheet.'); return;
+    ui.alert('Please select a row in the BankDetails sheet.'); return;
   }
   if (row <= 1) {
-    ui.alert('⚠️ Please select a data row (row 2 or below).'); return;
+    ui.alert('Please select a data row (row 2 or below).'); return;
   }
   if (String(sheet.getRange(row, 8).getValue()).trim().toUpperCase() !== 'TRUE') {
-    ui.alert('⚠️ Row not yet Reconciled.'); return;
+    ui.alert('This row is not yet marked Reconciled.'); return;
   }
   var receiptNo = String(sheet.getRange(row, 3).getValue()).trim();
   if (!receiptNo) {
-    ui.alert('⚠️ No RefNo in Col C.'); return;
+    ui.alert('No RefNo found in Col C.'); return;
   }
-  if (ui.alert('📄 Generate Receipt for ReceiptNo: ' + receiptNo + '\n\nProceed?',
-      ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
+  // Skip if PDF already generated
+  var existing = String(sheet.getRange(row, 9).getValue()).trim();
+  if (existing) {
+    var overwrite = ui.alert(
+      'Receipt already exists',
+      'A PDF already exists for this receipt:\n' + existing +
+      '\n\nGenerate again (overwrites existing)?',
+      ui.ButtonSet.YES_NO
+    );
+    if (overwrite !== ui.Button.YES) return;
+  }
+  if (ui.alert(
+    'Generate Receipt PDF for: ' + receiptNo + '\n\nPDF will be saved to Drive.\nEmail will NOT be sent yet.',
+    ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
 
   var result = generateConsolidatedReceipt(receiptNo);
   if (result.success) {
-    var emailSummary = result.emailResults
-      .map(function(r){ return (r.sent ? '✅' : '❌') + ' ' + r.to; })
-      .join('\n') || 'None — no email on record';
-    ui.alert('✅ Done!',
-      'Receipt No  : ' + result.receiptNo + '\n' +
-      'Properties  : ' + result.properties.join(', ') + '\n' +
-      'Total       : ₹' + fINR(result.totalAmount) + '\n' +
-      'Transactions: ' + result.txCount + '\n\n' +
-      'Emails:\n' + emailSummary,
+    ui.alert('PDF Generated!',
+      'Receipt No : ' + result.receiptNo + '\n' +
+      'Properties : ' + result.properties.join(', ') + '\n' +
+      'Total      : Rs.' + fINR(result.totalAmount) + '\n\n' +
+      'PDF saved to Drive.\n' +
+      'Use "Send Receipt Email" when ready to notify the owner.',
       ui.ButtonSet.OK);
   } else {
-    ui.alert('❌ Failed', result.message, ui.ButtonSet.OK);
+    ui.alert('Failed', result.message, ui.ButtonSet.OK);
   }
 }
 
+// ── Send email for already-generated receipt ────────────────────────
+function sendReceiptEmailFromMenu() {
+  var ui    = SpreadsheetApp.getUi();
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var row   = sheet.getActiveCell().getRow();
+  if (sheet.getName() !== 'BankDetails') {
+    ui.alert('Please select a row in the BankDetails sheet.'); return;
+  }
+  if (row <= 1) {
+    ui.alert('Please select a data row (row 2 or below).'); return;
+  }
+  var receiptNo = String(sheet.getRange(row, 3).getValue()).trim();
+  var pdfUrl    = String(sheet.getRange(row, 9).getValue()).trim();  // Col I
+  if (!receiptNo) {
+    ui.alert('No RefNo found in Col C.'); return;
+  }
+  if (!pdfUrl) {
+    ui.alert('No PDF found for this row.\nPlease run "Generate Receipt PDF" first.'); return;
+  }
+
+  var ss        = SpreadsheetApp.openById(SS_ID);
+  var bankRow   = getBankRow(ss, receiptNo);
+  var txRows    = getTransactionRows(ss, receiptNo);
+  var ioMap     = getInternalOrderMap(ss);
+  var memberMap = {};
+  txRows.forEach(function(tx) {
+    tx.ioName   = ioMap[tx.internalOrder] || tx.internalOrder || '-';
+    tx.invoices = tx.billId
+      ? getInvoicesByBillIds(ss, tx.billId.split(',').map(function(b){ return b.trim(); }).filter(Boolean))
+      : [];
+    if (tx.propertyId && !memberMap[tx.propertyId])
+      memberMap[tx.propertyId] = getMemberData(ss, tx.propertyId);
+  });
+
+  // Rebuild PDF blob from Drive file for attachment
+  var fileId   = pdfUrl.replace('https://drive.google.com/file/d/','').replace('/view','');
+  var pdfBlob  = DriveApp.getFileById(fileId).getBlob().setContentType('application/pdf');
+  var fileName = 'RCPT-' + receiptNo + '.pdf';
+
+  // Confirm before sending
+  var emailList = [];
+  txRows.forEach(function(tx) {
+    var m = memberMap[tx.propertyId];
+    if (!m) return;
+    if (m.email) emailList.push(m.email);
+    if (m.isProxy && m.proxyEmail) emailList.push(m.proxyEmail);
+  });
+  var uniqueEmails = emailList.filter(function(v,i,a){ return a.indexOf(v.toLowerCase()) === i; });
+  if (!uniqueEmails.length) {
+    ui.alert('No email addresses found for the properties in this receipt.'); return;
+  }
+
+  var confirm = ui.alert(
+    'Send Receipt Email',
+    'Receipt No : ' + receiptNo + '\n' +
+    'Amount     : Rs.' + fINR(bankRow.amount) + '\n\n' +
+    'Will send to:\n' + uniqueEmails.join('\n') + '\n\nProceed?',
+    ui.ButtonSet.YES_NO
+  );
+  if (confirm !== ui.Button.YES) return;
+
+  var emailResults = sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, fileName);
+
+  // Update log with email results
+  logReceiptEmail(ss, receiptNo, emailResults);
+
+  var summary = emailResults.map(function(r){
+    return (r.sent ? 'Sent' : 'FAILED') + ' -> ' + r.to;
+  }).join('\n');
+  ui.alert('Email Done!', summary, ui.ButtonSet.OK);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  DUES NOTE HELPER  (MOMEN01 only)
+// ═══════════════════════════════════════════════════════════════════
+function duesNoteHtml(entries) {
+  // Only show for Maintenance Charges (MOMEN01)
+  var maintenanceEntries = entries.filter(function(e) {
+    return e.tx.internalOrder === 'MOMEN01';
+  });
+  if (!maintenanceEntries.length) return '';
+
+  // Check across all MOMEN01 invoices — any outstanding balance?
+  var totalPrevDues  = 0;
+  var totalBalance   = 0;
+  maintenanceEntries.forEach(function(e) {
+    (e.tx.invoices || []).forEach(function(inv) {
+      totalBalance += inv.balance;
+      // Previous dues = invoices where period is before current payment period
+      if (inv.balance > 0) totalPrevDues += inv.balance;
+    });
+  });
+
+  var allClear = totalBalance <= 0;
+
+  if (allClear) {
+    // Appreciation note — no dues remaining
+    return '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;' +
+      'padding:12px 16px;margin:10px 0 14px">' +
+      '<div style="font-size:13px;font-weight:700;color:#15803d;margin-bottom:4px">' +
+        'No Pending Dues</div>' +
+      '<div style="font-size:12px;color:#166534">' +
+        'Your maintenance account is fully up to date. Thank you for your prompt payments! ' +
+        'We appreciate your commitment to the society.' +
+      '</div>' +
+      '</div>';
+  } else {
+    // Dues remaining note
+    return '<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;' +
+      'padding:12px 16px;margin:10px 0 14px">' +
+      '<div style="font-size:13px;font-weight:700;color:#c2410c;margin-bottom:4px">' +
+        'Previous Dues Pending — Rs.' + fINR(totalBalance) + '</div>' +
+      '<div style="font-size:12px;color:#9a3412">' +
+        'You have outstanding maintenance dues of <strong>Rs.' + fINR(totalBalance) + '</strong>. ' +
+        'We request you to clear the pending amount at your earliest convenience. ' +
+        'For any queries, please contact the treasurer.' +
+      '</div>' +
+      '</div>';
+  }
+}
+
+// ── Update log row with email sent status ───────────────────────────
+function logReceiptEmail(ss, receiptNo, emailResults) {
+  var logSheet = ss.getSheetByName(RECEIPTS_LOG_SHEET);
+  if (!logSheet) return;
+  var data = logSheet.getDataRange().getValues();
+  var sent = emailResults.filter(function(r){ return r.sent; })
+    .map(function(r){ return r.to; }).join(', ') || 'None';
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][1]).trim() === receiptNo) {
+      logSheet.getRange(i + 1, 8).setValue(sent);   // Col H = Emails Sent
+      return;
+    }
+  }
+}
+
+// ── Open log sheet ───────────────────────────────────────────────────
 function openLog() {
   var sheet = SpreadsheetApp.openById(SS_ID).getSheetByName(RECEIPTS_LOG_SHEET);
   if (sheet) SpreadsheetApp.setActiveSheet(sheet);
   else SpreadsheetApp.getUi().alert('No receipts generated yet.');
-}
-
-// ═══════════════════════════════════════════════════════════════════
-//  TEST
-// ═══════════════════════════════════════════════════════════════════
-function testReceiptGeneration() {
-  // Single property + MOMEN01 invoices : 111862041743  (PID 141, ₹500)
-  // Multi-property + INDPE01 no bills  : 454154939921  (PID 137+138, ₹2000)
-  var testReceiptNo = '111862041743';
-  Logger.log('▶ Test: ' + testReceiptNo);
-  var result = generateConsolidatedReceipt(testReceiptNo);
-  Logger.log(JSON.stringify(result, null, 2));
 }
