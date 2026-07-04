@@ -597,31 +597,31 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
       'background:' + bg + ';overflow:hidden">' +
 
       // ── Block title bar: LocationName · Plot No · PropertyID ────
-      '<div style="background:#1a3c5e;color:#ffffff;padding:7px 14px;' +
+      '<div style="background:#0d2137;color:#ffffff;padding:8px 14px;' +
         'display:flex;justify-content:space-between;align-items:center">' +
       '<div style="font-size:12px;font-weight:700;letter-spacing:.3px;color:#ffffff">' +
         (m.locationName || 'Property') +
       '</div>' +
-      '<div style="font-size:11px;opacity:.8">' +
-        'Plot No: ' + (m.plotNo || '—') +
+      '<div style="font-size:11px;color:#93b4cc">' +
+        'Plot No: ' + (m.plotNo || '-') +
         ' &nbsp;|&nbsp; Property ID: ' + tx.propertyId +
       '</div>' +
       '</div>' +
 
       // ── Owner + Purpose + Amount bar ────────────────────────────
-      '<div style="background:#2a5f8f;color:#ffffff;padding:9px 14px;' +
+      '<div style="background:#1a4a7a;color:#ffffff;padding:10px 14px;' +
         'display:flex;justify-content:space-between;align-items:flex-start">' +
       '<div>' +
-      '<div style="font-size:13px;font-weight:700;color:#ffffff">' + (m.fullName || '-') + jointBadge + '</div>' +
+      '<div style="font-size:13px;font-weight:700;color:#ffffff;text-shadow:0 1px 2px rgba(0,0,0,.3)">' + (m.fullName || '-') + jointBadge + '</div>' +
       proxyNote +
-      '<div style="font-size:12px;margin-top:4px;font-weight:600;opacity:.95">' +
+      '<div style="font-size:12px;margin-top:4px;font-weight:700;color:#ffffff">' +
         ioLabel +
-        ' <span style="font-weight:400;opacity:.75;font-size:10px">(' + tx.internalOrder + ')</span>' +
+        ' <span style="font-weight:400;color:#b3d4f0;font-size:10px">(' + tx.internalOrder + ')</span>' +
       '</div>' +
       '</div>' +
       '<div style="text-align:right">' +
-      '<div style="font-size:20px;font-weight:700">₹' + fINR(tx.amount) + '</div>' +
-      '<div style="font-size:10px;margin-top:2px;opacity:.75">FY: ' + tx.fyYear + '</div>' +
+      '<div style="font-size:20px;font-weight:700;color:#ffffff">&#8377;' + fINR(tx.amount) + '</div>' +
+      '<div style="font-size:10px;margin-top:2px;color:#b3d4f0">FY: ' + tx.fyYear + '</div>' +
       '</div>' +
       '</div>' +
 
@@ -664,13 +664,13 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     '</style></head><body><div class="page">' +
 
     // ── PAGE HEADER ─────────────────────────────────────────────
-    '<div style="background:#1a3c5e;border-radius:10px 10px 0 0;padding:0;overflow:hidden">' +
+    '<div style="background:#0d2137;border-radius:10px 10px 0 0;padding:0;overflow:hidden">' +
 
     // Top accent bar
     '<div style="background:#c8a951;height:5px;width:100%"></div>' +
 
     // Header content: logo left, society name center, RECEIPT badge right
-    '<div style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center">' +
+    '<div style="padding:16px 20px;background:#0d2137;display:flex;justify-content:space-between;align-items:center">' +
 
     // Logo
     '<div style="width:70px;height:70px;flex-shrink:0">' +
@@ -680,7 +680,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
     // Society name + tagline (center)
     '<div style="flex:1;text-align:center;padding:0 16px">' +
-    '<div style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:.5px">' + SOCIETY_NAME + '</div>' +
+    '<div style="font-size:15px;font-weight:700;color:#ffffff;letter-spacing:.4px;text-shadow:0 1px 3px rgba(0,0,0,.4)">' + SOCIETY_NAME + '</div>' +
     '<div style="font-size:10px;color:#c8a951;margin-top:3px;letter-spacing:.8px;text-transform:uppercase">' +
       SOCIETY_REGD + ' &nbsp;·&nbsp; Vampuguda, Hyderabad' +
     '</div>' +
@@ -707,11 +707,12 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
       'padding:20px;background:#fff">' +
 
     // Receipt meta: 3 columns
-    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">' +
-    metaBox("Receipt No", receiptNo) +
-    metaBox("Date", bankRow.displayDate) +
-    metaBox("Payment Mode", mode) +
-    "</div>" +
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:14px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">' +
+    '<tr>' +
+    '<td style="width:33.3%;padding:10px 14px;border-right:1px solid #e2e8f0;vertical-align:top">' + metaBox('Receipt No', receiptNo) + '</td>' +
+    '<td style="width:33.3%;padding:10px 14px;border-right:1px solid #e2e8f0;vertical-align:top">' + metaBox('Date', bankRow.displayDate) + '</td>' +
+    '<td style="width:33.3%;padding:10px 14px;vertical-align:top">' + metaBox('Payment Mode', mode) + '</td>' +
+    '</tr></table>' +
 
     // Narration row
     '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;' +
@@ -984,7 +985,7 @@ function openLog() {
 // ═══════════════════════════════════════════════════════════════════
 function testReceiptGeneration() {
   // Change receiptNo below to any reconciled receipt in BankDetails
-  var receiptNo = '111862041743';   // PID 141, Rs.500, MOMEN01
+  var receiptNo = '120808133356';   // Multi-property test
   Logger.log('Testing receipt: ' + receiptNo);
   var result = generateConsolidatedReceipt(receiptNo);
   Logger.log(JSON.stringify(result, null, 2));
@@ -1000,7 +1001,7 @@ function testReceiptGeneration() {
 function testSendEmail() {
   // Run this AFTER testReceiptGeneration has written the PDF URL to Col I
   // It will send to parthok@gmail.com (TEST_EMAIL is set)
-  var receiptNo = '111862041743';
+  var receiptNo = '120808133356';
   var ss        = SpreadsheetApp.openById(SS_ID);
   var bankRow   = getBankRow(ss, receiptNo);
   if (!bankRow) { Logger.log('Bank row not found'); return; }
