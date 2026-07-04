@@ -444,14 +444,14 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
       if (tx.invoices && tx.invoices.length > 0) {
         invRows = tx.invoices.map(function(inv) {
           return '<tr style="font-size:11px">' +
-            '<td style="padding:4px 8px;color:#475569;border-bottom:1px solid #f1f5f9">' + inv.billId + '</td>' +
-            '<td style="padding:4px 8px;border-bottom:1px solid #f1f5f9">' + inv.period + '</td>' +
-            '<td style="padding:4px 8px;text-align:right;border-bottom:1px solid #f1f5f9">₹' + fINR(inv.billAmt) + '</td>' +
-            '<td style="padding:4px 8px;text-align:right;border-bottom:1px solid #f1f5f9;color:#15803d">₹' + fINR(inv.paidAmt) + '</td>' +
-            '<td style="padding:4px 8px;text-align:right;border-bottom:1px solid #f1f5f9;color:' +
+            '<td style="padding:4px 8px;color:#475569;border:1px solid #000000">' + inv.billId + '</td>' +
+            '<td style="padding:4px 8px;border:1px solid #000000">' + inv.period + '</td>' +
+            '<td style="padding:4px 8px;text-align:right;border:1px solid #000000">₹' + fINR(inv.billAmt) + '</td>' +
+            '<td style="padding:4px 8px;text-align:right;border:1px solid #000000;color:#15803d">₹' + fINR(inv.paidAmt) + '</td>' +
+            '<td style="padding:4px 8px;text-align:right;border:1px solid #000000;color:' +
               (inv.balance > 0 ? '#dc2626' : '#15803d') + '">' +
               (inv.balance > 0 ? '₹'+fINR(inv.balance) : '₹0') + '</td>' +
-            '<td style="padding:4px 8px;border-bottom:1px solid #f1f5f9">' + inv.status + '</td>' +
+            '<td style="padding:4px 8px;border:1px solid #000000">' + inv.status + '</td>' +
             '</tr>';
         }).join('');
       }
@@ -592,8 +592,8 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     txList.forEach(function(tx) {
       var txMember = memberMap[tx.propertyId] || {};
       var propPrefix = isMerged
-        ? '<td style="padding:4px 8px;font-size:10px;font-weight:700;color:#0d2137;border-bottom:1px solid #f1f5f9">' + tx.propertyId + '</td>' +
-          '<td style="padding:4px 8px;font-size:10px;color:#475569;border-bottom:1px solid #f1f5f9">' + (txMember.plotNo || '-') + '</td>'
+        ? '<td style="padding:4px 8px;font-size:10px;font-weight:700;color:#0d2137;border:1px solid #000000">' + tx.propertyId + '</td>' +
+          '<td style="padding:4px 8px;font-size:10px;color:#475569;border:1px solid #000000">' + (txMember.plotNo || '-') + '</td>'
         : '';
 
       if (tx.invoices && tx.invoices.length > 0) {
@@ -603,22 +603,22 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
           invSubtotal.bal  += inv.balance;
           invRows += '<tr>' +
             propPrefix +
-            '<td style="padding:4px 8px;font-size:10px;color:#1a3c5e;font-weight:600;border-bottom:1px solid #f1f5f9">' + inv.billId + '</td>' +
-            '<td style="padding:4px 8px;font-size:10px;color:#475569;border-bottom:1px solid #f1f5f9">' + (inv.billDate || '-') + '</td>' +
-            '<td style="padding:4px 8px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.period + '</td>' +
-            '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9">&#8377;' + fINR(inv.billAmt) + '</td>' +
-            '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:#15803d">&#8377;' + fINR(inv.paidAmt) + '</td>' +
-            '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:' +
+            '<td style="padding:4px 8px;font-size:10px;color:#1a3c5e;font-weight:600;border:1px solid #000000">' + inv.billId + '</td>' +
+            '<td style="padding:4px 8px;font-size:10px;color:#475569;border:1px solid #000000">' + (inv.billDate || '-') + '</td>' +
+            '<td style="padding:4px 8px;font-size:10px;border:1px solid #000000">' + inv.period + '</td>' +
+            '<td style="padding:4px 8px;font-size:11px;text-align:right;border:1px solid #000000">&#8377;' + fINR(inv.billAmt) + '</td>' +
+            '<td style="padding:4px 8px;font-size:11px;text-align:right;border:1px solid #000000;color:#15803d">&#8377;' + fINR(inv.paidAmt) + '</td>' +
+            '<td style="padding:4px 8px;font-size:11px;text-align:right;border:1px solid #000000;color:' +
               (inv.balance > 0 ? '#dc2626' : '#64748b') + '">' +
               (inv.balance > 0 ? '&#8377;'+fINR(inv.balance) : '&#8377;0') + '</td>' +
-            '<td style="padding:4px 8px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.status + '</td>' +
+            '<td style="padding:4px 8px;font-size:10px;border:1px solid #000000">' + inv.status + '</td>' +
             '</tr>';
         });
       } else {
         // No invoices — show one row with direct payment note
         invRows += '<tr>' +
           propPrefix +
-          '<td colspan="7" style="padding:4px 8px;font-size:11px;color:#94a3b8;border-bottom:1px solid #f1f5f9">' +
+          '<td colspan="7" style="padding:4px 8px;font-size:11px;color:#94a3b8;border:1px solid #000000">' +
           (tx.notes || tx.remarks || 'Direct payment — no invoice linked') + '</td></tr>';
       }
     });
@@ -626,7 +626,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     // Subtotal row (if multiple invoices total)
     var totalInvoices = txList.reduce(function(s,t){ return s + (t.invoices ? t.invoices.length : 0); }, 0);
     if (totalInvoices > 1) {
-      invRows += '<tr style="background:#f0fdf4;font-weight:700">' +
+      invRows += '<tr style="background:#e8e8e8;font-weight:700;border-top:2px solid #000000">' +
         (isMerged ? '<td colspan="2" style="padding:4px 8px;font-size:11px"></td>' : '') +
         '<td colspan="3" style="padding:4px 8px;font-size:11px">Sub-total</td>' +
         '<td style="padding:4px 8px;font-size:11px;text-align:right">&#8377;' + fINR(invSubtotal.bill) + '</td>' +
@@ -647,51 +647,50 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
     // Title bar
     var titleContent = isMerged
-      ? 'Properties ' + txList.map(function(t){ return t.propertyId; }).join(', ') + ' &nbsp;·&nbsp; ' + txList.length + ' blocks'
-      : 'Plot No: ' + (m.plotNo || '-') + ' &nbsp;·&nbsp; ID: ' + txList[0].propertyId;
+      ? txList.map(function(t){ var tm=memberMap[t.propertyId]||{}; return 'Plot '+( tm.plotNo||'-')+' (ID:'+t.propertyId+')'; }).join(' &nbsp;·&nbsp; ')
+      : 'Plot No: ' + (m.plotNo || '-') + ' &nbsp;·&nbsp; Property ID: ' + txList[0].propertyId;
 
-    return '<div style="border:1px solid #d1dce8;border-radius:8px;margin-bottom:12px;background:' + bg + ';overflow:hidden">' +
+    return '<div style="border:2px solid #000000;border-radius:0;margin-bottom:12px;background:' + bg + ';overflow:hidden">' +
 
-      // ── Title bar ──────────────────────────────────────────────
-      '<div style="background:#0d2137;color:#ffffff;padding:7px 14px;' +
+      // ── Title bar — dark bg, white text, plot/ID info ───────────
+      '<div style="background:#1a1a2e;color:#ffffff;padding:6px 14px;' +
         'display:flex;justify-content:space-between;align-items:center">' +
-      '<div style="font-size:12px;font-weight:700;color:#ffffff">' +
-        (isMerged ? 'Consolidated Block' : 'Property Block') +
+      '<div style="font-size:11px;font-weight:700;color:#ffffff">' +
+        (m.fullName || '-') +
       '</div>' +
-      '<div style="font-size:11px;color:#c8a951;font-weight:600">' + titleContent + '</div>' +
+      '<div style="font-size:10px;color:#dddddd">' + titleContent + '</div>' +
       '</div>' +
 
-      // ── Owner + IO + Amount bar ─────────────────────────────────
-      '<div style="background:#ffffff;color:#1a1a2e;padding:9px 14px;border-bottom:1px solid #e2e8f0;' +
-        'display:flex;justify-content:space-between;align-items:flex-start">' +
+      // ── IO + Amount bar ──────────────────────────────────────────
+      '<div style="background:#f5f5f5;color:#000000;padding:7px 14px;border-bottom:2px solid #000000;' +
+        'display:flex;justify-content:space-between;align-items:center">' +
       '<div>' +
-      '<div style="font-size:13px;font-weight:700;color:#1a1a2e">' + (m.fullName || '-') + jointBadge + '</div>' +
-      proxyNote +
-      '<div style="font-size:12px;margin-top:3px;font-weight:600;color:#1a1a2e">' +
+      jointBadge + proxyNote +
+      '<div style="font-size:12px;font-weight:700;color:#000000">' +
         ioLabel +
-        ' <span style="font-weight:400;color:#475569;font-size:10px">(' + grp.internalOrder + ')</span>' +
+        ' <span style="font-weight:400;color:#444444;font-size:10px">(' + grp.internalOrder + ')</span>' +
       '</div>' +
       '</div>' +
       '<div style="text-align:right">' +
-      '<div style="font-size:20px;font-weight:700;color:#15803d">&#8377;' + fINR(groupAmt) + '</div>' +
+      '<div style="font-size:18px;font-weight:700;color:#000000">&#8377;' + fINR(groupAmt) + '</div>' +
       '</div>' +
       '</div>' +
 
       // ── Invoice table ───────────────────────────────────────────
-      '<div style="padding:8px 12px">' +
-      '<table style="width:100%;border-collapse:collapse">' +
-      '<tr style="background:#e8f0fe">' +
+      '<div style="padding:0">' +
+      '<table style="width:100%;border-collapse:collapse;border:1px solid #000000">' +
+      '<tr style="background:#e8e8e8">' +
       (isMerged
-        ? '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Prop ID</th>' +
-          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Plot No</th>'
+        ? '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:700;color:#000000;border:1px solid #000000">Prop ID</th>' +
+          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:700;color:#000000;border:1px solid #000000">Plot No</th>'
         : '') +
-      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Bill ID</th>' +
-      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Bill Date</th>' +
-      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Period</th>' +
-      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Bill Amt</th>' +
-      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Paid</th>' +
-      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Balance</th>' +
-      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Status</th>' +
+      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:700;color:#000000;border:1px solid #000000">Bill ID</th>' +
+      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:700;color:#000000;border:1px solid #000000">Bill Date</th>' +
+      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:700;color:#000000;border:1px solid #000000">Period</th>' +
+      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:700;color:#000000;border:1px solid #000000">Bill Amt</th>' +
+      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:700;color:#000000;border:1px solid #000000">Paid</th>' +
+      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:700;color:#000000;border:1px solid #000000">Balance</th>' +
+      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:700;color:#000000;border:1px solid #000000">Status</th>' +
       '</tr>' + invRows + '</table></div>' +
 
       '</div>';
@@ -704,12 +703,12 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
   // ── Grand total row (multi-property only) ────────────────────────
   var grandTotal = isMulti
-    ? '<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #16a34a;' +
-      'border-radius:8px;padding:10px 16px;display:flex;justify-content:space-between;' +
-      'align-items:center;margin-bottom:14px">' +
-      '<span style="font-size:13px;font-weight:700;color:#166534">Total — ' +
+    ? '<div style="border:2px solid #000000;background:#eeeeee;' +
+      'padding:8px 16px;display:flex;justify-content:space-between;' +
+      'align-items:center;margin-bottom:12px">' +
+      '<span style="font-size:13px;font-weight:700;color:#000000">Total — ' +
         txRows.length + ' Properties</span>' +
-      '<span style="font-size:20px;font-weight:700;color:#15803d">₹' + fINR(totalAmt) + '</span>' +
+      '<span style="font-size:20px;font-weight:700;color:#000000">&#8377;' + fINR(totalAmt) + '</span>' +
       '</div>'
     : '';
 
@@ -724,78 +723,70 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     '</style></head><body><div class="page">' +
 
     // ── PAGE HEADER ─────────────────────────────────────────────
-    '<div style="background:#0d2137;border-radius:10px 10px 0 0;padding:0;overflow:hidden">' +
+    '<div style="border:2px solid #000000;border-radius:6px 6px 0 0;overflow:hidden">' +
 
-    // Top accent bar
-    '<div style="background:#c8a951;height:5px;width:100%"></div>' +
+    // Header row: logo | society name + regd | RECEIPT label
+    '<div style="display:flex;align-items:center;padding:10px 16px;background:#ffffff;border-bottom:2px solid #000000">' +
 
-    // Header content: logo left, society name center, RECEIPT badge right
-    '<div style="padding:16px 20px;background:#0d2137;display:flex;justify-content:space-between;align-items:center">' +
-
-    // Logo
-    '<div style="width:70px;height:70px;flex-shrink:0">' +
-    '<img src="https://scwavampuguda-tech.github.io/society-dashboard/icons/society_logo.png" width="70" height="70" ' +
-    'style="border-radius:50%;border:2px solid #c8a951;object-fit:cover" alt="SCRWA"/>' +
+    // Logo — fixed box, no clip
+    '<div style="flex-shrink:0;margin-right:14px">' +
+    '<img src="https://scwavampuguda-tech.github.io/society-dashboard/icons/society_logo.png" ' +
+    'width="64" height="64" style="display:block;border:1px solid #cccccc;border-radius:4px" alt="SCRWA"/>' +
     '</div>' +
 
-    // Society name + tagline (center)
-    '<div style="flex:1;text-align:center;padding:0 16px">' +
-    '<div style="font-size:15px;font-weight:700;color:#ffffff;letter-spacing:.4px;text-shadow:0 1px 3px rgba(0,0,0,.4)">' + SOCIETY_NAME + '</div>' +
-    '<div style="font-size:10px;color:#c8a951;margin-top:3px;letter-spacing:.8px;text-transform:uppercase">' +
+    // Society name + regd + email (center)
+    '<div style="flex:1;text-align:center">' +
+    '<div style="font-size:15px;font-weight:700;color:#000000;letter-spacing:.3px">' + SOCIETY_NAME + '</div>' +
+    '<div style="font-size:10px;color:#333333;margin-top:2px">' +
       SOCIETY_REGD + ' &nbsp;·&nbsp; Vampuguda, Hyderabad' +
     '</div>' +
-    '<div style="font-size:10px;color:#93b4cc;margin-top:2px">' + SOCIETY_EMAIL + '</div>' +
+    '<div style="font-size:10px;color:#333333;margin-top:1px">' + SOCIETY_EMAIL + '</div>' +
     '</div>' +
 
-    // RECEIPT badge (right)
+    // RECEIPT label (right)
     '<div style="flex-shrink:0;text-align:right">' +
-    '<div style="background:#c8a951;color:#1a3c5e;padding:6px 18px;border-radius:6px;' +
-      'font-weight:700;font-size:14px;letter-spacing:1.5px">RECEIPT</div>' +
-    (isMulti
-      ? '<div style="font-size:10px;color:#93b4cc;margin-top:5px">Consolidated · ' + txRows.length + ' Properties</div>'
-      : '') +
+    '<div style="border:2px solid #000000;padding:5px 16px;font-weight:700;font-size:16px;' +
+      'letter-spacing:2px;color:#000000">RECEIPT</div>' +
+    (isMulti ? '<div style="font-size:10px;color:#333333;margin-top:4px">' + txRows.length + ' Properties</div>' : '') +
     '</div>' +
 
     '</div>' +
-
-    // Bottom accent bar
-    '<div style="background:#c8a951;height:2px;width:100%"></div>' +
     '</div>' +
 
     // ── BODY ────────────────────────────────────────────────────
-    '<div style="border:1px solid #d1dce8;border-top:none;border-radius:0 0 10px 10px;' +
+    '<div style="border:2px solid #000000;border-top:none;border-radius:0 0 6px 6px;' +
       'padding:14px 18px;background:#fff">' +
 
     // Receipt meta: 3 columns
-    '<table style="width:100%;border-collapse:collapse;margin-bottom:14px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">' +
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:12px;border:2px solid #000000">' +
     '<tr>' +
-    '<td style="width:33.3%;padding:10px 14px;border-right:1px solid #e2e8f0;vertical-align:top">' + metaBox('Receipt No', receiptNo) + '</td>' +
-    '<td style="width:33.3%;padding:10px 14px;border-right:1px solid #e2e8f0;vertical-align:top">' + metaBox('Date', bankRow.displayDate) + '</td>' +
-    '<td style="width:33.3%;padding:10px 14px;vertical-align:top">' + metaBox('Payment Mode', mode) + '</td>' +
+    '<td style="width:33.3%;padding:9px 14px;border-right:2px solid #000000;vertical-align:top">' + metaBox('Receipt No', receiptNo) + '</td>' +
+    '<td style="width:33.3%;padding:9px 14px;border-right:2px solid #000000;vertical-align:top">' + metaBox('Date', bankRow.displayDate) + '</td>' +
+    '<td style="width:33.3%;padding:9px 14px;vertical-align:top">' + metaBox('Payment Mode', mode) + '</td>' +
     '</tr></table>' +
 
     // Narration row
-    '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;' +
-      'padding:8px 14px;font-size:12px;margin-bottom:14px;color:#475569">' +
-    '<span style="font-weight:600;color:#1a3c5e">Narration: </span>' + bankRow.narration +
+    '<div style="border:1px solid #000000;' +
+      'padding:7px 14px;font-size:11px;margin-bottom:12px;color:#000000">' +
+    '<span style="font-weight:700;color:#000000">Narration: </span>' + bankRow.narration +
     '</div>' +
 
     // Amount box
-    '<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #16a34a;' +
-      'border-radius:8px;padding:12px 18px;display:flex;justify-content:space-between;' +
-      'align-items:center;margin-bottom:16px">' +
+    '<div style="border:2px solid #000000;' +
+      'padding:10px 16px;display:flex;justify-content:space-between;' +
+      'align-items:center;margin-bottom:12px">' +
     '<div>' +
-    '<div style="font-size:11px;color:#166534;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Total Amount Received</div>' +
-    '<div style="font-size:11px;color:#166534;font-style:italic;margin-top:3px">' +
+    '<div style="font-size:11px;color:#000000;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Total Amount Received</div>' +
+    '<div style="font-size:11px;color:#000000;font-style:italic;margin-top:2px">' +
       'Rupees ' + numberToWords(totalAmt) + ' Only' +
     '</div>' +
     '</div>' +
-    '<div style="font-size:28px;font-weight:700;color:#15803d">&#8377;' + fINR(totalAmt) + '</div>' +
+    '<div style="font-size:26px;font-weight:700;color:#000000">&#8377;' + fINR(totalAmt) + '</div>' +
     '</div>' +
 
     // Section label
-    '<div style="font-weight:700;font-size:11px;color:#1a3c5e;margin:0 0 10px;padding:5px 12px;' +
-      'background:#eef4fb;border-left:4px solid #c8a951;border-radius:0 4px 4px 0;' +
+    '<div style="font-weight:700;font-size:11px;color:#000000;margin:0 0 10px;padding:5px 12px;' +
+      'background:#eeeeee;border-left:4px solid #000000;' +
       'text-transform:uppercase;letter-spacing:.6px">' +
       (isMulti ? 'Properties &amp; Invoice Detail' : 'Invoice Detail') +
     '</div>' +
@@ -808,17 +799,17 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
     // Received stamp
     '<div style="text-align:right;margin-bottom:16px">' +
-    '<span style="display:inline-block;border:2.5px solid #15803d;color:#15803d;' +
-      'padding:5px 22px;border-radius:4px;font-weight:700;font-size:13px;letter-spacing:1px;' +
+    '<span style="display:inline-block;border:2.5px solid #000000;color:#000000;' +
+      'padding:5px 22px;font-weight:700;font-size:13px;letter-spacing:1px;' +
       'transform:rotate(-8deg);display:inline-block">RECEIVED</span>' +
     '</div>' +
 
     // Footer
-    '<div style="text-align:center;font-size:10px;color:#94a3b8;' +
-      'border-top:2px solid #eef4fb;padding-top:12px;line-height:2">' +
+    '<div style="text-align:center;font-size:10px;color:#333333;' +
+      'border-top:1px solid #000000;padding-top:10px;line-height:2">' +
     'This is a system-generated receipt. No signature required.<br>' +
     SOCIETY_NAME + ' &nbsp;·&nbsp; ' + SOCIETY_REGD + '<br>' +
-    '<span style="font-size:10px;color:#cbd5e1">Generated: ' +
+    '<span style="font-size:10px;color:#333333">Generated: ' +
     Utilities.formatDate(new Date(), tz, "dd MMM yyyy 'at' HH:mm") + ' IST</span>' +
     '</div>' +
 
@@ -828,10 +819,9 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 }
 
 function metaBox(label, value) {
-  return '<div style="background:#f8fafc;border-radius:6px;padding:8px 10px">' +
-    '<div style="font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;' +
-      'letter-spacing:.4px">' + label + '</div>' +
-    '<div style="font-size:13px;font-weight:600;color:#1a1a2e;margin-top:3px">' + value + '</div>' +
+  return '<div style="padding:6px 4px">' +
+    '<div style="font-size:9px;font-weight:700;color:#000000;text-transform:uppercase;letter-spacing:.5px">' + label + '</div>' +
+    '<div style="font-size:13px;font-weight:700;color:#000000;margin-top:2px">' + value + '</div>' +
     '</div>';
 }
 
