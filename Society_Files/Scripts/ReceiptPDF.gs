@@ -599,7 +599,7 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
     var portalLink  = '<a href="https://scwavampuguda-tech.github.io/society-dashboard/Society_Portal.html" style="color:#1e4d8c">Outstanding Report</a>';
     var body =
       '<div style="font-family:Arial,sans-serif;font-size:14px;color:#1a1a2e;line-height:1.8">' +
-      '<p>Dear ' + info.displayName + ',</p>' +
+      '<p>Dear ' + (info.toName || 'Member') + ',</p>' +
       '<p>Thank you for your contribution to <strong>' + SOCIETY_SHORT + '</strong>. ' +
       'Your timely payments help us maintain and improve the quality of life in our community. ' +
       'We sincerely appreciate your continued support and trust in the Management Committee.</p>' +
@@ -746,6 +746,13 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
         (m.fullName || '-') + jointBadge +
       '</div>' +
       proxyNote +
+      '</div>' +
+
+      // ── Property ID + Location row ────────────────────────────────
+      '<div style="background:#1a3c5e;color:#c8a951;padding:4px 14px;font-size:9px">' +
+        'Property ID: <strong>' + (txList[0] ? txList[0].propertyId : '') + '</strong>' +
+        (m.plotNo       ? ' &nbsp;|&nbsp; Plot No: <strong>' + m.plotNo + '</strong>' : '') +
+        (m.locationName ? ' &nbsp;|&nbsp; ' + m.locationName : '') +
       '</div>' +
 
       // ── Owner + IO + Amount bar ─────────────────────────────────
