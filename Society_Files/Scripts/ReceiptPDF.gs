@@ -667,7 +667,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     var txList = grp.txList;
     var m      = grp.m;
     var ioLabel = grp.ioLabel;
-    var isMerged = txList.length > 1;
+    var isMerged = txRows.length > 1;  // true if receipt has >1 property row
     var bg     = idx % 2 === 0 ? '#ffffff' : '#f8faff';
 
     // ── Merged invoice table (multiple properties, same owner+IO) ─
