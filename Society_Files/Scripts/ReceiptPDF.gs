@@ -554,7 +554,7 @@ function getOrCreateReceiptFolder(dateStr) {
 function writeReceiptUrlToSheet(ss, sheetRow, url) {
   var sheet = ss.getSheetByName('TransactionDetails');
   if (!sheet) return;
-  sheet.getRange(sheetRow, 14).setValue(url); // Col N = column 14
+  sheet.getRange(sheetRow, 15).setValue(url); // Col O = column 15 (Attachments — Image type in AppSheet)
 }
 
 function logReceipt(ss, tx, member, fileName, pdfUrl) {
