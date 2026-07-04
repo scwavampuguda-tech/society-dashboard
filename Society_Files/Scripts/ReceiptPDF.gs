@@ -529,10 +529,10 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
       var invRows = '';
       if (tx.invoices && tx.invoices.length > 0) {
         invRows = tx.invoices.map(function(inv) {
-          return '<tr style="font-size:11px">' +
-            '<td style="padding:4px 8px;color:#475569;border-bottom:1px solid #f1f5f9">' + inv.billId + '</td>' +
+          return '<tr style="font-size:9px">' +
+            '<td style="padding:2px 4px;color:#475569;border-bottom:1px solid #f1f5f9">' + inv.billId + '</td>' +
             '<td style="padding:4px 8px;border-bottom:1px solid #f1f5f9">' + inv.period + '</td>' +
-            '<td style="padding:4px 8px;text-align:right;border-bottom:1px solid #f1f5f9">₹' + fINR(inv.billAmt) + '</td>' +
+            '<td style="padding:2px 4px;text-align:right;border-bottom:1px solid #f1f5f9">₹' + fINR(inv.billAmt) + '</td>' +
             '<td style="padding:4px 8px;text-align:right;border-bottom:1px solid #f1f5f9;color:#15803d">₹' + fINR(inv.paidAmt) + '</td>' +
             '<td style="padding:4px 8px;text-align:right;border-bottom:1px solid #f1f5f9;color:' +
               (inv.balance > 0 ? '#dc2626' : '#15803d') + '">' +
@@ -684,8 +684,8 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     txList.forEach(function(tx) {
       var txMember = memberMap[tx.propertyId] || {};
       var propPrefix = isMerged
-        ? '<td style="padding:4px 8px;font-size:10px;font-weight:700;color:#0d2137;border-bottom:1px solid #f1f5f9">' + tx.propertyId + '</td>' +
-          '<td style="padding:4px 8px;font-size:10px;color:#475569;border-bottom:1px solid #f1f5f9">' + (txMember.plotNo || '-') + '</td>'
+        ? '<td style="padding:2px 4px;font-size:9px;font-weight:700;color:#0d2137;border-bottom:1px solid #f1f5f9">' + tx.propertyId + '</td>' +
+          '<td style="padding:2px 4px;font-size:9px;color:#475569;border-bottom:1px solid #f1f5f9">' + (txMember.plotNo || '-') + '</td>'
         : '';
 
       if (tx.invoices && tx.invoices.length > 0) {
@@ -695,15 +695,15 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
           invSubtotal.bal  += inv.balance;
           invRows += '<tr>' +
             propPrefix +
-            '<td style="padding:4px 8px;font-size:10px;color:#1a3c5e;font-weight:600;border-bottom:1px solid #f1f5f9">' + inv.billId + '</td>' +
-            '<td style="padding:4px 8px;font-size:10px;color:#475569;border-bottom:1px solid #f1f5f9">' + (inv.billDate || '-') + '</td>' +
-            '<td style="padding:4px 8px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.period + '</td>' +
-            '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9">&#8377;' + fINR(inv.billAmt) + '</td>' +
+            '<td style="padding:2px 4px;font-size:10px;color:#1a3c5e;font-weight:600;border-bottom:1px solid #f1f5f9">' + inv.billId + '</td>' +
+            '<td style="padding:2px 4px;font-size:10px;color:#475569;border-bottom:1px solid #f1f5f9">' + (inv.billDate || '-') + '</td>' +
+            '<td style="padding:2px 4px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.period + '</td>' +
+            '<td style="padding:2px 4px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9">&#8377;' + fINR(inv.billAmt) + '</td>' +
             '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:#15803d">&#8377;' + fINR(inv.paidAmt) + '</td>' +
             '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:' +
               (inv.balance > 0 ? '#dc2626' : '#64748b') + '">' +
               (inv.balance > 0 ? '&#8377;'+fINR(inv.balance) : '&#8377;0') + '</td>' +
-            '<td style="padding:4px 8px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.status + '</td>' +
+            '<td style="padding:2px 4px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.status + '</td>' +
             '</tr>';
         });
       } else {
@@ -760,19 +760,42 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
       // ── Invoice table ───────────────────────────────────────────
       '<div style="padding:4px 8px">' +
-      '<table style="width:100%;border-collapse:collapse">' +
+      '<table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:9px">' +
+      // Col widths: PropID PlotNo BillID BillDate Period BillAmt Paid Balance Status
+      (isMerged
+        ? '<colgroup>' +
+            '<col style="width:6%"/>'  +  // Prop ID
+            '<col style="width:6%"/>'  +  // Plot No
+            '<col style="width:22%"/>' +  // Bill ID
+            '<col style="width:9%"/>'  +  // Bill Date
+            '<col style="width:9%"/>'  +  // Period
+            '<col style="width:10%"/>' +  // Bill Amt
+            '<col style="width:10%"/>' +  // Paid
+            '<col style="width:10%"/>' +  // Balance
+            '<col style="width:9%"/>'  +  // Status
+          '</colgroup>'
+        : '<colgroup>' +
+            '<col style="width:28%"/>' +  // Bill ID
+            '<col style="width:11%"/>' +  // Bill Date
+            '<col style="width:11%"/>' +  // Period
+            '<col style="width:12%"/>' +  // Bill Amt
+            '<col style="width:12%"/>' +  // Paid
+            '<col style="width:12%"/>' +  // Balance
+            '<col style="width:14%"/>' +  // Status
+          '</colgroup>'
+      ) +
       '<tr style="background:#e8f0fe">' +
       (isMerged
-        ? '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Prop ID</th>' +
-          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Plot No</th>'
+        ? '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Prop ID</th>' +
+          '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Plot No</th>'
         : '') +
-      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Bill ID</th>' +
-      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Bill Date</th>' +
-      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Period</th>' +
-      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Bill Amt</th>' +
-      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Paid</th>' +
-      '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Balance</th>' +
-      '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Status</th>' +
+      '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Bill ID</th>' +
+      '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Bill Date</th>' +
+      '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Period</th>' +
+      '<th style="padding:3px 4px;text-align:right;font-size:9px;font-weight:700;color:#1a3c5e">Bill Amt</th>' +
+      '<th style="padding:3px 4px;text-align:right;font-size:9px;font-weight:700;color:#1a3c5e">Paid</th>' +
+      '<th style="padding:3px 4px;text-align:right;font-size:9px;font-weight:700;color:#1a3c5e">Balance</th>' +
+      '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Status</th>' +
       '</tr>' + invRows + '</table></div>' +
 
       '</div>';
