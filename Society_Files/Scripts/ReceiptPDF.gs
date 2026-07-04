@@ -547,13 +547,8 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
 
         '<table style="width:100%;border-collapse:collapse;margin-bottom:0">' +
 
-        // ── Row 1: Plot No · PropertyID ─────────────────────────
-        '<tr style="background:#0f2744;color:#fff">' +
-        '<td style="padding:6px 12px;font-size:11px;font-weight:700">' +
-          'Property ID: ' + tx.propertyId +
-          ' &nbsp;|&nbsp; Plot No: ' + (mm.plotNo || '—') +
-        '</td>' +
-        '</tr>' +
+        // ── Row 1: Owner name only ────────────────────────────────
+
 
         // ── Row 2: Owner name + Purpose / Amount ─────────────────
         '<tr style="background:#1e4d8c;color:#fff">' +
