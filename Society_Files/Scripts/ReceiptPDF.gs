@@ -583,21 +583,32 @@ function sendConsolidatedEmails(receiptNo, bankRow, txRows, memberMap,
                                 pdfBlob, pdfUrl, fileName, waLinks) {
   var results = [];
 
-  // ── Group tx rows by unique member email ─────────────────────────
-  var emailMap = {};
+  // ── Collect ALL available emails per property — owner AND proxy, no conditions ──
+  // Rule: if an email address exists, send to it. No harm in sending to both.
+  var emailMap = {};  // addr → { name, proxyNote, entries[] }
+
+  function addToEmailMap(addr, name, proxyNote, tx, member) {
+    var a = String(addr || '').trim().toLowerCase();
+    if (!a || a.indexOf('@') < 1) return;  // skip blank or invalid
+    if (!emailMap[a]) emailMap[a] = { name: name, proxyNote: proxyNote, entries: [] };
+    emailMap[a].entries.push({ tx: tx, member: member });
+  }
+
   txRows.forEach(function(tx) {
     var m = memberMap[tx.propertyId];
     if (!m) return;
-    var emails = [];
-    if (m.email)      emails.push({ addr: m.email, name: m.fullName, proxyNote: '' });
-    if (m.proxyEmail && m.proxyEmail !== m.email)
-      emails.push({ addr: m.proxyEmail, name: m.proxyName, proxyNote: ' (Proxy for ' + m.fullName + ')' });
 
-    emails.forEach(function(e) {
-      if (!e.addr) return;
-      if (!emailMap[e.addr]) emailMap[e.addr] = { name: e.name, proxyNote: e.proxyNote, entries: [] };
-      emailMap[e.addr].entries.push({ tx: tx, member: m });
-    });
+    // 1. Owner email — always send if present
+    addToEmailMap(m.email, m.fullName, '', tx, m);
+
+    // 2. Proxy email — always send if present, even if same as owner
+    //    (proxyEmail === owner email is caught by dedup in addToEmailMap via same key)
+    if (m.proxyEmail) {
+      var proxyNote = m.proxyName
+        ? ' (Representative for ' + m.fullName + ')'
+        : ' (Proxy for ' + m.fullName + ')';
+      addToEmailMap(m.proxyEmail, m.proxyName || m.fullName, proxyNote, tx, m);
+    }
   });
 
   // ── Send one email per unique address ────────────────────────────
