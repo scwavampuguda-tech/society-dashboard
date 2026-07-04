@@ -676,10 +676,10 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
     txList.forEach(function(tx) {
       var txMember = memberMap[tx.propertyId] || {};
-      var propPrefix = isMerged
-        ? '<td style="padding:2px 4px;font-size:9px;font-weight:700;color:#0d2137;border-bottom:1px solid #f1f5f9">' + tx.propertyId + '</td>' +
-          '<td style="padding:2px 4px;font-size:9px;color:#475569;border-bottom:1px solid #f1f5f9">' + (txMember.plotNo || '-') + '</td>'
-        : '';
+      // Always show Prop ID + Plot No for every receipt
+      var propPrefix =
+        '<td style="padding:2px 4px;font-size:9px;font-weight:700;color:#0d2137;border-bottom:1px solid #f1f5f9">' + tx.propertyId + '</td>' +
+        '<td style="padding:2px 4px;font-size:9px;color:#475569;border-bottom:1px solid #f1f5f9">' + (txMember.plotNo || '-') + '</td>';
 
       if (tx.invoices && tx.invoices.length > 0) {
         tx.invoices.forEach(function(inv) {
@@ -755,33 +755,20 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
       '<div style="padding:4px 8px">' +
       '<table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:9px">' +
       // Col widths: PropID PlotNo BillID BillDate Period BillAmt Paid Balance Status
-      (isMerged
-        ? '<colgroup>' +
-            '<col style="width:6%"/>'  +  // Prop ID
-            '<col style="width:6%"/>'  +  // Plot No
-            '<col style="width:22%"/>' +  // Bill ID
-            '<col style="width:9%"/>'  +  // Bill Date
-            '<col style="width:9%"/>'  +  // Period
-            '<col style="width:10%"/>' +  // Bill Amt
-            '<col style="width:10%"/>' +  // Paid
-            '<col style="width:10%"/>' +  // Balance
-            '<col style="width:9%"/>'  +  // Status
-          '</colgroup>'
-        : '<colgroup>' +
-            '<col style="width:28%"/>' +  // Bill ID
-            '<col style="width:11%"/>' +  // Bill Date
-            '<col style="width:11%"/>' +  // Period
-            '<col style="width:12%"/>' +  // Bill Amt
-            '<col style="width:12%"/>' +  // Paid
-            '<col style="width:12%"/>' +  // Balance
-            '<col style="width:14%"/>' +  // Status
-          '</colgroup>'
-      ) +
+      '<colgroup>' +
+        '<col style="width:6%"/>'  +  // Prop ID
+        '<col style="width:6%"/>'  +  // Plot No
+        '<col style="width:22%"/>' +  // Bill ID
+        '<col style="width:9%"/>'  +  // Bill Date
+        '<col style="width:9%"/>'  +  // Period
+        '<col style="width:10%"/>' +  // Bill Amt
+        '<col style="width:10%"/>' +  // Paid
+        '<col style="width:10%"/>' +  // Balance
+        '<col style="width:9%"/>'  +  // Status
+      '</colgroup>' +
       '<tr style="background:#e8f0fe">' +
-      (isMerged
-        ? '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Prop ID</th>' +
-          '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Plot No</th>'
-        : '') +
+      '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Prop ID</th>' +
+      '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Plot No</th>' +
       '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Bill ID</th>' +
       '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Bill Date</th>' +
       '<th style="padding:3px 4px;text-align:left;font-size:9px;font-weight:700;color:#1a3c5e">Period</th>' +
