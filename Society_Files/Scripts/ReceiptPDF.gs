@@ -324,8 +324,15 @@ function getInvoicesByBillIds(ss, billIds) {
       var raw = String(data[i][4]).trim();
       period  = raw.length >= 7 ? raw.substring(0, 7) : raw;
     }
+    var billDate = '';
+    if (data[i][3] instanceof Date) {
+      billDate = Utilities.formatDate(data[i][3], tz, 'dd-MMM-yy');
+    } else if (data[i][3]) {
+      billDate = String(data[i][3]).trim().substring(0,11);
+    }
     found.push({
       billId:    billId,
+      billDate:  billDate,
       period:    period,
       billAmt:   Math.abs(parseFloat(data[i][6]) || 0),
       paidAmt:   Math.abs(parseFloat(data[i][7]) || 0),
@@ -572,14 +579,15 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
         invSubtotal.paid += inv.paidAmt;
         invSubtotal.bal  += inv.balance;
         invRows += '<tr>' +
-          '<td style="padding:5px 8px;font-size:10px;color:#475569;border-bottom:1px solid #f1f5f9">' + inv.billId + '</td>' +
-          '<td style="padding:5px 8px;font-size:11px;border-bottom:1px solid #f1f5f9">' + inv.period + '</td>' +
-          '<td style="padding:5px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9">₹' + fINR(inv.billAmt) + '</td>' +
-          '<td style="padding:5px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:#15803d">₹' + fINR(inv.paidAmt) + '</td>' +
-          '<td style="padding:5px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:' +
+          '<td style="padding:4px 8px;font-size:10px;color:#1a3c5e;font-weight:600;border-bottom:1px solid #f1f5f9">' + inv.billId + '</td>' +
+          '<td style="padding:4px 8px;font-size:10px;color:#475569;border-bottom:1px solid #f1f5f9">' + (inv.billDate || '-') + '</td>' +
+          '<td style="padding:4px 8px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.period + '</td>' +
+          '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9">&#8377;' + fINR(inv.billAmt) + '</td>' +
+          '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:#15803d">&#8377;' + fINR(inv.paidAmt) + '</td>' +
+          '<td style="padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid #f1f5f9;color:' +
             (inv.balance > 0 ? '#dc2626' : '#64748b') + '">' +
-            (inv.balance > 0 ? '₹'+fINR(inv.balance) : '₹0') + '</td>' +
-          '<td style="padding:5px 8px;font-size:11px;border-bottom:1px solid #f1f5f9">' + inv.status + '</td>' +
+            (inv.balance > 0 ? '&#8377;'+fINR(inv.balance) : '&#8377;0') + '</td>' +
+          '<td style="padding:4px 8px;font-size:10px;border-bottom:1px solid #f1f5f9">' + inv.status + '</td>' +
           '</tr>';
       });
       // Subtotal row (only if multiple invoices)
@@ -605,10 +613,13 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
       'background:' + bg + ';overflow:hidden">' +
 
       // ── Block title bar: LocationName · Plot No · PropertyID ────
-      '<div style="background:#0d2137;color:#ffffff;padding:8px 14px;' +
+      '<div style="background:#0d2137;color:#ffffff;padding:7px 14px;' +
         'display:flex;justify-content:space-between;align-items:center">' +
       '<div style="font-size:12px;font-weight:700;letter-spacing:.3px;color:#ffffff">' +
-        (m.locationName || 'Property') +
+        'Property ' + (idx + 1) + ' of ' + txRows.length +
+      '</div>' +
+      '<div style="font-size:11px;color:#c8a951;font-weight:600">' +
+        'Plot No: ' + (m.plotNo || '-') + ' &nbsp;·&nbsp; ID: ' + tx.propertyId +
       '</div>' +
       '</div>' +
 
@@ -622,9 +633,6 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
         ioLabel +
         ' <span style="font-weight:400;color:#475569;font-size:10px">(' + tx.internalOrder + ')</span>' +
       '</div>' +
-      '<div style="font-size:10px;margin-top:3px;color:#475569">' +
-        'Plot No: ' + (m.plotNo || '-') + ' &nbsp;|&nbsp; Property ID: ' + tx.propertyId +
-      '</div>' +
       '</div>' +
       '<div style="text-align:right">' +
       '<div style="font-size:20px;font-weight:700;color:#15803d">&#8377;' + fINR(tx.amount) + '</div>' +
@@ -636,12 +644,13 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
         ? '<div style="padding:8px 12px">' +
           '<table style="width:100%;border-collapse:collapse">' +
           '<tr style="background:#e8f0fe">' +
-          '<th style="padding:5px 8px;text-align:left;font-size:10px;font-weight:600;color:#475569">Bill ID</th>' +
-          '<th style="padding:5px 8px;text-align:left;font-size:10px;font-weight:600;color:#475569">Period</th>' +
-          '<th style="padding:5px 8px;text-align:right;font-size:10px;font-weight:600;color:#475569">Bill Amt</th>' +
-          '<th style="padding:5px 8px;text-align:right;font-size:10px;font-weight:600;color:#475569">Paid</th>' +
-          '<th style="padding:5px 8px;text-align:right;font-size:10px;font-weight:600;color:#475569">Balance</th>' +
-          '<th style="padding:5px 8px;text-align:left;font-size:10px;font-weight:600;color:#475569">Status</th>' +
+          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Bill ID</th>' +
+          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Bill Date</th>' +
+          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Period</th>' +
+          '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Bill Amt</th>' +
+          '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Paid</th>' +
+          '<th style="padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:#1a3c5e">Balance</th>' +
+          '<th style="padding:4px 8px;text-align:left;font-size:10px;font-weight:600;color:#1a3c5e">Status</th>' +
           '</tr>' + invRows + '</table></div>'
         : '<div style="padding:8px 12px;font-size:11px;color:#94a3b8">' +
           (tx.notes || tx.remarks ? (tx.notes || tx.remarks) : 'Direct payment — no invoice linked') +
@@ -664,8 +673,9 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
   var html =
     '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' +
     '@import url(https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;600;700&display=swap);' +
-    'body{font-family:Roboto,Arial,sans-serif;margin:0;padding:0;color:#1a1a2e;font-size:13px}' +
-    '.page{width:700px;margin:0 auto;padding:20px}' +
+    '@page{size:A4 landscape;margin:12mm}' +
+    'body{font-family:Roboto,Arial,sans-serif;margin:0;padding:0;color:#1a1a2e;font-size:12px}' +
+    '.page{width:100%;max-width:1050px;margin:0 auto;padding:0}' +
     'table{border-collapse:collapse}' +
     '</style></head><body><div class="page">' +
 
@@ -710,7 +720,7 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
 
     // ── BODY ────────────────────────────────────────────────────
     '<div style="border:1px solid #d1dce8;border-top:none;border-radius:0 0 10px 10px;' +
-      'padding:20px;background:#fff">' +
+      'padding:14px 18px;background:#fff">' +
 
     // Receipt meta: 3 columns
     '<table style="width:100%;border-collapse:collapse;margin-bottom:14px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">' +
