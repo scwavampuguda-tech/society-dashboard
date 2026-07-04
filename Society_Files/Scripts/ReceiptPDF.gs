@@ -493,24 +493,24 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
                   (isMulti ? ' (' + txRows.length + ' Properties)' : '') +
                   ' - ' + SOCIETY_SHORT;
 
-    // Plain narrative email — minimal HTML for clickable receipt link
-    var receiptLink = '<a href="' + pdfUrl + '" style="color:#1a1a2e">' + receiptNo + '</a>';
+    // Email body — clean narrative, receipt no. once as clickable link
+    var receiptLink = '<a href="' + pdfUrl + '" style="color:#1a1a2e;font-weight:bold">' + receiptNo + '</a>';
+    var portalLink  = '<a href="https://scwavampuguda-tech.github.io/society-dashboard/Society_Portal.html" style="color:#1e4d8c">Society Portal</a>';
     var body =
-      '<div style="font-family:Arial,sans-serif;font-size:14px;color:#1a1a2e;line-height:1.7">' +
+      '<div style="font-family:Arial,sans-serif;font-size:14px;color:#1a1a2e;line-height:1.8">' +
       '<p>Dear ' + info.displayName + ',</p>' +
-      '<p>Thank you for your payment to ' + SOCIETY_SHORT + '.</p>' +
-      '<p>We are pleased to confirm that your payment of Rs.' + fINR(bankRow.amount) + ' has been received ' +
-      'and reconciled against Receipt No. ' + receiptLink + ' dated ' + bankRow.displayDate + '.</p>' +
-      '<p>Please find the receipt PDF attached to this email. A copy is also available on Google Drive ' +
-      'under Receipt No. ' + receiptLink + '.</p>' +
-      '<p>Please retain this receipt for your records. For any queries, kindly quote ' +
-      'Receipt No. ' + receiptNo + ' in your communication with the Society office.</p>' +
+      '<p>Thank you for your payment of <strong>Rs.' + fINR(bankRow.amount) + '</strong> to ' + SOCIETY_SHORT + '. ' +
+      'Your payment dated ' + bankRow.displayDate + ' has been received and reconciled. ' +
+      'The receipt (No. ' + receiptLink + ') is attached to this email and also available on Google Drive via the same link.</p>' +
+      '<p>To view your current outstanding dues, please visit the ' + portalLink + '.</p>' +
+      '<p>For any queries, please quote the receipt number in your communication with the Society office.</p>' +
       '<p>Regards,<br>' +
       'SCRWA Management Committee<br>' +
       SOCIETY_SHORT + ' | ' + SOCIETY_REGD + '<br>' +
       SOCIETY_EMAIL + '</p>' +
       '<p style="font-size:11px;color:#94a3b8">This is a system-generated email. Please do not reply to this message.</p>' +
       '</div>';
+
 
 
 
