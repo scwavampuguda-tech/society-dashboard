@@ -959,55 +959,6 @@ function sendReceiptEmailFromMenu() {
   ui.alert('Email Done!', summary, ui.ButtonSet.OK);
 }
 
-// ═══════════════════════════════════════════════════════════════════
-//  DUES NOTE HELPER  (MOMEN01 only)
-// ═══════════════════════════════════════════════════════════════════
-function duesNoteHtml(entries) {
-  // Only show for Maintenance Charges (MOMEN01)
-  var maintenanceEntries = entries.filter(function(e) {
-    return e.tx.internalOrder === 'MOMEN01';
-  });
-  if (!maintenanceEntries.length) return '';
-
-  // Check across all MOMEN01 invoices — any outstanding balance?
-  var totalPrevDues  = 0;
-  var totalBalance   = 0;
-  maintenanceEntries.forEach(function(e) {
-    (e.tx.invoices || []).forEach(function(inv) {
-      totalBalance += inv.balance;
-      // Previous dues = invoices where period is before current payment period
-      if (inv.balance > 0) totalPrevDues += inv.balance;
-    });
-  });
-
-  var allClear = totalBalance <= 0;
-
-  if (allClear) {
-    // Appreciation note — no dues remaining
-    return '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;' +
-      'padding:12px 16px;margin:10px 0 14px">' +
-      '<div style="font-size:13px;font-weight:700;color:#15803d;margin-bottom:4px">' +
-        'No Pending Dues</div>' +
-      '<div style="font-size:12px;color:#166534">' +
-        'Your maintenance account is fully up to date. Thank you for your prompt payments! ' +
-        'We appreciate your commitment to the society.' +
-      '</div>' +
-      '</div>';
-  } else {
-    // Dues remaining note
-    return '<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;' +
-      'padding:12px 16px;margin:10px 0 14px">' +
-      '<div style="font-size:13px;font-weight:700;color:#c2410c;margin-bottom:4px">' +
-        'Previous Dues Pending — Rs.' + fINR(totalBalance) + '</div>' +
-      '<div style="font-size:12px;color:#9a3412">' +
-        'You have outstanding maintenance dues of <strong>Rs.' + fINR(totalBalance) + '</strong>. ' +
-        'We request you to clear the pending amount at your earliest convenience. ' +
-        'For any queries, please contact the treasurer.' +
-      '</div>' +
-      '</div>';
-  }
-}
-
 // ── Update log row with email sent status ───────────────────────────
 function logReceiptEmail(ss, receiptNo, emailResults) {
   var logSheet = ss.getSheetByName(RECEIPTS_LOG_SHEET);
