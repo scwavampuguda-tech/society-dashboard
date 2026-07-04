@@ -334,7 +334,7 @@ function getInvoicesByBillIds(ss, billIds) {
 function getMemberData(ss, propertyId) {
   if (!propertyId) return null;
   var m = {
-    propertyId: propertyId, plotNo: '', laneNo: '', ownerType: 'Single',
+    propertyId: propertyId, plotNo: '', locationName: '', ownerType: 'Single',
     name: '', name2: '', fullName: '', email: '', status: '',
     isProxy: false, proxyName: '', proxyEmail: ''
   };
@@ -343,16 +343,16 @@ function getMemberData(ss, propertyId) {
     var owData = owSheet.getDataRange().getValues();
     for (var i = 1; i < owData.length; i++) {
       if (String(owData[i][0]).trim().replace(/\.0$/,'') !== propertyId) continue;
-      m.plotNo   = String(owData[i][1]  || '').trim().replace(/\.0$/,'');
-      m.ownerType= String(owData[i][3]  || 'Single').trim();
-      m.name     = String(owData[i][4]  || '').trim();
-      m.name2    = String(owData[i][5]  || '').trim();
-      m.laneNo   = String(owData[i][7]  || '').trim();
-      m.status   = String(owData[i][9]  || '').trim();
-      m.email    = String(owData[i][10] || '').trim();   // Col K
-      var ipr    = String(owData[i][14] || '').trim().toLowerCase();
-      m.isProxy  = ipr === 'yes' || ipr === 'y' || ipr === 'true';
-      m.fullName = m.name + (m.name2 ? ' & ' + m.name2 : '');
+      m.plotNo       = String(owData[i][1]  || '').trim().replace(/\.0$/,'');   // Col B propertylocation
+      m.ownerType    = String(owData[i][3]  || 'Single').trim();
+      m.name         = String(owData[i][4]  || '').trim();
+      m.name2        = String(owData[i][5]  || '').trim();
+      m.locationName = String(owData[i][7]  || '').trim();                      // Col H Lane No
+      m.status       = String(owData[i][9]  || '').trim();
+      m.email        = String(owData[i][10] || '').trim();                      // Col K EmailID
+      var ipr        = String(owData[i][14] || '').trim().toLowerCase();
+      m.isProxy      = ipr === 'yes' || ipr === 'y' || ipr === 'true';
+      m.fullName     = m.name + (m.name2 ? ' & ' + m.name2 : '');
       break;
     }
   }
@@ -439,36 +439,36 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
       }
 
       return '<tr>' +
-        '<td colspan="6" style="padding:0;padding-bottom:10px">' +
+        '<td colspan="6" style="padding:0;padding-bottom:12px">' +
 
-        // ── Property header bar (email) ──────────────────────────
         '<table style="width:100%;border-collapse:collapse;margin-bottom:0">' +
+
+        // ── Row 1: LocationName · Plot No · PropertyID ───────────
+        '<tr style="background:#0f2744;color:#fff">' +
+        '<td style="padding:6px 12px;font-size:12px;font-weight:700">' +
+          (mm.locationName || 'Property') +
+        '</td>' +
+        '<td style="padding:6px 12px;font-size:11px;opacity:.8;text-align:right">' +
+          'Plot No: ' + (mm.plotNo || '—') +
+          ' &nbsp;|&nbsp; Property ID: ' + tx.propertyId +
+        '</td>' +
+        '</tr>' +
+
+        // ── Row 2: Owner name + Purpose / Amount ─────────────────
         '<tr style="background:#1e4d8c;color:#fff">' +
-
-        // Left — Plot No (prominent) + owner
-        '<td style="padding:8px 12px;width:65%">' +
-          '<div style="font-size:14px;font-weight:700">📍 Plot No: ' + (mm.plotNo || tx.propertyId) + '</div>' +
-          '<div style="font-size:11px;margin-top:2px;opacity:.9">' + (mm.fullName || '—') +
-            (mm.laneNo ? ' · ' + mm.laneNo : '') + '</div>' +
+        '<td style="padding:8px 12px">' +
+          '<div style="font-size:13px;font-weight:700">' + (mm.fullName || '—') + '</div>' +
+          '<div style="font-size:12px;margin-top:3px;font-weight:600;opacity:.95">' +
+            tx.ioName +
+            ' <span style="font-weight:400;font-size:10px;opacity:.75">(' + tx.internalOrder + ')</span>' +
+          '</div>' +
         '</td>' +
-
-        // Right — Amount + Purpose
         '<td style="padding:8px 12px;text-align:right">' +
-          '<div style="font-size:16px;font-weight:700">₹' + fINR(tx.amount) + '</div>' +
-          '<div style="font-size:11px;margin-top:2px;opacity:.9;font-weight:600">' + tx.ioName + '</div>' +
-          '<div style="font-size:10px;opacity:.7">(' + tx.internalOrder + ')</div>' +
-        '</td>' +
-
-        '</tr>' +
-
-        // Meta sub-row — FY + PropertyID
-        '<tr style="background:#f0f5ff">' +
-        '<td colspan="2" style="padding:5px 12px;font-size:11px;color:#475569">' +
-          '<b>FY:</b> ' + tx.fyYear +
-          ' &nbsp;|&nbsp; <b>Property ID:</b> ' + tx.propertyId +
-          ' &nbsp;|&nbsp; <b>Mode:</b> ' + tx.mode +
+          '<div style="font-size:18px;font-weight:700">₹' + fINR(tx.amount) + '</div>' +
+          '<div style="font-size:10px;opacity:.75;margin-top:2px">FY: ' + tx.fyYear + '</div>' +
         '</td>' +
         '</tr>' +
+
         '</table>' +
         // Invoice breakup sub-table
         (invRows
@@ -612,45 +612,41 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     }
 
     var jointBadge = m.ownerType === '👥 Joint' || m.ownerType === 'Joint'
-      ? ' <span style="background:rgba(219,234,254,.3);color:#bfdbfe;font-size:9px;padding:1px 5px;border-radius:6px">Joint</span>' : '';
-    var proxyNote  = (m.isProxy && m.proxyName)
+      ? ' <span style="background:rgba(219,234,254,.3);color:#bfdbfe;font-size:9px;' +
+        'padding:1px 5px;border-radius:6px">Joint</span>' : '';
+    var proxyNote = (m.isProxy && m.proxyName)
       ? ' <span style="font-size:10px;opacity:.8">| Rep: ' + m.proxyName + '</span>' : '';
 
     return '<div style="border:1px solid #d1dce8;border-radius:8px;margin-bottom:14px;' +
       'background:' + bg + ';overflow:hidden">' +
 
-      // ── Property header bar ──────────────────────────────────────
-      '<div style="background:#1e4d8c;color:#fff;padding:10px 14px;' +
+      // ── Block title bar: LocationName · Plot No · PropertyID ────
+      '<div style="background:#0f2744;color:#fff;padding:7px 14px;' +
+        'display:flex;justify-content:space-between;align-items:center">' +
+      '<div style="font-size:12px;font-weight:700;letter-spacing:.3px">' +
+        (m.locationName || 'Property') +
+      '</div>' +
+      '<div style="font-size:11px;opacity:.8">' +
+        'Plot No: ' + (m.plotNo || '—') +
+        ' &nbsp;|&nbsp; Property ID: ' + tx.propertyId +
+      '</div>' +
+      '</div>' +
+
+      // ── Owner + Purpose + Amount bar ────────────────────────────
+      '<div style="background:#1e4d8c;color:#fff;padding:9px 14px;' +
         'display:flex;justify-content:space-between;align-items:flex-start">' +
-
-      // LEFT — Plot No (large) + Owner name
       '<div>' +
-      '<div style="font-size:16px;font-weight:700;letter-spacing:.3px">' +
-        '📍 Plot No: ' + (m.plotNo || tx.propertyId) + jointBadge +
-      '</div>' +
-      '<div style="font-size:12px;margin-top:3px;opacity:.9">' +
-        (m.fullName || '—') + proxyNote +
-      '</div>' +
-      '<div style="font-size:11px;margin-top:2px;opacity:.7">' + (m.laneNo || '') + '</div>' +
-      '</div>' +
-
-      // RIGHT — Amount (large) + Purpose
-      '<div style="text-align:right">' +
-      '<div style="font-size:18px;font-weight:700">₹' + fINR(tx.amount) + '</div>' +
-      '<div style="font-size:11px;margin-top:3px;opacity:.9;font-weight:600">' +
+      '<div style="font-size:13px;font-weight:700">' + (m.fullName || '—') + jointBadge + '</div>' +
+      proxyNote +
+      '<div style="font-size:12px;margin-top:4px;font-weight:600;opacity:.95">' +
         ioLabel +
+        ' <span style="font-weight:400;opacity:.75;font-size:10px">(' + tx.internalOrder + ')</span>' +
       '</div>' +
-      '<div style="font-size:10px;opacity:.7">(' + tx.internalOrder + ')</div>' +
       '</div>' +
-
+      '<div style="text-align:right">' +
+      '<div style="font-size:20px;font-weight:700">₹' + fINR(tx.amount) + '</div>' +
+      '<div style="font-size:10px;margin-top:2px;opacity:.75">FY: ' + tx.fyYear + '</div>' +
       '</div>' +
-
-      // ── Meta row — Mode · FY · PropertyID ───────────────────────
-      '<div style="padding:6px 14px;background:#f0f5ff;border-bottom:1px solid #e8eef5;' +
-        'display:flex;gap:20px;font-size:11px;color:#475569">' +
-      '<span><b>Mode :</b> ' + mode + '</span>' +
-      '<span><b>FY :</b> ' + tx.fyYear + '</span>' +
-      '<span><b>Property ID :</b> ' + tx.propertyId + '</span>' +
       '</div>' +
 
       // Invoice breakup
@@ -711,32 +707,35 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
         '⚡ Consolidated Payment — ' + txRows.length + ' Properties</div>'
       : '') +
 
-    // Meta grid
-    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 20px;margin-bottom:16px">' +
+    // ── HEADER: Bank transaction data only ──────────────────────
+    '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;' +
+      'padding:14px 18px;margin-bottom:16px">' +
+
+    // Receipt meta row
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 20px;margin-bottom:12px">' +
     metaBox('Receipt No', receiptNo) +
     metaBox('Date', bankRow.displayDate) +
-    metaBox('FY Year', fyYear) +
+    metaBox('Payment Mode', mode) +
     '</div>' +
 
-    // Bank transaction
-    '<div style="font-weight:700;font-size:11px;color:#0f2744;margin:0 0 8px;padding:4px 10px;' +
-      'background:#f0f5ff;border-left:3px solid #1e4d8c;border-radius:0 4px 4px 0;' +
-      'text-transform:uppercase;letter-spacing:.5px">🏦 Bank Transaction</div>' +
-    '<div style="font-size:12px;margin-bottom:14px;padding:0 4px">' +
-    '<div style="margin-bottom:4px"><span style="color:#64748b;width:130px;display:inline-block">UPI Ref / Receipt No</span>' +
-      '<strong>' + receiptNo + '</strong></div>' +
-    '<div style="margin-bottom:4px"><span style="color:#64748b;width:130px;display:inline-block">Narration</span>' +
-      bankRow.narration + '</div>' +
-    '<div><span style="color:#64748b;width:130px;display:inline-block">Payment Mode</span>' +
-      mode + '</div>' +
+    // Narration
+    '<div style="font-size:12px;margin-bottom:10px">' +
+    '<span style="color:#64748b;font-weight:600;width:110px;display:inline-block">Narration</span>' +
+    bankRow.narration +
     '</div>' +
 
-    // Amount box
+    // Amount box inside header
     '<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #16a34a;' +
-      'border-radius:10px;padding:12px 18px;text-align:center;margin-bottom:16px">' +
-    '<div style="font-size:24px;font-weight:700;color:#15803d">₹' + fINR(totalAmt) + '</div>' +
-    '<div style="font-size:11px;color:#166534;margin-top:3px;font-style:italic">' +
-      'Rupees ' + numberToWords(totalAmt) + ' Only</div>' +
+      'border-radius:8px;padding:10px 16px;display:flex;justify-content:space-between;align-items:center">' +
+    '<div>' +
+    '<div style="font-size:11px;color:#166534;font-weight:600">TOTAL AMOUNT RECEIVED</div>' +
+    '<div style="font-size:11px;color:#166534;font-style:italic;margin-top:2px">' +
+      'Rupees ' + numberToWords(totalAmt) + ' Only' +
+    '</div>' +
+    '</div>' +
+    '<div style="font-size:26px;font-weight:700;color:#15803d">₹' + fINR(totalAmt) + '</div>' +
+    '</div>' +
+
     '</div>' +
 
     // Section label
