@@ -493,64 +493,48 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
                   (isMulti ? ' (' + txRows.length + ' Properties)' : '') +
                   ' - ' + SOCIETY_SHORT;
 
+    // Plain narrative body — one paragraph per property
+    var propLines = info.entries.map(function(e) {
+      var tx = e.tx;
+      var mm = memberMap[tx.propertyId] || {};
+      var line = 'Property: ' + (mm.locationName || '') + ', Plot No. ' + (mm.plotNo || '-') +
+                 ' (Property ID: ' + tx.propertyId + ')' +
+                 ' | Purpose: ' + tx.ioName +
+                 ' | Amount: Rs.' + fINR(tx.amount) +
+                 ' | FY: ' + tx.fyYear;
+      return line;
+    }).join('\n');
+
     var body =
-      '<div style="font-family:Arial,sans-serif;max-width:620px;color:#1a1a2e">' +
+      'Dear ' + info.displayName + ',' +
+      '\n\n' +
+      'Thank you for your payment to ' + SOCIETY_SHORT + '.' +
+      '\n\n' +
+      'We are pleased to confirm that your payment has been received and reconciled. ' +
+      'Please find attached the receipt for Receipt No. ' + receiptNo + ' dated ' + bankRow.displayDate + ' ' +
+      'for an amount of Rs.' + fINR(bankRow.amount) + '.' +
+      '\n\n' +
+      'Payment details:' +
+      '\n' + propLines +
+      '\n\n' +
+      'A copy of the receipt PDF is attached to this email. You may also view or download it using the link below:' +
+      '\n' + pdfUrl +
+      '\n\n' +
+      'Please retain this receipt for your records. For any queries, kindly quote Receipt No. ' + receiptNo + ' ' +
+      'in your communication with the Society office.' +
+      '\n\n' +
+      'Regards,' +
+      '\nSCRWA Management Committee' +
+      '\n' + SOCIETY_SHORT + ' | ' + SOCIETY_REGD +
+      '\n' + SOCIETY_EMAIL +
+      '\n\n' +
+      'Note: This is a system-generated email. Please do not reply to this message.';
 
-      // Header
-      '<div style="background:linear-gradient(135deg,#0f2744,#1e4d8c);color:#fff;' +
-        'padding:16px 22px;border-radius:8px 8px 0 0;display:flex;' +
-        'justify-content:space-between;align-items:center">' +
-      '<div><h2 style="margin:0;font-size:15px">' + SOCIETY_SHORT + '</h2>' +
-      '<p style="margin:3px 0 0;font-size:11px;opacity:.8">' + SOCIETY_REGD + '</p></div>' +
-      '<div style="background:#FFD700;color:#0f2744;padding:4px 14px;border-radius:16px;' +
-        'font-weight:700;font-size:13px">RECEIPT</div>' +
-      '</div>' +
-
-      '<div style="border:1px solid #d1dce8;border-top:none;padding:20px 22px;' +
-        'border-radius:0 0 8px 8px">' +
-      '<p>Dear <strong>' + info.displayName + '</strong>,</p>' +
-      '<p>This is to confirm that your payment has been received and reconciled. Details are provided below.</p>' +
-
-      // Summary row
-      '<table style="width:100%;border-collapse:collapse;font-size:13px;margin:10px 0">' +
-      '<tr><td style="padding:7px 10px;background:#f8fafc;width:35%;border-bottom:1px solid #e2e8f0"><b>Receipt No</b></td>' +
-        '<td style="padding:7px 10px;border-bottom:1px solid #e2e8f0"><b>' + receiptNo + '</b></td></tr>' +
-      '<tr><td style="padding:7px 10px;background:#f8fafc;border-bottom:1px solid #e2e8f0"><b>Date</b></td>' +
-        '<td style="padding:7px 10px;border-bottom:1px solid #e2e8f0">' + bankRow.displayDate + '</td></tr>' +
-      '<tr><td style="padding:7px 10px;background:#f8fafc;border-bottom:1px solid #e2e8f0"><b>Total Amount</b></td>' +
-        '<td style="padding:7px 10px;border-bottom:1px solid #e2e8f0;color:#15803d;font-weight:700">' +
-        '₹' + fINR(bankRow.amount) + '</td></tr>' +
-      (isMulti
-        ? '<tr><td style="padding:7px 10px;background:#f8fafc;border-bottom:1px solid #e2e8f0"><b>Properties</b></td>' +
-          '<td style="padding:7px 10px;border-bottom:1px solid #e2e8f0">' + txRows.length + ' plots covered</td></tr>'
-        : '') +
-      '</table>' +
-
-      // Property + invoice detail
-      '<p style="font-weight:700;font-size:12px;color:#0f2744;margin:14px 0 6px;' +
-        'border-left:3px solid #1e4d8c;padding-left:8px">PAYMENT DETAILS</p>' +
-      '<table style="width:100%;border-collapse:collapse">' + propRowsHtml + '</table>' +
-
-      // PDF links
-      '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;' +
-        'padding:12px 16px;margin:14px 0">' +
-      '<p style="margin:0 0 6px;font-weight:700;font-size:12px">Receipt PDF</p>' +
-      '<p style="margin:0 0 4px;font-size:12px">The receipt PDF is attached to this email. Please save it for your records.</p>' +
-      '<p style="margin:0;font-size:12px"><a href="' + pdfUrl +
-        '" style="color:#1e4d8c">View / Download online (Google Drive)</a></p>' +
-      '</div>' +
-
-      '<hr style="border:none;border-top:1px solid #e2e8f0;margin:14px 0">' +
-      '<p style="font-size:11px;color:#64748b;margin:0">' +
-        'This is a system-generated email. Please do not reply to this message.<br>' +
-        SOCIETY_EMAIL + ' | ' + SOCIETY_REGD + '</p>' +
-      '</div></div>';
 
     try {
       GmailApp.sendEmail(TEST_EMAIL || addr, TEST_EMAIL ? '[TEST to: ' + addr + '] ' + subject : subject,
-        'Please use an HTML-capable email client to view this receipt.',
+        body,
         {
-          htmlBody:    body,
           attachments: [pdfBlob.setName(fileName)],
           name:        SOCIETY_SHORT,
           replyTo:     SOCIETY_EMAIL
