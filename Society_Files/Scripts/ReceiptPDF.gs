@@ -984,3 +984,52 @@ function openLog() {
   if (sheet) SpreadsheetApp.setActiveSheet(sheet);
   else SpreadsheetApp.getUi().alert('No receipts generated yet.');
 }
+
+// ═══════════════════════════════════════════════════════════════════
+//  TEST — run from Apps Script editor dropdown
+// ═══════════════════════════════════════════════════════════════════
+function testReceiptGeneration() {
+  // Change receiptNo below to any reconciled receipt in BankDetails
+  var receiptNo = '111862041743';   // PID 141, Rs.500, MOMEN01
+  Logger.log('Testing receipt: ' + receiptNo);
+  var result = generateConsolidatedReceipt(receiptNo);
+  Logger.log(JSON.stringify(result, null, 2));
+  if (result.success) {
+    Logger.log('PDF URL: ' + result.pdfUrl);
+    Logger.log('Properties: ' + result.properties.join(', '));
+    Logger.log('Amount: Rs.' + result.totalAmount);
+  } else {
+    Logger.log('FAILED: ' + result.message);
+  }
+}
+
+function testSendEmail() {
+  // Run this AFTER testReceiptGeneration has written the PDF URL to Col I
+  // It will send to parthok@gmail.com (TEST_EMAIL is set)
+  var receiptNo = '111862041743';
+  var ss        = SpreadsheetApp.openById(SS_ID);
+  var bankRow   = getBankRow(ss, receiptNo);
+  if (!bankRow) { Logger.log('Bank row not found'); return; }
+  var pdfUrl    = '';
+  var bSheet    = ss.getSheetByName('BankDetails');
+  var data      = bSheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][2]).trim() === receiptNo) { pdfUrl = String(data[i][8]).trim(); break; }
+  }
+  if (!pdfUrl) { Logger.log('No PDF URL in Col I — run testReceiptGeneration first'); return; }
+  var txRows    = getTransactionRows(ss, receiptNo);
+  var ioMap     = getInternalOrderMap(ss);
+  var memberMap = {};
+  txRows.forEach(function(tx) {
+    tx.ioName   = ioMap[tx.internalOrder] || tx.internalOrder || '-';
+    tx.invoices = tx.billId
+      ? getInvoicesByBillIds(ss, tx.billId.split(',').map(function(b){ return b.trim(); }).filter(Boolean))
+      : [];
+    if (tx.propertyId && !memberMap[tx.propertyId])
+      memberMap[tx.propertyId] = getMemberData(ss, tx.propertyId);
+  });
+  var fileId  = pdfUrl.replace('https://drive.google.com/file/d/','').replace('/view','');
+  var pdfBlob = DriveApp.getFileById(fileId).getBlob().setContentType('application/pdf');
+  var results = sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, 'RCPT-' + receiptNo + '.pdf');
+  Logger.log('Email results: ' + JSON.stringify(results));
+}
