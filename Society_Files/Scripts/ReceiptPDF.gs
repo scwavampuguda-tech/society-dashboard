@@ -743,8 +743,8 @@ function buildPdf(receiptNo, bankRow, txRows, memberMap, ioMap, tz) {
     // Section label
     '<div style="font-weight:700;font-size:11px;color:#0f2744;margin:0 0 10px;padding:4px 10px;' +
       'background:#f0f5ff;border-left:3px solid #1e4d8c;border-radius:0 4px 4px 0;' +
-      'text-transform:uppercase;letter-spacing:.5px'>' + (isMulti ? 'Properties and Invoice Detail' : 'Invoice Detail') + '</div>' +
-
+      'text-transform:uppercase;letter-spacing:.5px">' +
+      (isMulti ? 'Properties and Invoice Detail' : 'Invoice Detail') + '</div>' +
     // Property blocks
     propBlocks +
 
