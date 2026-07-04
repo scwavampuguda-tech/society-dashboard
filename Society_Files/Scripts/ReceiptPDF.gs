@@ -396,6 +396,11 @@ function getOrCreateFolder(dateStr) {
 // ═══════════════════════════════════════════════════════════════════
 function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, fileName) {
   var results  = [];
+
+  // ── TEST MODE: set to "" to send to real addresses ──────────
+  var TEST_EMAIL = 'parthok@gmail.com';
+  // ────────────────────────────────────────────────────────────
+
   var emailMap = {};   // lowercase addr → { displayName, entries[] }
 
   function addAddr(addr, displayName, tx, member) {
@@ -542,7 +547,7 @@ function sendEmails(receiptNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, file
       '</div></div>';
 
     try {
-      GmailApp.sendEmail(addr, subject,
+      GmailApp.sendEmail(TEST_EMAIL || addr, TEST_EMAIL ? '[TEST to: ' + addr + '] ' + subject : subject,
         'Please use an HTML-capable email client to view this receipt.',
         {
           htmlBody:    body,
