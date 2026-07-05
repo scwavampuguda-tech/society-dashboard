@@ -1183,36 +1183,7 @@ function numberToWords(n) {
 //  If edit is in TransactionDetails Col B (ReceiptNo added/changed)
 //  → writes correct absolute formula to Col D same row
 // ═══════════════════════════════════════════════════════════════════
-function onEdit(e) {
-  try {
-    var sheet = e.range.getSheet();
-    if (sheet.getName() !== 'TransactionDetails') return;
 
-    var row = e.range.getRow();
-    if (row < 2) return;
-
-    // Need a ReceiptNo in Col B before we can build the formula
-    var colBVal = String(sheet.getRange(row, 2).getValue() || '').trim();
-    if (!colBVal) return;
-
-    var colDCell    = sheet.getRange(row, 4);
-    var colDFormula = colDCell.getFormula();
-
-    // Rewrite if: blank OR has broken C[ structured/relative refs
-    if (colDFormula && colDFormula.indexOf('C[') < 0) return;
-
-    // Build formula with ABSOLUTE column refs — never shifts on copy
-    // INDIRECT+ROW — copy-paste safe, no hardcoded row number
-    var f =
-      '=IFERROR(' +
-      'IF(INDEX(BankDetails!$F:$F,MATCH(INDIRECT("B"&ROW()),BankDetails!$C:$C,0))<>"","\uD83D\uDCB0Cash In",' +
-      'IF(INDEX(BankDetails!$E:$E,MATCH(INDIRECT("B"&ROW()),BankDetails!$C:$C,0))<>"","\uD83D\uDCB8Cash Out",""))' +
-      ',"")';
-    colDCell.setFormula(f);
-  } catch(err) {
-    // Silent fail — onEdit must never throw to avoid spamming error alerts
-  }
-}
 
 // ═══════════════════════════════════════════════════════════════════
 //  SHEET MENU
@@ -1479,31 +1450,4 @@ function testSendEmail() {
 //  Rewrites ALL TransactionDetails Col D rows with INDIRECT+ROW()
 //  This formula is 100% copy-paste safe — no hardcoded row numbers
 //  Run ONCE from GAS editor to fix all existing rows
-// ═══════════════════════════════════════════════════════════════════
-function fixAllColDFormulas() {
-  var ss     = SpreadsheetApp.openById(SS_ID);
-  var tSheet = ss.getSheetByName('TransactionDetails');
-  if (!tSheet) { Logger.log('TransactionDetails not found'); return; }
-
-  var lastRow = tSheet.getLastRow();
-  if (lastRow < 2) { Logger.log('No data rows'); return; }
-
-  // INDIRECT("B"&ROW()) resolves to Col B of the current row
-  // No hardcoded row number = safe to copy, paste, autofill forever
-  var safeFormula =
-    '=IFERROR(' +
-    'IF(INDEX(BankDetails!$F:$F,MATCH(INDIRECT("B"&ROW()),BankDetails!$C:$C,0))<>"",' +
-    '"\uD83D\uDCB0Cash In",' +
-    'IF(INDEX(BankDetails!$E:$E,MATCH(INDIRECT("B"&ROW()),BankDetails!$C:$C,0))<>"",' +
-    '"\uD83D\uDCB8Cash Out",""))' +
-    ',"")';
-
-  var numRows  = lastRow - 1;
-  var formulas = [];
-  for (var i = 0; i < numRows; i++) { formulas.push([safeFormula]); }
-
-  tSheet.getRange(2, 4, numRows, 1).setFormulas(formulas);
-  SpreadsheetApp.flush();
-  Logger.log('\u2705 Fixed ' + numRows + ' Col D rows with INDIRECT+ROW formula');
-}
 

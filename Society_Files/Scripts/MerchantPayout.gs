@@ -472,6 +472,56 @@ function fixTransactionTypeFormulas() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════
+//  restoreColDFormulas() — ONE-TIME RESTORE
+//  Rewrites TransactionDetails Col D with the ORIGINAL formula
+//  that was working before ReceiptPDF.gs development.
+//  Only fixes rows where formula has broken C[ structured refs.
+//  Run once from GAS editor, then this function is no longer needed.
+// ═══════════════════════════════════════════════════════════════
+function restoreColDFormulas() {
+  var ss     = SpreadsheetApp.openById(SS_ID);
+  var tSheet = ss.getSheetByName('TransactionDetails');
+  if (!tSheet) { Logger.log('TransactionDetails not found'); return; }
+
+  var lastRow = tSheet.getLastRow();
+  if (lastRow < 2) { Logger.log('No data rows'); return; }
+
+  var fixed = 0, skipped = 0;
+  for (var i = 2; i <= lastRow; i++) {
+    var cell    = tSheet.getRange(i, 4);
+    var formula = cell.getFormula();
+
+    // Only rewrite rows that have broken C[ structured refs
+    // (introduced by our fixTransactionTypeFormulas / fixAllColDFormulas runs)
+    if (!formula || formula.indexOf('C[') < 0) {
+      skipped++;
+      continue;
+    }
+
+    // Restore ORIGINAL formula — plain column refs (no $)
+    // Google Sheets adjusts row number correctly when copied down
+    var original =
+      '=IFERROR(' +
+        'IF(' +
+          'INDEX(BankDetails!F:F,MATCH(B' + i + ',BankDetails!C:C,0))<>"",' +
+          '"\uD83D\uDCB0Cash In",' +
+          'IF(' +
+            'INDEX(BankDetails!E:E,MATCH(B' + i + ',BankDetails!C:C,0))<>"",' +
+            '"\uD83D\uDCB8Cash Out",""' +
+          ')' +
+        ')' +
+      ',"")';
+
+    cell.setFormula(original);
+    fixed++;
+  }
+
+  SpreadsheetApp.flush();
+  Logger.log('\u2705 Restored ' + fixed + ' Col D formulas | Skipped (already OK): ' + skipped);
+}
+
 // TEST FUNCTIONS — run manually, no sheet writes
 // ═══════════════════════════════════════════════════════════════════════════
 
