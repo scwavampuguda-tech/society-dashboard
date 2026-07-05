@@ -254,7 +254,7 @@ function generateConsolidatedReceipt(receiptNo) {
 
   // 11. Write EmailSent timestamp to Col J
   var tz        = Session.getScriptTimeZone();
-  var sentStamp = Utilities.formatDate(new Date(), tz, 'dd-MMM-yyyy HH:mm');
+  var sentStamp = new Date();  // Date object — compatible with AppSheet DateTime type
   writePdfUrl(ss, bankRow.sheetRow, txRows, pdfUrl, sentStamp);
 
   // 12. Log
@@ -989,7 +989,8 @@ function processUnsentEmails() {
     var emailSent = String(data[i][9] || '').trim();   // Col J [9]
 
     // Skip if no PDF URL or email already sent
-    if (!pdfUrl || emailSent) continue;
+    // Skip if no URL, or URL is just 'YES' trigger, or email already sent
+    if (!pdfUrl || pdfUrl.toUpperCase() === 'YES' || emailSent) continue;
     if (!refNo)  continue;
 
     Logger.log('processUnsentEmails: processing RefNo ' + refNo);
@@ -1028,7 +1029,7 @@ function processUnsentEmails() {
       var emailResults = sendEmails(refNo, bankRow, txRows, memberMap, pdfBlob, pdfUrl, fileName);
 
       // Stamp Col J with sent timestamp
-      var sentStamp = Utilities.formatDate(new Date(), tz, 'dd-MMM-yyyy HH:mm');
+      var sentStamp = new Date();  // Date object — compatible with AppSheet DateTime type
       bSheet.getRange(i + 2, 10).setValue(sentStamp);   // Col J, row i+2 (1-indexed, +1 for header)
 
       Logger.log('processUnsentEmails: email sent for ' + refNo + ' → ' + sentStamp + ' (' + emailResults.length + ' recipients)');
