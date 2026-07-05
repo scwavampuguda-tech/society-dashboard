@@ -394,43 +394,7 @@ function appendToSheet(bankSheet, rowsToAppend) {
   SpreadsheetApp.flush();
   log('✅ Appended ' + rowsToAppend.length + ' new row(s) to BankDetails');
 
-  // ── Write Cash In / Cash Out as plain TEXT to TransactionDetails Col D ──
-  // No formula = no copy-paste breakage ever
-  // rowsToAppend[i][5] = deposit (Cash In), [4] = withdrawal (Cash Out)
-  try {
-    var ss2    = SpreadsheetApp.openById(SS_ID);
-    var tSheet = ss2.getSheetByName('TransactionDetails');
-    if (tSheet && tSheet.getLastRow() >= 2) {
-      // Build RRN → type map from this batch
-      var typeMap = {};
-      for (var ri = 0; ri < rowsToAppend.length; ri++) {
-        var rrn = String(rowsToAppend[ri][2] || '').trim();
-        var dep = rowsToAppend[ri][5];
-        if (!rrn) continue;
-        typeMap[rrn] = (dep && dep !== '' && dep !== 0) ? '💰Cash In' : '💸Cash Out';
-      }
-      // Scan TransactionDetails Col B for matching RRNs
-      var tLastRow = tSheet.getLastRow();
-      var colB     = tSheet.getRange(2, 2, tLastRow - 1, 1).getValues();
-      var updates  = 0;
-      for (var ti = 0; ti < colB.length; ti++) {
-        var tRrn = String(colB[ti][0] || '').trim();
-        if (!tRrn || !typeMap[tRrn]) continue;
-        var dCell = tSheet.getRange(ti + 2, 4);
-        var dFml  = dCell.getFormula();
-        var dVal  = String(dCell.getValue() || '').trim();
-        // Only write if blank or has broken C[ formula
-        if (!dVal || (dFml && dFml.indexOf('C[') >= 0)) {
-          dCell.setValue(typeMap[tRrn]);
-          updates++;
-        }
-      }
-      if (updates > 0) {
-        SpreadsheetApp.flush();
-        log('✅ TransactionDetails Col D: ' + updates + ' type values written');
-      }
-    }
-  } catch(terr) {
+   catch(terr) {
     log('⚠️ Col D update skipped: ' + terr.toString());
   }
 }
@@ -460,30 +424,7 @@ function log(msg) {
 // ═══════════════════════════════════════════════════════════════════
 //  ONE-TIME FIX: fixTransactionTypeFormulas()
 //  Rewrites TransactionDetails Col D with absolute column refs
-//  Run once from GAS editor — fixes all existing + future rows
-// ═══════════════════════════════════════════════════════════════════
-function fixTransactionTypeFormulas() {
-  var ss     = SpreadsheetApp.openById(SS_ID);
-  var tSheet = ss.getSheetByName('TransactionDetails');
-  if (!tSheet) { Logger.log('TransactionDetails not found'); return; }
-
-  var lastRow = tSheet.getLastRow();
-  if (lastRow < 2) { Logger.log('No data rows'); return; }
-
-  var fixed = 0;
-  for (var i = 2; i <= lastRow; i++) {
-    // Col D = column 4, Col B = column 2 (ReceiptNo)
-    var formula =
-      '=IFERROR(IF(INDEX(BankDetails!$F:$F,MATCH(B' + i + ',BankDetails!$C:$C,0))<>"",' +
-      '"\uD83D\uDCB0Cash In",' +
-      'IF(INDEX(BankDetails!$E:$E,MATCH(B' + i + ',BankDetails!$C:$C,0))<>"",' +
-      '"\uD83D\uDCB8Cash Out","")),"")';
-    tSheet.getRange(i, 4).setFormula(formula);
-    fixed++;
-  }
-  SpreadsheetApp.flush();
-  Logger.log('✅ Fixed ' + fixed + ' Col D formulas in TransactionDetails');
-}
+//  Run once from GAS editor — fixes all existing + future rows
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -492,49 +433,7 @@ function fixTransactionTypeFormulas() {
 //  Rewrites TransactionDetails Col D with the ORIGINAL formula
 //  that was working before ReceiptPDF.gs development.
 //  Only fixes rows where formula has broken C[ structured refs.
-//  Run once from GAS editor, then this function is no longer needed.
-// ═══════════════════════════════════════════════════════════════
-function restoreColDFormulas() {
-  var ss     = SpreadsheetApp.openById(SS_ID);
-  var tSheet = ss.getSheetByName('TransactionDetails');
-  if (!tSheet) { Logger.log('TransactionDetails not found'); return; }
-
-  var lastRow = tSheet.getLastRow();
-  if (lastRow < 2) { Logger.log('No data rows'); return; }
-
-  var fixed = 0, skipped = 0;
-  for (var i = 2; i <= lastRow; i++) {
-    var cell    = tSheet.getRange(i, 4);
-    var formula = cell.getFormula();
-
-    // Only rewrite rows that have broken C[ structured refs
-    // (introduced by our fixTransactionTypeFormulas / fixAllColDFormulas runs)
-    if (!formula || formula.indexOf('C[') < 0) {
-      skipped++;
-      continue;
-    }
-
-    // Restore ORIGINAL formula — plain column refs (no $)
-    // Google Sheets adjusts row number correctly when copied down
-    var original =
-      '=IFERROR(' +
-        'IF(' +
-          'INDEX(BankDetails!F:F,MATCH(B' + i + ',BankDetails!C:C,0))<>"",' +
-          '"\uD83D\uDCB0Cash In",' +
-          'IF(' +
-            'INDEX(BankDetails!E:E,MATCH(B' + i + ',BankDetails!C:C,0))<>"",' +
-            '"\uD83D\uDCB8Cash Out",""' +
-          ')' +
-        ')' +
-      ',"")';
-
-    cell.setFormula(original);
-    fixed++;
-  }
-
-  SpreadsheetApp.flush();
-  Logger.log('\u2705 Restored ' + fixed + ' Col D formulas | Skipped (already OK): ' + skipped);
-}
+//  Run once from GAS editor, then this function is no longer needed.
 
 // TEST FUNCTIONS — run manually, no sheet writes
 // ═══════════════════════════════════════════════════════════════════════════
