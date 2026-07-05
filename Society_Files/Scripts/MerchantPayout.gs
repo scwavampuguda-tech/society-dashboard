@@ -349,11 +349,11 @@ function extractAlertTransaction(body) {
 // ═══════════════════════════════════════════════════════════════════════════
 function appendToSheet(bankSheet, rowsToAppend) {
   if (rowsToAppend.length === 0) {
-    log('ℹ️ No new transactions to import');
+    log('i️ No new transactions to import');
     return;
   }
 
-  // Sort by date ascending (index 0) before appending to sheet
+  // Sort by date ascending before writing
   rowsToAppend.sort(function(a, b) {
     var da = a[0] instanceof Date ? a[0].getTime() : new Date(a[0]).getTime();
     var db = b[0] instanceof Date ? b[0].getTime() : new Date(b[0]).getTime();
@@ -365,61 +365,76 @@ function appendToSheet(bankSheet, rowsToAppend) {
   var appendRange = bankSheet.getRange(startRow, 1, rowsToAppend.length, 8);
   appendRange.setValues(rowsToAppend);
 
-  // ── Col 7: Closing Balance — copy formula from row above ─────────────
+  // Col 7: Closing Balance formula
   var prevBalCell    = bankSheet.getRange(startRow - 1, 7);
   var prevBalFormula = prevBalCell.getFormula();
-
   if (prevBalFormula) {
     for (var r = 0; r < rowsToAppend.length; r++) {
-      var newRow     = startRow + r;
-      var newFormula = shiftFormula(prevBalFormula, startRow - 1, newRow);
-      bankSheet.getRange(newRow, 7).setFormula(newFormula);
+      var newRow = startRow + r;
+      bankSheet.getRange(newRow, 7).setFormula(shiftFormula(prevBalFormula, startRow - 1, newRow));
     }
     log('✅ Closing Balance formula applied to ' + rowsToAppend.length + ' row(s)');
   } else {
-    log('⚠️ Closing Balance: no formula found in row above — left blank');
+    log('⚠️ Closing Balance: no formula in row above');
   }
 
-  // ── Col 8: Reconciled — copy formula from row above ──────────────────
+  // Col 8: Reconciled formula
   var prevRecCell    = bankSheet.getRange(startRow - 1, 8);
   var prevRecFormula = prevRecCell.getFormula();
-
   if (prevRecFormula) {
     for (var r = 0; r < rowsToAppend.length; r++) {
-      var newRow     = startRow + r;
-      var newFormula = shiftFormula(prevRecFormula, startRow - 1, newRow);
-      bankSheet.getRange(newRow, 8).setFormula(newFormula);
+      var newRow = startRow + r;
+      bankSheet.getRange(newRow, 8).setFormula(shiftFormula(prevRecFormula, startRow - 1, newRow));
     }
     log('✅ Reconciled formula applied to ' + rowsToAppend.length + ' row(s)');
   } else {
-    log('⚠️ Reconciled: no formula found in row above — left blank');
+    log('⚠️ Reconciled: no formula in row above');
   }
 
   SpreadsheetApp.flush();
   log('✅ Appended ' + rowsToAppend.length + ' new row(s) to BankDetails');
 
-  // ── Fix TransactionDetails Col D formulas (absolute refs) ──────────
+  // ── Write Cash In / Cash Out as plain TEXT to TransactionDetails Col D ──
+  // No formula = no copy-paste breakage ever
+  // rowsToAppend[i][5] = deposit (Cash In), [4] = withdrawal (Cash Out)
   try {
-    var ss      = SpreadsheetApp.openById(SS_ID);
-    var tSheet  = ss.getSheetByName('TransactionDetails');
-    if (tSheet) {
+    var ss2    = SpreadsheetApp.openById(SS_ID);
+    var tSheet = ss2.getSheetByName('TransactionDetails');
+    if (tSheet && tSheet.getLastRow() >= 2) {
+      // Build RRN → type map from this batch
+      var typeMap = {};
+      for (var ri = 0; ri < rowsToAppend.length; ri++) {
+        var rrn = String(rowsToAppend[ri][2] || '').trim();
+        var dep = rowsToAppend[ri][5];
+        if (!rrn) continue;
+        typeMap[rrn] = (dep && dep !== '' && dep !== 0) ? '💰Cash In' : '💸Cash Out';
+      }
+      // Scan TransactionDetails Col B for matching RRNs
       var tLastRow = tSheet.getLastRow();
-      for (var tr = 2; tr <= tLastRow; tr++) {
-        var existingFormula = tSheet.getRange(tr, 4).getFormula();
-        // Only fix if formula contains relative structured refs like C[n]
-        if (existingFormula && existingFormula.indexOf('C[') >= 0) {
-          var fixedFormula =
-            '=IFERROR(IF(INDEX(BankDetails!$F:$F,MATCH(B' + tr + ',BankDetails!$C:$C,0))<>"","\uD83D\uDCB0Cash In",' +
-            'IF(INDEX(BankDetails!$E:$E,MATCH(B' + tr + ',BankDetails!$C:$C,0))<>"","\uD83D\uDCB8Cash Out","")),"")';
-          tSheet.getRange(tr, 4).setFormula(fixedFormula);
+      var colB     = tSheet.getRange(2, 2, tLastRow - 1, 1).getValues();
+      var updates  = 0;
+      for (var ti = 0; ti < colB.length; ti++) {
+        var tRrn = String(colB[ti][0] || '').trim();
+        if (!tRrn || !typeMap[tRrn]) continue;
+        var dCell = tSheet.getRange(ti + 2, 4);
+        var dFml  = dCell.getFormula();
+        var dVal  = String(dCell.getValue() || '').trim();
+        // Only write if blank or has broken C[ formula
+        if (!dVal || (dFml && dFml.indexOf('C[') >= 0)) {
+          dCell.setValue(typeMap[tRrn]);
+          updates++;
         }
       }
-      log('✅ TransactionDetails Col D formulas verified/fixed');
+      if (updates > 0) {
+        SpreadsheetApp.flush();
+        log('✅ TransactionDetails Col D: ' + updates + ' type values written');
+      }
     }
-  } catch(ferr) {
-    log('⚠️ Col D formula fix skipped: ' + ferr.toString());
+  } catch(terr) {
+    log('⚠️ Col D update skipped: ' + terr.toString());
   }
 }
+
 
 
 // ═══════════════════════════════════════════════════════════════════════════
