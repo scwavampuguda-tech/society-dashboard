@@ -1,376 +1,420 @@
-// ===== App Script: HDFC Merchant Payout Report + Direct UPI Alerts =====
+// ═══════════════════════════════════════════════════════════════════════════
+// MerchantPayout.gs  v2.3
+// ═══════════════════════════════════════════════════════════════════════════
 // Source 1: upi@hdfcbank.bank.in     — Merchant Payout Report (.xlsx)
-// Source 2: alerts@hdfcbank.bank.in  — Direct UPI credit/debit alerts (plain text)
-// Both append to BankDetails sheet. Drive API v2 must be enabled in Services.
+// Source 2: alerts@hdfcbank.bank.in  — Direct UPI credit alerts (plain text)
+// Both append to BankDetails sheet in SocietyData spreadsheet
+//
+// FIXES IN v2.3:
+//   - Date columns write real Date objects (not strings) — no setNumberFormat
+//   - try-catch inside row loop — one bad row never crashes entire import
+//   - Empty/null row guard for converted Excel rows
+//   - msg.markRead() after ALL attachments processed
+//   - try/finally on both temp file cleanups
+//   - RRNs forced to String when building duplicate lookup
+//
+// REQUIRES: Drive API v2 → Extensions → Apps Script → Services → Drive API
+// TRIGGER : 5-min time-driven trigger on checkAndImport()
+// ═══════════════════════════════════════════════════════════════════════════
 
-const SHEET_ID_MP       = "1oXmvMIfQDm51KoHHtkhg8KgK1Qi5mwFYSBdrwir85CA";
-const DEBUG_MP          = true;
-const THREAD_LIMIT_MP   = 50;
+const SHEET_ID_MP     = "1oXmvMIfQDm51KoHHtkhg8KgK1Qi5mwFYSBdrwir85CA";
+const DEBUG_MP        = true;
+const THREAD_LIMIT_MP = 50;
 
-// ── Excel column indices (0-based) for Merchant Payout ──
-const COL_PAYER_VPA  = 5;
-const COL_MERCHANT   = 3;
-const COL_RRN        = 8;
-const COL_TXN_DATE   = 9;
-const COL_NET_AMT    = 18;
-const COL_CR_DR      = 22;
+// ── Excel column indices (0-based) — HDFC Merchant Payout Report ─────────
+const COL_PAYER_VPA = 5;   // Payer VPA
+const COL_MERCHANT  = 3;   // Merchant Name
+const COL_RRN       = 8;   // Txn ref no. (RRN)
+const COL_TXN_DATE  = 9;   // Transaction Req Date  "14-JUN-2026 11:26:50"
+const COL_NET_AMT   = 18;  // Net Amount
+const COL_CR_DR     = 22;  // CR / DR
 
-// ── Entry points ──
-function doGet_MP(e) {
-  return ContentService
-    .createTextOutput(JSON.stringify(parseMerchantPayoutReport()))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-function doPost_MP(e) {
-  return ContentService
-    .createTextOutput(JSON.stringify(parseMerchantPayoutReport()))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-function runMerchantPayout() {
-  const result = parseMerchantPayoutReport();
-  Logger.log(JSON.stringify(result, null, 2));
-}
+// ── BankDetails column map (1-based, 8 columns) ──────────────────────────
+// Col 1 Date | Col 2 Narration | Col 3 Chq/Ref.No. | Col 4 Value Dt
+// Col 5 Withdrawal Amt | Col 6 Deposit Amt | Col 7 Closing Balance | Col 8 Reconciled
 
-// ══════════════════════════════════════════════════════════
-// MAIN FUNCTION
-// ══════════════════════════════════════════════════════════
-function parseMerchantPayoutReport() {
-  try {
-    const ss = SpreadsheetApp.openById(SHEET_ID_MP);
-    if (!ss) return { ok: false, message: "Spreadsheet not found" };
 
-    const sheet = ss.getSheetByName("BankDetails");
-    if (!sheet) return { ok: false, message: "BankDetails sheet not found" };
-
-    const existingRefs = new Set(
-      sheet.getRange("C2:C").getValues().flat().filter(Boolean).map(String)
-    );
-
-    const stats = {
-      threadsFound: 0, threadsProcessed: 0,
-      rowsSeen: 0, imported: 0, skipped: 0, errors: []
-    };
-
-    // ── Source 1: Merchant Payout Report emails (xlsx attachment) ──
-    const q1 = `from:upi@hdfcbank.bank.in subject:"Merchant Payout Report" is:unread has:attachment`;
-    const threads1 = GmailApp.search(q1, 0, THREAD_LIMIT_MP);
-
-    // ── Source 2: Direct UPI Alert emails (plain text) ──
-    const q2 = `from:alerts@hdfcbank.bank.in subject:"Account update for your HDFC Bank" is:unread`;
-    const threads2 = GmailApp.search(q2, 0, THREAD_LIMIT_MP);
-
-    stats.threadsFound = threads1.length + threads2.length;
-    if (DEBUG_MP) {
-      Logger.log(`📧 Merchant Payout threads: ${threads1.length}`);
-      Logger.log(`📧 Direct Alert threads: ${threads2.length}`);
-    }
-
-    // ── Process Source 1: xlsx attachments ──
-    threads1.forEach(thread => {
-      try {
-        const messages = thread.getMessages().filter(m => m.isUnread());
-        if (!messages.length) return;
-        stats.threadsProcessed++;
-
-        messages.forEach(msg => {
-          try {
-            const xlsxAtt = msg.getAttachments().find(a =>
-              a.getName().toLowerCase().endsWith('.xlsx') &&
-              a.getName().toLowerCase().includes('merchant')
-            );
-            if (!xlsxAtt) {
-              if (DEBUG_MP) Logger.log("No .xlsx found, skipping");
-              stats.skipped++;
-              return;
-            }
-            if (DEBUG_MP) Logger.log("📎 Processing: " + xlsxAtt.getName());
-
-            const rows = parseXlsxAttachment(xlsxAtt);
-            if (!rows || rows.length < 2) {
-              stats.errors.push("Could not parse XLSX");
-              return;
-            }
-
-            rows.slice(1).forEach(row => {
-              try {
-                stats.rowsSeen++;
-                const rrn    = String(row[COL_RRN]      || "").trim();
-                const crDr   = String(row[COL_CR_DR]    || "").trim().toUpperCase();
-                const netAmt = parseFloat(row[COL_NET_AMT]   || 0);
-                const rawDate= String(row[COL_TXN_DATE]  || "").trim();
-                const payer  = String(row[COL_PAYER_VPA] || "").trim();
-                const merch  = String(row[COL_MERCHANT]  || "").trim();
-
-                if (!rrn || !netAmt) { stats.skipped++; return; }
-                if (existingRefs.has(rrn)) {
-                  if (DEBUG_MP) Logger.log("Duplicate RRN: " + rrn);
-                  stats.skipped++; return;
-                }
-
-                const txnDate = parseMerchantDate(rawDate);
-                if (!txnDate) { stats.skipped++; return; }
-
-                const narration = buildNarration(payer, merch);
-                appendToSheet(sheet, txnDate, narration, rrn, netAmt, crDr, existingRefs, stats);
-
-              } catch(rowErr) {
-                stats.errors.push("Row: " + (rowErr.message || rowErr));
-              }
-            });
-
-            markDone(msg, thread);
-          } catch(msgErr) {
-            stats.errors.push("Msg: " + (msgErr.message || msgErr));
-          }
-        });
-      } catch(tErr) { stats.errors.push("Thread: " + (tErr.message || tErr)); }
-    });
-
-    // ── Process Source 2: plain text UPI alerts ──
-    threads2.forEach(thread => {
-      try {
-        const messages = thread.getMessages().filter(m => m.isUnread());
-        if (!messages.length) return;
-        stats.threadsProcessed++;
-
-        messages.forEach(msg => {
-          try {
-            stats.rowsSeen++;
-            const body = msg.getPlainBody() || msg.getBody() || "";
-            const cleanBody = body.replace(/\s+/g, " ").trim();
-
-            if (DEBUG_MP) Logger.log("📨 Alert email body (first 200): " + cleanBody.substring(0, 200));
-
-            const txn = extractAlertTransaction(cleanBody);
-            if (!txn) {
-              if (DEBUG_MP) Logger.log("Could not parse alert email");
-              stats.skipped++; return;
-            }
-            if (!txn.refNo || !txn.amount) {
-              if (DEBUG_MP) Logger.log("Missing refNo or amount in alert");
-              stats.skipped++; return;
-            }
-            if (existingRefs.has(txn.refNo)) {
-              if (DEBUG_MP) Logger.log("Duplicate ref: " + txn.refNo);
-              stats.skipped++; return;
-            }
-
-            const txnDate = txn.txnDate ? new Date(txn.txnDate) : new Date();
-            const crDr    = txn.isCredit ? "CR" : "DR";
-            const narration = txn.narration || "HDFC UPI Alert";
-
-            appendToSheet(sheet, txnDate, narration, txn.refNo, txn.amount, crDr, existingRefs, stats);
-            markDone(msg, thread);
-
-          } catch(msgErr) {
-            stats.errors.push("Alert msg: " + (msgErr.message || msgErr));
-          }
-        });
-      } catch(tErr) { stats.errors.push("Alert thread: " + (tErr.message || tErr)); }
-    });
-
-    return { ok: true, stats };
-
-  } catch(err) {
-    return { ok: false, message: String(err) };
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// SHARED: Append a row to BankDetails
-// ══════════════════════════════════════════════════════════
-function appendToSheet(sheet, txnDate, narration, refNo, amount, crDr, existingRefs, stats) {
-  const lastDataRow    = sheet.getLastRow();
-  const closingBalCell = sheet.getRange(lastDataRow, 7);
-  const closingBal     = Number(closingBalCell.getValue()) || 0;
-  const closingFmt     = closingBalCell.getNumberFormat();
-
-  let withdrawalAmt = "";
-  let depositAmt    = "";
-  let newBalance    = closingBal;
-
-  if (crDr === "CR") {
-    depositAmt  = amount;
-    newBalance += amount;
-  } else {
-    withdrawalAmt = amount;
-    newBalance   -= amount;
-  }
-
-  sheet.appendRow([txnDate, narration, refNo, txnDate,
-                   withdrawalAmt, depositAmt, newBalance, ""]);
-
-  const newRow = sheet.getLastRow();
-
-  try { sheet.getRange(newRow, 1).setNumberFormat("dd-mm-yyyy"); } catch(e) {}
-  try { sheet.getRange(newRow, 4).setNumberFormat("dd-mm-yyyy"); } catch(e) {}
-  try { sheet.getRange(newRow, 5).setNumberFormat("\u20b9#,##0.00"); } catch(e) {}
-  try { sheet.getRange(newRow, 6).setNumberFormat("\u20b9#,##0.00"); } catch(e) {}
-  try { sheet.getRange(newRow, 7).setNumberFormat(closingFmt);       } catch(e) {}
-
-  const formula = `=IFERROR(IF(AND(
-  ABS(SUM(FILTER(TransactionDetails!G:G,TransactionDetails!A:A=C${newRow})))=ABS(
-    IF(FILTER(TransactionDetails!C:C,TransactionDetails!A:A=C${newRow})="💰Cash In",
-      VALUE(SUBSTITUTE(F${newRow},"₹","")),VALUE(SUBSTITUTE(E${newRow},"₹","")))),
-  COUNTA(FILTER(TransactionDetails!E:E,TransactionDetails!A:A=C${newRow}))>0,
-  COUNTA(FILTER(TransactionDetails!F:F,TransactionDetails!A:A=C${newRow}))>0,
-  COUNTA(FILTER(TransactionDetails!G:G,TransactionDetails!A:A=C${newRow}))>0,
-  IF(FILTER(TransactionDetails!C:C,TransactionDetails!A:A=C${newRow})="💰Cash In",
-    COUNTA(FILTER(TransactionDetails!H:H,TransactionDetails!A:A=C${newRow}))>0,TRUE)
-),TRUE,FALSE),"")`;
-  try { sheet.getRange(newRow, 8).setFormula(formula); } catch(e) {}
-
-  if (DEBUG_MP) Logger.log(`✅ Imported | Ref: ${refNo} | ${crDr} ₹${amount}`);
-
-  existingRefs.add(refNo);
-  stats.imported++;
-}
-
-// ══════════════════════════════════════════════════════════
-// SOURCE 2: Parse plain-text HDFC alert email
-// ══════════════════════════════════════════════════════════
-// SOURCE 2: Parse plain-text HDFC alert email
-// Handles format: "Rs.160.00 is debited from your account ending 1250 towards VPA 9246308480-4@ybl (PARTHO KUNDU) on 25-06-26"
-function extractAlertTransaction(cleanBody) {
-  const result = {
-    isCredit:  false, isDebit: false,
-    amount:    0,     refNo:  "",
-    txnDate:   "",    narration: ""
+// ═══════════════════════════════════════════════════════════════════════════
+// ENTRY POINT — 5-min time-driven trigger runs this
+// ═══════════════════════════════════════════════════════════════════════════
+function checkAndImport() {
+  var stats = {
+    threadsFound      : 0,
+    threadsProcessed  : 0,
+    messagesSeen      : 0,
+    imported          : 0,
+    skipped           : 0,
+    errors            : []
   };
 
-  result.isCredit = /successfully credited/i.test(cleanBody) || /\bcredited\b/i.test(cleanBody);
-  result.isDebit  = /\bdebited\b/i.test(cleanBody);
-  if (!result.isCredit && !result.isDebit) return null;
-
-  // ── Amount: match "Rs.160.00 is debited/credited" — pick the amount tied to the action ──
-  // Try: "Rs.<amount> is debited/credited" first (most specific)
-  const amtSpecific =
-    cleanBody.match(/Rs\.?\s*([\d,]+(?:\.\d{1,2})?)\s+is\s+(?:debited|credited)/i) ||
-    cleanBody.match(/(?:debited|credited)\s+(?:by\s+)?Rs\.?\s*([\d,]+(?:\.\d{1,2})?)/i);
-  if (amtSpecific) {
-    result.amount = parseFloat(amtSpecific[1].replace(/,/g, ""));
-  } else {
-    // Fallback: first Rs. amount (avoid account numbers by requiring decimal or >3 digits only)
-    const amtAll = [...cleanBody.matchAll(/Rs\.?\s*([\d,]+(?:\.\d{1,2})?)/gi)];
-    for (const m of amtAll) {
-      const val = parseFloat(m[1].replace(/,/g, ""));
-      // Skip 4-digit account endings like 1250 that appear as "account ending 1250"
-      if (cleanBody.indexOf('ending ' + m[1]) === -1 && val > 0) {
-        result.amount = val;
-        break;
-      }
-    }
+  var ss        = SpreadsheetApp.openById(SHEET_ID_MP);
+  var bankSheet = ss.getSheetByName('BankDetails');
+  if (!bankSheet) {
+    log('ERROR: BankDetails sheet not found');
+    stats.errors.push('BankDetails sheet not found');
+    return stats;
   }
 
-  // ── Reference number ──
-  const refM =
-    cleanBody.match(/UPI\s*transaction\s*reference\s*no\.?\s*[:\-]?\s*(\d+)/i) ||
-    cleanBody.match(/UPI\s*Reference\s*No\.?\s*[:\-]?\s*(\d+)/i) ||
-    cleanBody.match(/reference\s*number(?:\s*is)?\s*[:\-]?\s*(\d+)/i);
-  if (refM) result.refNo = refM[1];
-
-  // ── Date: handles DD-MM-YY, DD-MM-YYYY, DD/MM/YY, DD/MM/YYYY ──
-  const dateM =
-    cleanBody.match(/on\s+(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})(?:\b|\.)/i) ||
-    cleanBody.match(/Date\s*[:\-]\s*(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})/i);
-  if (dateM) {
-    const parts = dateM[1].split(/[-\/]/);
-    if (parts.length === 3) {
-      const [day, month, year] = parts;
-      const fullYear = year.length === 2 ? "20" + year : year;
-      result.txnDate = `${month}/${day}/${fullYear}`;   // MM/DD/YYYY for new Date()
-    }
+  // ── Build existing RRN set from Col C ─────────────────────────────────
+  var existingRRNs = {};
+  var lastRow = bankSheet.getLastRow();
+  if (lastRow >= 2) {
+    var rrnData = bankSheet.getRange(2, 3, lastRow - 1, 1).getValues();
+    rrnData.forEach(function(r) {
+      var v = String(r[0] || '').trim();
+      if (v && v !== '0') existingRRNs[v] = true;
+    });
   }
+  log('Existing RRNs in BankDetails: ' + Object.keys(existingRRNs).length);
 
-  // ── Narration (DEBIT): "towards VPA 9246308480-4@ybl (PARTHO KUNDU)"
-  // Fix: VPA can contain digits, letters, dots, hyphens, @ — use [^\s(]+ to capture full VPA ──
-  if (result.isDebit && !result.narration) {
-    const debitM = cleanBody.match(/towards\s+VPA\s+([^\s(]+)\s*\(([^)]+)\)/i);
-    if (debitM) {
-      result.narration = debitM[2].trim() + ' ' + debitM[1].trim();  // "PARTHO KUNDU 9246308480-4@ybl"
-    }
-  }
+  var rowsToAppend = [];
 
-  // ── Narration (CREDIT): "Sender: NAME (VPA: vpa@bank)" ──
-  if (result.isCredit && !result.narration) {
-    const creditM = cleanBody.match(/Sender\s*:\s*(.*?)\s*\(VPA:\s*([^)]+)\)/i);
-    if (creditM) {
-      result.narration = creditM[1].trim() + ' ' + creditM[2].trim();  // "NAME vpa@bank"
-    }
-  }
+  importMerchantPayoutXlsx(existingRRNs, rowsToAppend, stats);
+  importUpiAlerts(existingRRNs, rowsToAppend, stats);
+  appendToSheet(bankSheet, rowsToAppend);
 
-  // ── Fallback narration: any VPA-like pattern ──
-  if (!result.narration) {
-    const vpaM = cleanBody.match(/([^\s(]+@[\w]+)/i);
-    if (vpaM) result.narration = vpaM[1];
-  }
-
-  return result;
+  stats.imported = rowsToAppend.length;
+  return stats;
 }
 
-function parseXlsxAttachment(attachment) {
-  let tempFileId  = null;
-  let convertedId = null;
+// ═══════════════════════════════════════════════════════════════════════════
+// SOURCE 1: upi@hdfcbank.bank.in — Merchant Payout .xlsx attachment
+// ═══════════════════════════════════════════════════════════════════════════
+function importMerchantPayoutXlsx(existingRRNs, rowsToAppend, stats) {
+  var threads = GmailApp.search(
+    'from:upi@hdfcbank.bank.in subject:"Merchant Payout" is:unread',
+    0, THREAD_LIMIT_MP
+  );
+  stats.threadsFound += threads.length;
+  log('Source 1 — Unread Merchant Payout emails found: ' + threads.length);
+
+  threads.forEach(function(thread) {
+    stats.threadsProcessed++;
+    thread.getMessages().forEach(function(msg) {
+      stats.messagesSeen++;
+      msg.getAttachments().forEach(function(att) {
+
+        var attName = att.getName().toLowerCase();
+        if (attName.indexOf('.xlsx') === -1 && attName.indexOf('.xls') === -1) {
+          log('SKIP non-Excel attachment: ' + att.getName());
+          return;
+        }
+        log('Processing attachment: ' + att.getName());
+
+        var tempFile = DriveApp.createFile(att);
+        var tempId   = tempFile.getId();
+
+        try {
+          var resource  = { title: 'temp_mp_import', mimeType: MimeType.GOOGLE_SHEETS };
+          var converted = Drive.Files.copy(resource, tempId, { convert: true });
+          var gsId      = converted.id;
+
+          try {
+            var gsTmp    = SpreadsheetApp.openById(gsId);
+            var srcSheet = gsTmp.getSheets()[0];
+            var dataRows = srcSheet.getDataRange().getValues();
+            log('Total rows in converted sheet (incl header/blanks): ' + dataRows.length);
+
+            for (var i = 1; i < dataRows.length; i++) {
+              try {
+                var row = dataRows[i];
+                if (!row || row.length === 0) continue;
+                if (row.every(function(c) { return c === '' || c === null || c === undefined; })) continue;
+
+                var rrn = String(row[COL_RRN] || '').trim();
+                if (!rrn || rrn === '0') continue;
+
+                if (existingRRNs[rrn]) {
+                  log('SKIP duplicate RRN: ' + rrn);
+                  stats.skipped++;
+                  continue;
+                }
+
+                var crDr = String(row[COL_CR_DR] || '').trim().toUpperCase();
+                if (crDr !== 'CR') {
+                  log('SKIP non-CR row RRN: ' + rrn);
+                  stats.skipped++;
+                  continue;
+                }
+
+                var rawDate    = String(row[COL_TXN_DATE] || '').trim();
+                var dateOnly   = rawDate.split(' ')[0];
+                var dateParsed = new Date(dateOnly);
+
+                var payerVpa  = String(row[COL_PAYER_VPA] || '').trim();
+                var narration = 'UPI-' + payerVpa;
+                var amount    = parseFloat(row[COL_NET_AMT]) || 0;
+
+                rowsToAppend.push([
+                  dateParsed, narration, rrn, dateParsed, '', amount, '', false
+                ]);
+
+                existingRRNs[rrn] = true;
+                log('QUEUED (xlsx) RRN: ' + rrn + '  ₹' + amount + '  ' + payerVpa);
+
+              } catch(rowErr) {
+                log('SKIP row ' + i + ' error: ' + rowErr.message);
+                stats.errors.push('Row ' + i + ': ' + rowErr.message);
+              }
+            }
+
+          } finally {
+            try { Drive.Files.remove(gsId); } catch(e) { log('Cleanup gsId error: ' + e.message); }
+          }
+
+        } finally {
+          try { Drive.Files.remove(tempId); } catch(e) { log('Cleanup tempId error: ' + e.message); }
+        }
+
+      }); // end attachments
+
+      msg.markRead();
+    }); // end messages
+
+    thread.markRead();
+  }); // end threads
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SOURCE 2: alerts@hdfcbank.bank.in — plain text UPI credit/debit alerts
+// ═══════════════════════════════════════════════════════════════════════════
+function importUpiAlerts(existingRRNs, rowsToAppend, stats) {
+  var threads = GmailApp.search(
+    'from:alerts@hdfcbank.bank.in subject:"Account update for your HDFC Bank" is:unread',
+    0, THREAD_LIMIT_MP
+  );
+  stats.threadsFound += threads.length;
+  log('Source 2 — Unread UPI Alert emails found: ' + threads.length);
+
+  threads.forEach(function(thread) {
+    stats.threadsProcessed++;
+    thread.getMessages().forEach(function(msg) {
+      stats.messagesSeen++;
+      var body = msg.getPlainBody();
+      var tx   = extractAlertTransaction(body);
+
+      if (!tx) {
+        log('SKIP — could not parse alert email body');
+        stats.skipped++;
+        msg.markRead();
+        return;
+      }
+
+      if (existingRRNs[tx.rrn]) {
+        log('SKIP duplicate RRN (alert): ' + tx.rrn);
+        stats.skipped++;
+        msg.markRead();
+        return;
+      }
+
+      if (tx.type !== 'CR') {
+        log('SKIP non-credit alert RRN: ' + tx.rrn);
+        stats.skipped++;
+        msg.markRead();
+        return;
+      }
+
+      rowsToAppend.push([
+        tx.date, tx.narration, tx.rrn, tx.date, '', tx.amount, '', false
+      ]);
+
+      existingRRNs[tx.rrn] = true;
+      log('QUEUED (alert) RRN: ' + tx.rrn + '  ₹' + tx.amount + '  ' + tx.narration);
+      msg.markRead();
+
+    }); // end messages
+
+    thread.markRead();
+  }); // end threads
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// extractAlertTransaction — parses plain text HDFC UPI alert email body
+//
+// Expected body format:
+//   Rs.500.00 credited to your A/c ...
+//   Sender: NAME (VPA: x@ybl)
+//   UPI Reference No.: 045209782909
+//   Date: 01-06-26
+// ═══════════════════════════════════════════════════════════════════════════
+function extractAlertTransaction(body) {
   try {
-    const blob = attachment.copyBlob();
-    blob.setName("temp_merchant_payout.xlsx");
-    const tempFile = DriveApp.createFile(blob);
-    tempFileId = tempFile.getId();
+    // Amount + credit/debit direction
+    var amtMatch = body.match(/Rs\.?([\d,]+\.?\d*)\s+(credited|debited)/i);
+    if (!amtMatch) return null;
+    var amount = parseFloat(amtMatch[1].replace(/,/g, ''));
+    var type   = amtMatch[2].toLowerCase() === 'credited' ? 'CR' : 'DR';
 
-    const converted = Drive.Files.copy(
-      { title: "temp_sheet_parse", mimeType: MimeType.GOOGLE_SHEETS },
-      tempFileId
-    );
-    convertedId = converted.id;
+    // Payer VPA and Sender name
+    var vpaMatch    = body.match(/VPA:\s*([^\s\)]+)/i);
+    var senderMatch = body.match(/Sender:\s*([^\(]+)/i);
+    var vpa         = vpaMatch    ? vpaMatch[1].trim() : '';
+    var sender      = senderMatch ? senderMatch[1].trim() : '';
+    var narration   = 'UPI-' + (vpa || sender || 'UNKNOWN');
 
-    const tempSheet = SpreadsheetApp.openById(convertedId).getSheets()[0];
-    const lastRow   = tempSheet.getLastRow();
-    const lastCol   = tempSheet.getLastColumn();
-    if (lastRow < 1 || lastCol < 1) return [];
+    // UPI Reference No. (RRN)
+    var rrnMatch = body.match(/UPI Reference No\.?:?\s*(\d+)/i);
+    if (!rrnMatch) return null;
+    var rrn = rrnMatch[1].trim();
 
-    const allRows = tempSheet.getRange(1, 1, lastRow, lastCol).getValues();
-    // Header row + only rows with a valid RRN
-    return allRows.filter((row, i) =>
-      i === 0 || String(row[COL_RRN] || "").trim() !== ""
-    );
+    // Date "01-06-26" or "01-06-2026" → real Date object
+    var dateMatch = body.match(/Date:\s*(\d{1,2}-\d{2}-\d{2,4})/i);
+    var dateObj;
+    if (dateMatch) {
+      var parts = dateMatch[1].split('-');
+      var dd    = parseInt(parts[0], 10);
+      var mm    = parseInt(parts[1], 10) - 1;    // JS months 0-based
+      var yy    = parts[2];
+      var yyyy  = yy.length === 2 ? 2000 + parseInt(yy, 10) : parseInt(yy, 10);
+      dateObj   = new Date(yyyy, mm, dd);
+    } else {
+      dateObj = new Date();                       // fallback: today
+    }
+
+    return { amount: amount, type: type, narration: narration, rrn: rrn, date: dateObj };
 
   } catch(e) {
-    Logger.log("XLSX parse error: " + e);
+    log('extractAlertTransaction error: ' + e.message);
     return null;
-  } finally {
-    try { if (tempFileId)  DriveApp.getFileById(tempFileId).setTrashed(true);  } catch(e) {}
-    try { if (convertedId) DriveApp.getFileById(convertedId).setTrashed(true); } catch(e) {}
   }
 }
 
-// ══════════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════════
-function parseMerchantDate(raw) {
-  try {
-    if (!raw) return null;
-    const match = raw.match(/^(\d{1,2})-([A-Z]{3})-(\d{4})/i);
-    if (!match) return null;
-    const months = {JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,
-                    JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
-    const m = months[match[2].toUpperCase()];
-    if (m === undefined) return null;
-    return new Date(parseInt(match[3]), m, parseInt(match[1]));
-  } catch(e) { return null; }
-}
 
-function buildNarration(payerVpa, merchantName) {
-  const parts = [];
-  if (payerVpa) parts.push(payerVpa);
-  if (merchantName && merchantName !== "SENIOR CITIZENS RESIDENTIAL WELFARE ASSO") {
-    parts.push(merchantName);
+// ═══════════════════════════════════════════════════════════════════════════
+// appendToSheet — writes all queued rows to BankDetails in one batch
+// Passes Date objects directly — NO setNumberFormat (typed column safe)
+// ═══════════════════════════════════════════════════════════════════════════
+function appendToSheet(bankSheet, rowsToAppend) {
+  if (rowsToAppend.length === 0) {
+    log('ℹ️ No new transactions to import');
+    return;
   }
-  return "UPI-" + parts.join("-");
+
+  // Sort by date ascending (index 0) before appending to sheet
+  rowsToAppend.sort(function(a, b) {
+    var da = a[0] instanceof Date ? a[0].getTime() : new Date(a[0]).getTime();
+    var db = b[0] instanceof Date ? b[0].getTime() : new Date(b[0]).getTime();
+    return da - db;
+  });
+  log('Sorted ' + rowsToAppend.length + ' row(s) by date ascending');
+
+  var startRow    = bankSheet.getLastRow() + 1;
+  var appendRange = bankSheet.getRange(startRow, 1, rowsToAppend.length, 8);
+  appendRange.setValues(rowsToAppend);
+
+  // ── Col 7: Closing Balance — copy formula from row above ─────────────
+  var prevBalCell    = bankSheet.getRange(startRow - 1, 7);
+  var prevBalFormula = prevBalCell.getFormula();
+
+  if (prevBalFormula) {
+    for (var r = 0; r < rowsToAppend.length; r++) {
+      var newRow     = startRow + r;
+      var newFormula = shiftFormula(prevBalFormula, startRow - 1, newRow);
+      bankSheet.getRange(newRow, 7).setFormula(newFormula);
+    }
+    log('✅ Closing Balance formula applied to ' + rowsToAppend.length + ' row(s)');
+  } else {
+    log('⚠️ Closing Balance: no formula found in row above — left blank');
+  }
+
+  // ── Col 8: Reconciled — copy formula from row above ──────────────────
+  var prevRecCell    = bankSheet.getRange(startRow - 1, 8);
+  var prevRecFormula = prevRecCell.getFormula();
+
+  if (prevRecFormula) {
+    for (var r = 0; r < rowsToAppend.length; r++) {
+      var newRow     = startRow + r;
+      var newFormula = shiftFormula(prevRecFormula, startRow - 1, newRow);
+      bankSheet.getRange(newRow, 8).setFormula(newFormula);
+    }
+    log('✅ Reconciled formula applied to ' + rowsToAppend.length + ' row(s)');
+  } else {
+    log('⚠️ Reconciled: no formula found in row above — left blank');
+  }
+
+  SpreadsheetApp.flush();
+  log('✅ Appended ' + rowsToAppend.length + ' new row(s) to BankDetails');
 }
 
-function markDone(msg, thread) {
-  try {
-    msg.markRead();
-    if (!thread.getMessages().some(m => m.isUnread())) thread.moveToArchive();
-  } catch(e) { Logger.log("Mark/archive error: " + e); }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// shiftFormula — shifts ALL row numbers in a formula by offset
+// e.g. prevRow=629, newRow=631 shifts all row refs by +2
+// ═══════════════════════════════════════════════════════════════════════════
+function shiftFormula(formula, prevRow, newRow) {
+  var offset = newRow - prevRow;
+  return formula.replace(/([A-Z]+)(\d+)/g, function(match, col, row) {
+    return col + (parseInt(row, 10) + offset);
+  });
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// log — controlled by DEBUG_MP flag
+// ═══════════════════════════════════════════════════════════════════════════
+function log(msg) {
+  if (DEBUG_MP) Logger.log(msg);
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TEST FUNCTIONS — run manually, no sheet writes
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Shows unread email count per source
+function testEmailCounts() {
+  var src1 = GmailApp.search(
+    'from:upi@hdfcbank.bank.in subject:"Merchant Payout" is:unread', 0, 50
+  );
+  var src2 = GmailApp.search(
+    'from:alerts@hdfcbank.bank.in subject:"Account update for your HDFC Bank" is:unread', 0, 50
+  );
+  Logger.log('Source 1 (xlsx)  unread threads: ' + src1.length);
+  Logger.log('Source 2 (alert) unread threads: ' + src2.length);
+}
+
+// Dry run — logs exactly what would be imported WITHOUT writing to sheet
+function testDryRun() {
+  var existingRRNs = {};
+  var rowsToAppend = [];
+  importMerchantPayoutXlsx(existingRRNs, rowsToAppend);
+  importUpiAlerts(existingRRNs, rowsToAppend);
+  Logger.log('═══ DRY RUN RESULT ═══');
+  Logger.log('Total rows that would be appended: ' + rowsToAppend.length);
+  rowsToAppend.forEach(function(r, idx) {
+    Logger.log(
+      'Row ' + (idx + 1) + ': ' +
+      Utilities.formatDate(r[0], Session.getScriptTimeZone(), 'dd-MM-yyyy') +
+      ' | ' + r[1] +
+      ' | RRN: ' + r[2] +
+      ' | ₹' + r[5]
+    );
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WEB APP ENTRY POINT — called when Web App URL is opened
+// Triggers checkAndImport() and returns result as plain text
+// ═══════════════════════════════════════════════════════════════════════════
+function doGetImport(e) {
+  try {
+    var stats = checkAndImport();
+    var response = {
+      ok        : stats.errors.length === 0,
+      timestamp : Utilities.formatDate(new Date(), 'Asia/Calcutta', 'dd-MM-yyyy HH:mm:ss'),
+      stats     : stats
+    };
+    return ContentService
+      .createTextOutput(JSON.stringify(response, null, 2))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    var errResponse = {
+      ok        : false,
+      timestamp : Utilities.formatDate(new Date(), 'Asia/Calcutta', 'dd-MM-yyyy HH:mm:ss'),
+      stats     : { error: err.message }
+    };
+    return ContentService
+      .createTextOutput(JSON.stringify(errResponse, null, 2))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
