@@ -424,10 +424,10 @@ function getInvoicesByBillIds(ss, billIds) {
       period  = raw.length >= 7 ? raw.substring(0, 7) : raw;
     }
     var billDate = '';
-    if (data[i][3] instanceof Date) {
-      billDate = Utilities.formatDate(data[i][3], tz, 'dd-MMM-yy');
-    } else if (data[i][3]) {
-      billDate = String(data[i][3]).trim().substring(0,11);
+    if (data[i][5] instanceof Date) {
+      billDate = Utilities.formatDate(data[i][5], tz, 'dd-MMM-yy');
+    } else if (data[i][5]) {
+      billDate = String(data[i][5]).trim().substring(0,11);
     }
     found.push({
       billId:    billId,
@@ -1450,4 +1450,3 @@ function testSendEmail() {
 //  Rewrites ALL TransactionDetails Col D rows with INDIRECT+ROW()
 //  This formula is 100% copy-paste safe — no hardcoded row numbers
 //  Run ONCE from GAS editor to fix all existing rows
-
