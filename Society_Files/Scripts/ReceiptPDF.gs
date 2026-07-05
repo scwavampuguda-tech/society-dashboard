@@ -133,6 +133,39 @@ function doGet(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
+    // Bank Sync shortcut: ?action=syncBank
+    if (action === 'syncBank') {
+      var syncResult;
+      try {
+        syncResult = importBankTransactions();
+      } catch(e2) {
+        syncResult = { errors: [e2.toString()], imported: 0 };
+      }
+      var imported = syncResult.imported || 0;
+      var errors   = (syncResult.errors || []).join('<br>');
+      var ts       = Utilities.formatDate(new Date(), 'Asia/Calcutta', 'dd-MMM-yyyy hh:mm a');
+      var html =
+        '<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'
+        + '<style>body{font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;'
+        + 'min-height:100vh;margin:0;background:#f0f4f8;}'
+        + '.card{background:#fff;border-radius:12px;padding:32px 28px;max-width:360px;width:90%;'
+        + 'box-shadow:0 4px 20px rgba(0,0,0,.12);text-align:center;}'
+        + '.icon{font-size:48px;margin-bottom:12px;}'
+        + 'h2{margin:0 0 8px;color:#0d2137;font-size:20px;}'
+        + 'p{color:#475569;font-size:14px;margin:4px 0;}'
+        + '.badge{display:inline-block;background:#dcfce7;color:#15803d;border-radius:20px;'
+        + 'padding:4px 14px;font-size:13px;font-weight:700;margin-top:12px;}'
+        + '.err{color:#dc2626;font-size:12px;margin-top:8px;}'
+        + '</style></head><body><div class="card">'
+        + (errors ? '<div class="icon">❌</div><h2>Sync Error</h2><div class="err">' + errors + '</div>'
+                  : '<div class="icon">✅</div><h2>Bank Sync Complete</h2>')
+        + '<p>' + imported + ' new transaction(s) imported</p>'
+        + '<p style="font-size:12px;color:#94a3b8">' + ts + '</p>'
+        + '<div class="badge">' + (errors ? 'Failed' : 'Success') + '</div>'
+        + '</div></body></html>';
+      return HtmlService.createHtmlOutput(html).setTitle('Bank Sync — SCRWA');
+    }
+
     return ContentService
       .createTextOutput(JSON.stringify({ success: false, message: 'Missing action or receiptNo' }))
       .setMimeType(ContentService.MimeType.JSON);
