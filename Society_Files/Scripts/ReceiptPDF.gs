@@ -1189,6 +1189,11 @@ function onOpen() {
     .addSeparator()
     .addItem('⚙️ Setup Auto-Email Trigger (1 min)', 'setupAutoEmailTrigger')
     .addItem('🛑 Remove Auto-Email Trigger',        'removeAutoEmailTrigger')
+    .addSeparator()
+    .addItem('💾 Backup Now',                       'runManualBackup')
+    .addItem('📊 Backup Status',                    'showBackupStatus')
+    .addItem('⚙️ Setup Backup Triggers',            'setupBackupTriggers')
+    .addItem('🛑 Remove Backup Triggers',           'removeBackupTriggers')
     .addToUi();
 }
 
