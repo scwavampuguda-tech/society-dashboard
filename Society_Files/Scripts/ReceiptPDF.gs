@@ -253,7 +253,7 @@ function generateConsolidatedReceipt(receiptNo) {
   if (iter.hasNext()) iter.next().setTrashed(true);
   var file     = folder.createFile(pdfBlob.setName(fileName));
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-  var pdfUrl   = 'https://drive.google.com/file/d/' + file.getId() + '/view';
+  var pdfUrl   = 'https://drive.google.com/uc?export=download&id=' + file.getId();
 
   // 8. Write URL to BankDetails Col J + TransactionDetails Col P
   writePdfUrl(ss, bankRow.sheetRow, txRows, pdfUrl);
