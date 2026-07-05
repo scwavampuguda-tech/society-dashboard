@@ -1,3 +1,32 @@
+
+// ── Sheet menu ───────────────────────────────────────────────────────────────
+function onOpenMerchantPayout() {
+  SpreadsheetApp.getUi()
+    .createMenu('🏦 Bank Sync')
+    .addItem('▶️ Run Bank Sync Now',         'importBankTransactions')
+    .addItem('🔍 Dry Run (no changes)',       'dryRunImport')
+    .addSeparator()
+    .addItem('⚙️ Setup 5-min Sync Trigger',  'setupSyncBankTrigger')
+    .addItem('🛑 Remove Sync Trigger',        'removeSyncBankTrigger')
+    .addToUi();
+}
+
+function setupSyncBankTrigger() {
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    if (t.getHandlerFunction() === 'processSyncBankFlag') ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger('processSyncBankFlag').timeBased().everyMinutes(5).create();
+  SpreadsheetApp.getUi().alert('✅ Bank Sync Trigger installed!\nWill check for sync request every 5 minutes.');
+}
+
+function removeSyncBankTrigger() {
+  var removed = 0;
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    if (t.getHandlerFunction() === 'processSyncBankFlag') { ScriptApp.deleteTrigger(t); removed++; }
+  });
+  SpreadsheetApp.getUi().alert('Sync trigger removed (' + removed + ' trigger(s) deleted).');
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // MerchantPayout.gs  v2.3
 // ═══════════════════════════════════════════════════════════════════════════
@@ -75,6 +104,40 @@ function checkAndImport() {
 
   stats.imported = rowsToAppend.length;
   return stats;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+//  SYNC TRIGGER — AppSheet sets Settings!B1 = "YES"
+//  This function runs every 5 min, picks it up, runs import
+// ═══════════════════════════════════════════════════════════════════
+function processSyncBankFlag() {
+  var ss = SpreadsheetApp.openById(SS_ID);
+
+  // Read Settings sheet B1
+  var settingsSheet = ss.getSheetByName('Settings');
+  if (!settingsSheet) {
+    log('processSyncBankFlag: Settings sheet not found');
+    return;
+  }
+
+  var flagCell = settingsSheet.getRange('B1');
+  var flagVal  = String(flagCell.getValue() || '').trim().toUpperCase();
+
+  if (flagVal !== 'YES') return;
+
+  // Clear flag immediately to prevent re-triggering
+  flagCell.setValue('');
+  log('processSyncBankFlag: SyncBank flag detected — starting import...');
+
+  try {
+    var result = importBankTransactions();
+    log('processSyncBankFlag: import done — ' + JSON.stringify(result));
+  } catch(err) {
+    log('processSyncBankFlag ERROR: ' + err.toString());
+    // Restore flag so user can retry
+    flagCell.setValue('YES');
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
