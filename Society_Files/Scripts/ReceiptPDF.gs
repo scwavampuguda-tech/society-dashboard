@@ -1176,6 +1176,45 @@ function numberToWords(n) {
   return w(n).trim();
 }
 
+
+// ═══════════════════════════════════════════════════════════════════
+//  onEdit — auto-fix TransactionDetails Col D formula
+//  Fires whenever a cell is edited in the sheet
+//  If edit is in TransactionDetails Col B (ReceiptNo added/changed)
+//  → writes correct absolute formula to Col D same row
+// ═══════════════════════════════════════════════════════════════════
+function onEdit(e) {
+  try {
+    var sheet = e.range.getSheet();
+    if (sheet.getName() !== 'TransactionDetails') return;
+
+    var col = e.range.getColumn();
+    var row = e.range.getRow();
+
+    // Only act when Col B (ReceiptNo) or Col D (Type) is edited
+    // and row >= 2 (skip header)
+    if (row < 2) return;
+    if (col !== 2 && col !== 4) return;
+
+    // Check if Col D has broken formula (C[ refs) or is blank
+    var colDCell    = sheet.getRange(row, 4);
+    var colDFormula = colDCell.getFormula();
+    var colBVal     = String(sheet.getRange(row, 2).getValue() || '').trim();
+
+    // Fix if: formula has C[ refs OR col D is blank but col B has value
+    if (!colBVal) return;  // no receipt no — skip
+    if (colDFormula && colDFormula.indexOf('C[') < 0) return;  // already correct
+
+    var fixedFormula =
+      '=IFERROR(IF(INDEX(BankDetails!$F:$F,MATCH(B' + row + ',BankDetails!$C:$C,0))<>"","\uD83D\uDCB0Cash In",' +
+      'IF(INDEX(BankDetails!$E:$E,MATCH(B' + row + ',BankDetails!$C:$C,0))<>"","\uD83D\uDCB8Cash Out","")),"")';
+
+    colDCell.setFormula(fixedFormula);
+  } catch(err) {
+    // Silent fail — onEdit must never throw
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════════
 //  SHEET MENU
 // ═══════════════════════════════════════════════════════════════════
