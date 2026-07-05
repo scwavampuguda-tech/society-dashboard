@@ -463,7 +463,6 @@ function fixTransactionTypeFormulas() {
       '"\uD83D\uDCB0Cash In",' +
       'IF(INDEX(BankDetails!$E:$E,MATCH(B' + i + ',BankDetails!$C:$C,0))<>"",' +
       '"\uD83D\uDCB8Cash Out","")),"")';
-'
     tSheet.getRange(i, 4).setFormula(formula);
     fixed++;
   }
