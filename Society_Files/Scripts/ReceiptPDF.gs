@@ -1188,30 +1188,34 @@ function onEdit(e) {
     var sheet = e.range.getSheet();
     if (sheet.getName() !== 'TransactionDetails') return;
 
-    var col = e.range.getColumn();
     var row = e.range.getRow();
-
-    // Only act when Col B (ReceiptNo) or Col D (Type) is edited
-    // and row >= 2 (skip header)
     if (row < 2) return;
-    if (col !== 2 && col !== 4) return;
 
-    // Check if Col D has broken formula (C[ refs) or is blank
+    // Need a ReceiptNo in Col B before we can build the formula
+    var colBVal = String(sheet.getRange(row, 2).getValue() || '').trim();
+    if (!colBVal) return;
+
     var colDCell    = sheet.getRange(row, 4);
     var colDFormula = colDCell.getFormula();
-    var colBVal     = String(sheet.getRange(row, 2).getValue() || '').trim();
 
-    // Fix if: formula has C[ refs OR col D is blank but col B has value
-    if (!colBVal) return;  // no receipt no — skip
-    if (colDFormula && colDFormula.indexOf('C[') < 0) return;  // already correct
+    // Rewrite if: blank OR has broken C[ structured/relative refs
+    if (colDFormula && colDFormula.indexOf('C[') < 0) return;
 
-    var fixedFormula =
-      '=IFERROR(IF(INDEX(BankDetails!$F:$F,MATCH(B' + row + ',BankDetails!$C:$C,0))<>"","\uD83D\uDCB0Cash In",' +
-      'IF(INDEX(BankDetails!$E:$E,MATCH(B' + row + ',BankDetails!$C:$C,0))<>"","\uD83D\uDCB8Cash Out","")),"")';
-
-    colDCell.setFormula(fixedFormula);
+    // Build formula with ABSOLUTE column refs — never shifts on copy
+    var f =
+      '=IFERROR(' +
+        'IF(' +
+          'INDEX(BankDetails!$F:$F,MATCH(B' + row + ',BankDetails!$C:$C,0))<>"",' +
+          '"\uD83D\uDCB0Cash In",' +
+          'IF(' +
+            'INDEX(BankDetails!$E:$E,MATCH(B' + row + ',BankDetails!$C:$C,0))<>"",' +
+            '"\uD83D\uDCB8Cash Out",""' +
+          ')' +
+        ')' +
+      ',"")';
+    colDCell.setFormula(f);
   } catch(err) {
-    // Silent fail — onEdit must never throw
+    // Silent fail — onEdit must never throw to avoid spamming error alerts
   }
 }
 
