@@ -394,9 +394,6 @@ function appendToSheet(bankSheet, rowsToAppend) {
   SpreadsheetApp.flush();
   log('✅ Appended ' + rowsToAppend.length + ' new row(s) to BankDetails');
 
-   catch(terr) {
-    log('⚠️ Col D update skipped: ' + terr.toString());
-  }
 }
 
 
@@ -424,7 +421,8 @@ function log(msg) {
 // ═══════════════════════════════════════════════════════════════════
 //  ONE-TIME FIX: fixTransactionTypeFormulas()
 //  Rewrites TransactionDetails Col D with absolute column refs
-//  Run once from GAS editor — fixes all existing + future rows
+//  Run once from GAS editor — fixes all existing + future rows
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -433,7 +431,8 @@ function log(msg) {
 //  Rewrites TransactionDetails Col D with the ORIGINAL formula
 //  that was working before ReceiptPDF.gs development.
 //  Only fixes rows where formula has broken C[ structured refs.
-//  Run once from GAS editor, then this function is no longer needed.
+//  Run once from GAS editor, then this function is no longer needed.
+
 
 // TEST FUNCTIONS — run manually, no sheet writes
 // ═══════════════════════════════════════════════════════════════════════════
