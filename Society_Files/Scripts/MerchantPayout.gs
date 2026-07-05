@@ -397,6 +397,28 @@ function appendToSheet(bankSheet, rowsToAppend) {
 
   SpreadsheetApp.flush();
   log('✅ Appended ' + rowsToAppend.length + ' new row(s) to BankDetails');
+
+  // ── Fix TransactionDetails Col D formulas (absolute refs) ──────────
+  try {
+    var ss      = SpreadsheetApp.openById(SS_ID);
+    var tSheet  = ss.getSheetByName('TransactionDetails');
+    if (tSheet) {
+      var tLastRow = tSheet.getLastRow();
+      for (var tr = 2; tr <= tLastRow; tr++) {
+        var existingFormula = tSheet.getRange(tr, 4).getFormula();
+        // Only fix if formula contains relative structured refs like C[n]
+        if (existingFormula && existingFormula.indexOf('C[') >= 0) {
+          var fixedFormula =
+            '=IFERROR(IF(INDEX(BankDetails!$F:$F,MATCH(B' + tr + ',BankDetails!$C:$C,0))<>"","\uD83D\uDCB0Cash In",' +
+            'IF(INDEX(BankDetails!$E:$E,MATCH(B' + tr + ',BankDetails!$C:$C,0))<>"","\uD83D\uDCB8Cash Out","")),"")';
+          tSheet.getRange(tr, 4).setFormula(fixedFormula);
+        }
+      }
+      log('✅ TransactionDetails Col D formulas verified/fixed');
+    }
+  } catch(ferr) {
+    log('⚠️ Col D formula fix skipped: ' + ferr.toString());
+  }
 }
 
 
@@ -418,6 +440,36 @@ function log(msg) {
   if (DEBUG_MP) Logger.log(msg);
 }
 
+
+
+// ═══════════════════════════════════════════════════════════════════
+//  ONE-TIME FIX: fixTransactionTypeFormulas()
+//  Rewrites TransactionDetails Col D with absolute column refs
+//  Run once from GAS editor — fixes all existing + future rows
+// ═══════════════════════════════════════════════════════════════════
+function fixTransactionTypeFormulas() {
+  var ss     = SpreadsheetApp.openById(SS_ID);
+  var tSheet = ss.getSheetByName('TransactionDetails');
+  if (!tSheet) { Logger.log('TransactionDetails not found'); return; }
+
+  var lastRow = tSheet.getLastRow();
+  if (lastRow < 2) { Logger.log('No data rows'); return; }
+
+  var fixed = 0;
+  for (var i = 2; i <= lastRow; i++) {
+    // Col D = column 4, Col B = column 2 (ReceiptNo)
+    var formula =
+      '=IFERROR(IF(INDEX(BankDetails!$F:$F,MATCH(B' + i + ',BankDetails!$C:$C,0))<>"",' +
+      '"\uD83D\uDCB0Cash In",' +
+      'IF(INDEX(BankDetails!$E:$E,MATCH(B' + i + ',BankDetails!$C:$C,0))<>"",' +
+      '"\uD83D\uDCB8Cash Out","")),"")';
+'
+    tSheet.getRange(i, 4).setFormula(formula);
+    fixed++;
+  }
+  SpreadsheetApp.flush();
+  Logger.log('✅ Fixed ' + fixed + ' Col D formulas in TransactionDetails');
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TEST FUNCTIONS — run manually, no sheet writes
