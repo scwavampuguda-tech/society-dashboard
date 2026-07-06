@@ -128,6 +128,25 @@ function processInvoiceFlags() {
 //  TRIGGER 3 — Bulk manual
 //  Run from GAS editor: bulkGenerateInvoices('Jul-2026')
 // ════════════════════════════════════════════════════════════════════════
+function previewBulk() {
+  var period   = 'Jul-2026';   // ← change period here if needed
+  var ss       = SpreadsheetApp.openById(SS_ID);
+  var ownerMap = getOwnerMap(ss);
+  var propIds  = getPropertyIdsForPeriod(ss, period, ownerMap);
+  Logger.log('=== Preview: ' + propIds.length + ' properties to invoice for ' + period + ' ===');
+  propIds.forEach(function(pid) {
+    var o      = ownerMap[pid];
+    var emails = [o.email, o.proxyEmail].filter(function(e){ return e && e.indexOf('@') > 0; });
+    Logger.log(
+      pid +
+      ' | Plot: '  + o.plotNo +
+      ' | Name: '  + o.ownername1 +
+      ' | Email: ' + (emails.length ? emails.join(', ') : '❌ NO EMAIL')
+    );
+  });
+  Logger.log('=== End Preview ===');
+}
+
 function bulkGenerateInvoices(billPeriod) {
   if (!billPeriod) {
     var tz = Session.getScriptTimeZone();
