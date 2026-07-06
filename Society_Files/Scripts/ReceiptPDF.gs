@@ -417,26 +417,26 @@ function getInvoicesByBillIds(ss, billIds) {
     var billId = String(data[i][0] || '').trim();
     if (!idSet[billId]) continue;
     var period = '';
-    if (data[i][4] instanceof Date) {
-      period = Utilities.formatDate(data[i][4], tz, 'MMM yyyy');
-    } else if (data[i][4]) {
-      var raw = String(data[i][4]).trim();
+    if (data[i][5] instanceof Date) {
+      period = Utilities.formatDate(data[i][5], tz, 'MMM yyyy');
+    } else if (data[i][5]) {
+      var raw = String(data[i][5]).trim();
       period  = raw.length >= 7 ? raw.substring(0, 7) : raw;
     }
     var billDate = '';
-    if (data[i][5] instanceof Date) {
-      billDate = Utilities.formatDate(data[i][5], tz, 'dd-MMM-yy');
-    } else if (data[i][5]) {
-      billDate = String(data[i][5]).trim().substring(0,11);
+    if (data[i][6] instanceof Date) {
+      billDate = Utilities.formatDate(data[i][6], tz, 'dd-MMM-yy');
+    } else if (data[i][6]) {
+      billDate = String(data[i][6]).trim().substring(0,11);
     }
     found.push({
       billId:    billId,
       billDate:  billDate,
       period:    period,
-      billAmt:   Math.abs(parseFloat(data[i][6]) || 0),
-      paidAmt:   Math.abs(parseFloat(data[i][7]) || 0),
-      balance:   parseFloat(data[i][8]) || 0,
-      status:    String(data[i][9] || '').trim().replace(/^[^\w\s✅⚠️]+\s*/,'')
+      billAmt:   Math.abs(parseFloat(data[i][7]) || 0),
+      paidAmt:   Math.abs(parseFloat(data[i][8]) || 0),
+      balance:   parseFloat(data[i][9]) || 0,
+      status:    String(data[i][10] || '').trim().replace(/^[^\w\s✅⚠️]+\s*/,'')
     });
   }
   return found;
