@@ -389,11 +389,23 @@ function buildInvoiceHtml(owner, invoiceRows, invoiceNo, displayDate, billPeriod
 
 
 function sendInvoiceEmail(owner, invoiceRows, savedFile, pdfUrl, invoiceNo, displayDate, billPeriod, totalAmt) {
-  var emailTo = owner.email || owner.proxyEmail || '';
-  if (!emailTo) {
-    Logger.log('No email for ' + owner.propertyId);
+  // Collect all unique valid email addresses — owner + proxy
+  var allEmails = [];
+  function addEmail(e) {
+    e = String(e || '').trim().toLowerCase();
+    if (e && e.indexOf('@') > 0 && allEmails.indexOf(e) < 0) allEmails.push(e);
+  }
+  addEmail(owner.email);
+  addEmail(owner.proxyEmail);
+
+  if (!allEmails.length) {
+    Logger.log('⚠️ No email for PropertyID: ' + owner.propertyId);
     return { sent: false, reason: 'No email address' };
   }
+
+  var emailTo = allEmails[0];
+  var emailCC = allEmails.slice(1).join(',');
+  Logger.log('📧 Invoice email To: ' + emailTo + (emailCC ? ' | CC: ' + emailCC : ''));
 
   var subject =
     'Invoice ' + billPeriod + ' | ' + SOCIETY_SHORT + ' | ' +
@@ -426,13 +438,15 @@ function sendInvoiceEmail(owner, invoiceRows, savedFile, pdfUrl, invoiceNo, disp
     '</div></div>';
 
   try {
-    GmailApp.sendEmail(emailTo, subject, '', {
+    var mailOpts = {
       htmlBody:    body,
       attachments: [savedFile.getBlob().setName(invoiceNo + '.pdf')],
       name:        SOCIETY_SHORT
-    });
-    Logger.log('✅ Invoice email → ' + emailTo);
-    return { sent: true, to: emailTo };
+    };
+    if (emailCC) mailOpts.cc = emailCC;
+    GmailApp.sendEmail(emailTo, subject, '', mailOpts);
+    Logger.log('✅ Invoice email sent → To: ' + emailTo + (emailCC ? ' | CC: ' + emailCC : ''));
+    return { sent: true, to: emailTo, cc: emailCC };
   } catch(err) {
     Logger.log('❌ Email failed → ' + emailTo + ': ' + err.toString());
     return { sent: false, error: err.toString() };
