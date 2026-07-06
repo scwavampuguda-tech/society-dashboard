@@ -224,11 +224,19 @@ function generateInvoiceForProperty(propId, billPeriod) {
   writeInvoiceTracking(ss, invoiceRows, pdfUrl, null, null);
 
   // ── Send email ────────────────────────────────────────────────────────
-  var emailResult = sendInvoiceEmail(owner, invoiceRows, savedFile, pdfUrl, invoiceNo, displayDate, billPeriod, totalAmt);
-  if (emailResult.sent) {
-    var stamp = Utilities.formatDate(now, tz, 'dd-MMM-yyyy HH:mm');
-    writeInvoiceTracking(ss, invoiceRows, null, stamp, null);
+  // Check if already sent — skip resend, stamp 'skipped'
+  var existingEmailStamp = String(invoiceRows[0] ? (ss.getSheetByName('Invoice')
+    ? ss.getSheetByName('Invoice').getRange(invoiceRows[0].sheetRow, INV_COL_EMAIL + 1).getValue() : '') : '').trim();
+  var emailResult;
+  if (existingEmailStamp && existingEmailStamp.indexOf('✅ Sent') === 0) {
+    Logger.log('⚠️ Email already sent for ' + propId + ' — skipping resend');
+    emailResult = { sent: false, status: '⚠️ Skipped: already sent on ' + existingEmailStamp.replace('✅ Sent ','') };
+  } else {
+    emailResult = sendInvoiceEmail(owner, invoiceRows, savedFile, pdfUrl, invoiceNo, displayDate, billPeriod, totalAmt);
   }
+  // Always stamp Col L with exact status — success, failure, no-email, skipped
+  var emailStatus = emailResult.status || (emailResult.sent ? '✅ Sent' : '❌ Unknown');
+  writeInvoiceTracking(ss, invoiceRows, null, emailStatus, null);
 
   // ── Log ───────────────────────────────────────────────────────────────
   logInvoice(ss, owner, invoiceRows, invoiceNo, pdfUrl, billPeriod, emailResult);
@@ -238,7 +246,9 @@ function generateInvoiceForProperty(propId, billPeriod) {
 
 // ════════════════════════════════════════════════════════════════════════
 //  Write tracking columns back to Invoice sheet
-//  pdfUrl → Col K, emailStamp → Col L, waStamp → Col M
+//  pdfUrl → Col K
+//  emailStamp → Col L: '✅ Sent 06-Jul-2026', '❌ No Email', '❌ Failed: ...', '⚠️ Skipped: ...'
+//  waStamp → Col M
 // ════════════════════════════════════════════════════════════════════════
 function writeInvoiceTracking(ss, invoiceRows, pdfUrl, emailStamp, waStamp) {
   var sheet = ss.getSheetByName(INV_SHEET);
@@ -424,7 +434,7 @@ function sendInvoiceEmail(owner, invoiceRows, savedFile, pdfUrl, invoiceNo, disp
 
   if (!allEmails.length) {
     Logger.log('⚠️ No email for PropertyID: ' + owner.propertyId);
-    return { sent: false, reason: 'No email address' };
+    return { sent: false, status: '❌ No Email', reason: 'No email address' };
   }
 
   var emailTo = allEmails.join(',');
@@ -466,11 +476,13 @@ function sendInvoiceEmail(owner, invoiceRows, savedFile, pdfUrl, invoiceNo, disp
       attachments: [savedFile.getBlob().setName(invoiceNo + '.pdf')],
       name:        SOCIETY_SHORT
     });
+    var sentStamp = '✅ Sent ' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd-MMM-yyyy hh:mm a');
     Logger.log('✅ Invoice email sent → To: ' + emailTo);
-    return { sent: true, to: emailTo };
+    return { sent: true, status: sentStamp, to: emailTo };
   } catch(err) {
+    var errMsg = '❌ Failed: ' + err.toString().substring(0, 80);
     Logger.log('❌ Email failed → ' + emailTo + ': ' + err.toString());
-    return { sent: false, error: err.toString() };
+    return { sent: false, status: errMsg, error: err.toString() };
   }
 }
 
@@ -615,7 +627,7 @@ function logInvoice(ss, owner, invoiceRows, invoiceNo, pdfUrl, billPeriod, email
     logSheet = ss.insertSheet(INV_LOG_SHEET);
     logSheet.appendRow([
       'Timestamp','InvoiceNo','PropertyID','PlotNo','OwnerName',
-      'BillPeriod','InvoiceRows','TotalAmount','PDFUrl','EmailSent','EmailTo'
+      'BillPeriod','InvoiceRows','TotalAmount','PDFUrl','EmailStatus','EmailTo','Notes'
     ]);
     logSheet.getRange(1, 1, 1, 11).setFontWeight('bold');
   }
@@ -625,7 +637,8 @@ function logInvoice(ss, owner, invoiceRows, invoiceNo, pdfUrl, billPeriod, email
   logSheet.appendRow([
     now, invoiceNo, owner.propertyId, owner.plotNo, owner.ownername1,
     billPeriod, invoiceRows.length, total, pdfUrl,
-    emailResult.sent ? 'Yes' : 'No',
-    emailResult.to || emailResult.reason || emailResult.error || ''
+    emailResult.status || (emailResult.sent ? '✅ Sent' : '❌ Unknown'),
+    emailResult.to || '',
+    emailResult.error || emailResult.reason || ''|| ''
   ]);
 }
