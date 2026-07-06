@@ -356,7 +356,7 @@ function getOutstandingInvoices(ss, propId, billPeriodFilter) {
     var balance = parseFloat(String(data[i][8]).replace(/[₹,\s]/g, '')) || 0;
 
     // Skip fully paid
-    if (balance <= 0 && status.toUpperCase().indexOf('PAID') >= 0) continue;
+
 
     // BillPeriod
     var billPeriod = '';
@@ -413,7 +413,7 @@ function getOwnerMap(ss) {
       email:       String(data[i][10] || '').trim(),
       phone:       String(data[i][11] || '').trim(),
       isWhatsapp:  String(data[i][12] || '').trim().toUpperCase() === 'TRUE',
-      isActive:    status === 'ACTIVE',
+      isActive:    status.replace(/[^a-zA-Z]/g,'').toUpperCase() === 'ACTIVE',
       proxyEmail:  proxy.email  || '',
       proxyPhone:  proxy.phone  || '',
       proxyWA:     proxy.isWA   || false
