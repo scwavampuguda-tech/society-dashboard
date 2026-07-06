@@ -136,7 +136,12 @@ function previewBulk() {
   Logger.log('=== Preview: ' + propIds.length + ' properties to invoice for ' + period + ' ===');
   propIds.forEach(function(pid) {
     var o      = ownerMap[pid];
-    var emails = [o.email, o.proxyEmail].filter(function(e){ return e && e.indexOf('@') > 0; });
+    var seen = {};
+    var emails = [o.email, o.proxyEmail].filter(function(e){
+      e = String(e || '').trim().toLowerCase();
+      if (!e || e.indexOf('@') < 0 || seen[e]) return false;
+      seen[e] = true; return true;
+    });
     Logger.log(
       pid +
       ' | Plot: '  + o.plotNo +
