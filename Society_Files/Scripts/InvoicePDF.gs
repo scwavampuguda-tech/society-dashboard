@@ -131,6 +131,61 @@ function processInvoiceFlags() {
 //  TRIGGER 3 — Bulk manual
 //  Run from GAS editor: bulkGenerateInvoices('Jul-2026')
 // ════════════════════════════════════════════════════════════════════════
+
+// ════════════════════════════════════════════════════════════════════════
+//  stampBillIDs()
+//  Run ONCE after removing the BillID formula from Col A.
+//  Writes plain-text BillID to every row where Col A is blank.
+//  Format: <PropertyID><MMMyyyy><InternalOrder>  e.g. 001Jul2026MOMEN01
+//  After running: set BillID as Key in AppSheet → all REF errors gone.
+// ════════════════════════════════════════════════════════════════════════
+function stampBillIDs() {
+  var ss    = SpreadsheetApp.openById(SS_ID);
+  var sheet = ss.getSheetByName(INV_SHEET);
+  if (!sheet) { Logger.log('❌ Invoice sheet not found'); return; }
+
+  var data  = sheet.getDataRange().getValues();
+  var tz    = Session.getScriptTimeZone();
+  var fixed = 0;
+  var skipped = 0;
+
+  // Data starts at row index 2 (rows 1+2 = label+header)
+  for (var i = 2; i < data.length; i++) {
+    var billId = String(data[i][INV_COL_BILLID] || '').trim();
+
+    // Skip if already has a plain-text value
+    if (billId && billId.indexOf('=') < 0) { skipped++; continue; }
+
+    var propId = String(data[i][INV_COL_PROPID]  || '').trim();
+    var io     = String(data[i][INV_COL_IO]       || '').trim();
+    var period = data[i][INV_COL_PERIOD];
+
+    if (!propId || !period) {
+      Logger.log('⚠️ Row ' + (i+1) + ' — missing PropertyID or BillPeriod, skipping');
+      continue;
+    }
+
+    // Format period as MMMyyyy e.g. Jul2026
+    var periodStr = '';
+    if (period instanceof Date) {
+      periodStr = Utilities.formatDate(period, tz, 'MMMyyyy');
+    } else {
+      // Try parsing "Jul-2026" or "2026-07" or "Jul 2026"
+      var d = new Date(String(period).replace('-', ' '));
+      periodStr = isNaN(d) ? String(period).replace(/[^a-zA-Z0-9]/g,'').substring(0,7)
+                           : Utilities.formatDate(d, tz, 'MMMyyyy');
+    }
+
+    var newBillId = propId + periodStr + io;
+    sheet.getRange(i + 1, INV_COL_BILLID + 1).setValue(newBillId);
+    Logger.log('✅ Row ' + (i+1) + ' → ' + newBillId);
+    fixed++;
+  }
+
+  SpreadsheetApp.flush();
+  Logger.log('═══ stampBillIDs complete: ' + fixed + ' stamped | ' + skipped + ' already set ═══');
+}
+
 function previewBulk() {
   var period   = 'Jul-2026';   // ← change period here if needed
   var ss       = SpreadsheetApp.openById(SS_ID);
