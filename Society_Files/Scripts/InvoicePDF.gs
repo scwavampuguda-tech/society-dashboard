@@ -171,6 +171,7 @@ function generateInvoiceForProperty(propId, billPeriod) {
   if (!owner.isActive) return { success: false, error: 'Inactive property: ' + propId };
 
   // Get all invoice rows for this property + period
+  var ioMap       = getInternalOrderMap(ss);
   var invoiceRows = getInvoiceRows(ss, propId, billPeriod);
   if (!invoiceRows.length) return { success: false, error: 'No invoices for ' + propId + ' | ' + billPeriod };
 
@@ -181,7 +182,7 @@ function generateInvoiceForProperty(propId, billPeriod) {
   var invoiceNo   = 'INV-' + propId + '-' + billPeriod.replace(/[^a-zA-Z0-9]/g,'-');
 
   // ── Build HTML → PDF ─────────────────────────────────────────────────
-  var html     = buildInvoiceHtml(owner, invoiceRows, invoiceNo, displayDate, billPeriod);
+  var html     = buildInvoiceHtml(owner, invoiceRows, invoiceNo, displayDate, billPeriod, ioMap);
   var htmlBlob = Utilities.newBlob(html, 'text/html', invoiceNo + '.html');
   var htmlFile = DriveApp.createFile(htmlBlob);
   var pdfBlob  = htmlFile.getAs('application/pdf').setName(invoiceNo + '.pdf');
@@ -229,7 +230,7 @@ function writeInvoiceTracking(ss, invoiceRows, pdfUrl, emailStamp, waStamp) {
 // ════════════════════════════════════════════════════════════════════════
 //  Build Invoice HTML
 // ════════════════════════════════════════════════════════════════════════
-function buildInvoiceHtml(owner, invoiceRows, invoiceNo, displayDate, billPeriod) {
+function buildInvoiceHtml(owner, invoiceRows, invoiceNo, displayDate, billPeriod, ioMap) {
   var totalAmt = invoiceRows.reduce(function(s, r) { return s + r.billAmt; }, 0);
 
   // Group by InternalOrder
@@ -248,7 +249,7 @@ function buildInvoiceHtml(owner, invoiceRows, invoiceNo, displayDate, billPeriod
     rows +=
       '<tr style="background:#eef2ff">' +
       '<td style="padding:5px 10px;font-size:11px;font-weight:700;color:#1e3a8a">' +
-        'Nature: ' + io + '</td>' +
+        io + (ioMap && ioMap[io] ? ' &nbsp;—&nbsp; ' + ioMap[io] : '') + '</td>' +
       '<td style="padding:5px 10px;font-size:11px;font-weight:700;color:#1e3a8a;text-align:right">' +
         '₹' + fINR(ioAmt) + '</td>' +
       '</tr>';
@@ -500,6 +501,19 @@ function normalizePeriod(val, tz) {
   var s = String(val || '').trim();
   // Handle 'Jun-2026' or 'Jun 2026' or 'Jun2026'
   return s.replace(/\s+/, '-');
+}
+
+function getInternalOrderMap(ss) {
+  var sheet = ss.getSheetByName('InternalOrder');
+  if (!sheet) return {};
+  var data  = sheet.getDataRange().getValues();
+  var map   = {};
+  for (var i = 1; i < data.length; i++) {
+    var code = String(data[i][0] || '').trim();
+    var name = String(data[i][1] || '').trim();
+    if (code) map[code] = name;
+  }
+  return map;
 }
 
 function getOwnerMap(ss) {
