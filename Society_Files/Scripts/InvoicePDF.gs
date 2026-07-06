@@ -403,9 +403,8 @@ function sendInvoiceEmail(owner, invoiceRows, savedFile, pdfUrl, invoiceNo, disp
     return { sent: false, reason: 'No email address' };
   }
 
-  var emailTo = allEmails[0];
-  var emailCC = allEmails.slice(1).join(',');
-  Logger.log('📧 Invoice email To: ' + emailTo + (emailCC ? ' | CC: ' + emailCC : ''));
+  var emailTo = allEmails.join(',');
+  Logger.log('📧 Invoice email To: ' + emailTo);
 
   var subject =
     'Invoice ' + billPeriod + ' | ' + SOCIETY_SHORT + ' | ' +
@@ -438,15 +437,13 @@ function sendInvoiceEmail(owner, invoiceRows, savedFile, pdfUrl, invoiceNo, disp
     '</div></div>';
 
   try {
-    var mailOpts = {
+    GmailApp.sendEmail(emailTo, subject, '', {
       htmlBody:    body,
       attachments: [savedFile.getBlob().setName(invoiceNo + '.pdf')],
       name:        SOCIETY_SHORT
-    };
-    if (emailCC) mailOpts.cc = emailCC;
-    GmailApp.sendEmail(emailTo, subject, '', mailOpts);
-    Logger.log('✅ Invoice email sent → To: ' + emailTo + (emailCC ? ' | CC: ' + emailCC : ''));
-    return { sent: true, to: emailTo, cc: emailCC };
+    });
+    Logger.log('✅ Invoice email sent → To: ' + emailTo);
+    return { sent: true, to: emailTo };
   } catch(err) {
     Logger.log('❌ Email failed → ' + emailTo + ': ' + err.toString());
     return { sent: false, error: err.toString() };
