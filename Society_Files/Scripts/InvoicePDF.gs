@@ -65,21 +65,20 @@ var PAYMENT_QR_B64  = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAY
 
 // Column indices in Invoice sheet (0-based)
 // Invoice sheet — correct column map (InvoiceNo inserted at Col B)
-var INV_COL_BILLID     = 0;    // Col A — BillID       (unchanged)
-var INV_COL_INVNO      = 1;    // Col B — InvoiceNo   (AppSheet key — NEW)
-var INV_COL_PROPID     = 2;    // Col C — PropertyID
-var INV_COL_IO         = 3;    // Col D — InternalOrder
-var INV_COL_START      = 4;    // Col E — StartPeriod
-var INV_COL_PERIOD     = 5;    // Col F — BillPeriod
-var INV_COL_BILLDATE   = 6;    // Col G — BillDate
-var INV_COL_BILLAMT    = 7;    // Col H — BillAmount
-var INV_COL_PAIDAMT    = 8;    // Col I — PaidAmount
-var INV_COL_BALANCE    = 9;    // Col J — BalanceRemaining
-var INV_COL_STATUS     = 10;   // Col K — Status
-var INV_COL_PDF        = 11;   // Col L — InvoicePDF
-var INV_COL_EMAIL      = 12;   // Col M — EmailSent
-var INV_COL_WA         = 13;   // Col N — WASent
-var INV_COL_GENFLAG    = 14;   // Col O — GenerateInvoice
+var INV_COL_BILLID       = 0;    // Col A — BillID
+var INV_COL_PROPID       = 1;    // Col B — PropertyID
+var INV_COL_IO           = 2;    // Col C — InternalOrder
+var INV_COL_START        = 3;    // Col D — StartPeriod
+var INV_COL_PERIOD       = 4;    // Col E — BillPeriod
+var INV_COL_BILLDATE     = 5;    // Col F — BillDate
+var INV_COL_BILLAMT      = 6;    // Col G — BillAmount
+var INV_COL_PAIDAMT      = 7;    // Col H — PaidAmount
+var INV_COL_BALANCE      = 8;    // Col I — BalanceRemaining
+var INV_COL_STATUS       = 9;    // Col J — Status
+var INV_COL_PDF          = 10;    // Col K — InvoicePDF
+var INV_COL_EMAIL        = 11;    // Col L — EmailSent
+var INV_COL_WA           = 12;    // Col M — WASent
+var INV_COL_GENFLAG      = 13;    // Col N — GenerateInvoice
 
 // ════════════════════════════════════════════════════════════════════════
 //  TRIGGER 1 — Monthly auto (set time-based trigger on this function)
