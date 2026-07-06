@@ -179,7 +179,7 @@ function generateInvoiceForProperty(propId, billPeriod) {
   var now         = new Date();
   var monthKey    = Utilities.formatDate(now, tz, 'yyyy-MM');
   var displayDate = Utilities.formatDate(now, tz, 'dd MMM yyyy');
-  var invoiceNo   = 'INV-' + propId + '-' + billPeriod.replace(/[^a-zA-Z0-9]/g,'-');
+  var invoiceNo   = invoiceRows.length > 0 ? invoiceRows[0].billId : ('INV-' + propId + '-' + billPeriod.replace(/[^a-zA-Z0-9]/g,'-'));
 
   // ── Build HTML → PDF ─────────────────────────────────────────────────
   var html     = buildInvoiceHtml(owner, invoiceRows, invoiceNo, displayDate, billPeriod, ioMap);
@@ -504,14 +504,15 @@ function normalizePeriod(val, tz) {
 }
 
 function getInternalOrderMap(ss) {
-  var sheet = ss.getSheetByName('InternalOrder');
-  if (!sheet) return {};
+  var sheet = ss.getSheetByName('InternalOrder') || ss.getSheetByName('InternalOrderData');
+  if (!sheet) { Logger.log('⚠️ InternalOrder sheet not found'); return {}; }
   var data  = sheet.getDataRange().getValues();
   var map   = {};
+  Logger.log('InternalOrder sheet: ' + sheet.getName() + ' | rows: ' + data.length);
   for (var i = 1; i < data.length; i++) {
     var code = String(data[i][0] || '').trim();
     var name = String(data[i][1] || '').trim();
-    if (code) map[code] = name;
+    if (code) { map[code] = name; Logger.log('IO: ' + code + ' = ' + name); }
   }
   return map;
 }
