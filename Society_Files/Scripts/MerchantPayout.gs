@@ -1,3 +1,67 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// MerchantPayout.gs  v2.4
+// ═══════════════════════════════════════════════════════════════════════════
+// Source 1: upi@hdfcbank.bank.in     — Merchant Payout Report (.xlsx)
+// Source 2: alerts@hdfcbank.bank.in  — Direct UPI credit alerts (plain text)
+// Both append to BankDetails sheet in SocietyData spreadsheet
+//
+// FIX IN v2.4:
+//   - doGetImport() renamed to doGet() — Web App was returning
+//     "An unknown error has occurred" because GAS requires exactly doGet(e)
+//     to handle HTTP GET requests from mobile shortcut / webapp URL
+//
+// REQUIRES: Drive API v2 → Extensions → Apps Script → Services → Drive API
+// TRIGGER : 5-min time-driven trigger on checkAndImport()
+// ═══════════════════════════════════════════════════════════════════════════
+
+const SHEET_ID_MP     = "1oXmvMIfQDm51KoHHtkhg8KgK1Qi5mwFYSBdrwir85CA";
+const DEBUG_MP        = true;
+const THREAD_LIMIT_MP = 50;
+
+// ── Excel column indices (0-based) — HDFC Merchant Payout Report ─────────
+const COL_PAYER_VPA = 5;   // Payer VPA
+const COL_MERCHANT  = 3;   // Merchant Name
+const COL_RRN       = 8;   // Txn ref no. (RRN)
+const COL_TXN_DATE  = 9;   // Transaction Req Date  "14-JUN-2026 11:26:50"
+const COL_NET_AMT   = 18;  // Net Amount
+const COL_CR_DR     = 22;  // CR / DR
+
+// ── BankDetails column map (1-based, 8 columns) ──────────────────────────
+// Col 1 Date | Col 2 Narration | Col 3 Chq/Ref.No. | Col 4 Value Dt
+// Col 5 Withdrawal Amt | Col 6 Deposit Amt | Col 7 Closing Balance | Col 8 Reconciled
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WEB APP ENTRY POINT — GAS requires exactly doGet(e) for HTTP GET
+// Mobile shortcut → opens Web App URL → GAS calls doGet(e) → runs import
+// ═══════════════════════════════════════════════════════════════════════════
+function doGet(e) {
+  try {
+    var stats = checkAndImport();
+    var response = {
+      ok        : stats.errors.length === 0,
+      timestamp : Utilities.formatDate(new Date(), 'Asia/Calcutta', 'dd-MM-yyyy HH:mm:ss'),
+      stats     : stats
+    };
+    return ContentService
+      .createTextOutput(JSON.stringify(response, null, 2))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    var errResponse = {
+      ok        : false,
+      timestamp : Utilities.formatDate(new Date(), 'Asia/Calcutta', 'dd-MM-yyyy HH:mm:ss'),
+      error     : err.message
+    };
+    return ContentService
+      .createTextOutput(JSON.stringify(errResponse, null, 2))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doPost(e) {
+  return doGet(e);
+}
+
 
 // ── Sheet menu ───────────────────────────────────────────────────────────────
 function onOpenMerchantPayout() {
@@ -27,53 +91,18 @@ function removeSyncBankTrigger() {
   SpreadsheetApp.getUi().alert('Sync trigger removed (' + removed + ' trigger(s) deleted).');
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// MerchantPayout.gs  v2.3
-// ═══════════════════════════════════════════════════════════════════════════
-// Source 1: upi@hdfcbank.bank.in     — Merchant Payout Report (.xlsx)
-// Source 2: alerts@hdfcbank.bank.in  — Direct UPI credit alerts (plain text)
-// Both append to BankDetails sheet in SocietyData spreadsheet
-//
-// FIXES IN v2.3:
-//   - Date columns write real Date objects (not strings) — no setNumberFormat
-//   - try-catch inside row loop — one bad row never crashes entire import
-//   - Empty/null row guard for converted Excel rows
-//   - msg.markRead() after ALL attachments processed
-//   - try/finally on both temp file cleanups
-//   - RRNs forced to String when building duplicate lookup
-//
-// REQUIRES: Drive API v2 → Extensions → Apps Script → Services → Drive API
-// TRIGGER : 5-min time-driven trigger on checkAndImport()
-// ═══════════════════════════════════════════════════════════════════════════
-
-const SHEET_ID_MP     = "1oXmvMIfQDm51KoHHtkhg8KgK1Qi5mwFYSBdrwir85CA";
-const DEBUG_MP        = true;
-const THREAD_LIMIT_MP = 50;
-
-// ── Excel column indices (0-based) — HDFC Merchant Payout Report ─────────
-const COL_PAYER_VPA = 5;   // Payer VPA
-const COL_MERCHANT  = 3;   // Merchant Name
-const COL_RRN       = 8;   // Txn ref no. (RRN)
-const COL_TXN_DATE  = 9;   // Transaction Req Date  "14-JUN-2026 11:26:50"
-const COL_NET_AMT   = 18;  // Net Amount
-const COL_CR_DR     = 22;  // CR / DR
-
-// ── BankDetails column map (1-based, 8 columns) ──────────────────────────
-// Col 1 Date | Col 2 Narration | Col 3 Chq/Ref.No. | Col 4 Value Dt
-// Col 5 Withdrawal Amt | Col 6 Deposit Amt | Col 7 Closing Balance | Col 8 Reconciled
-
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ENTRY POINT — 5-min time-driven trigger runs this
 // ═══════════════════════════════════════════════════════════════════════════
 function checkAndImport() {
   var stats = {
-    threadsFound      : 0,
-    threadsProcessed  : 0,
-    messagesSeen      : 0,
-    imported          : 0,
-    skipped           : 0,
-    errors            : []
+    threadsFound     : 0,
+    threadsProcessed : 0,
+    messagesSeen     : 0,
+    imported         : 0,
+    skipped          : 0,
+    errors           : []
   };
 
   var ss        = SpreadsheetApp.openById(SHEET_ID_MP);
@@ -103,18 +132,18 @@ function checkAndImport() {
   appendToSheet(bankSheet, rowsToAppend);
 
   stats.imported = rowsToAppend.length;
+  log('DONE | imported: ' + stats.imported + ' | skipped: ' + stats.skipped);
   return stats;
 }
 
 
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 //  SYNC TRIGGER — AppSheet sets Settings!B1 = "YES"
 //  This function runs every 5 min, picks it up, runs import
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function processSyncBankFlag() {
-  var ss = SpreadsheetApp.openById(SS_ID);
+  var ss = SpreadsheetApp.openById(SHEET_ID_MP);
 
-  // Read Settings sheet B1
   var settingsSheet = ss.getSheetByName('Settings');
   if (!settingsSheet) {
     log('processSyncBankFlag: Settings sheet not found');
@@ -126,19 +155,18 @@ function processSyncBankFlag() {
 
   if (flagVal !== 'YES') return;
 
-  // Clear flag immediately to prevent re-triggering
   flagCell.setValue('');
   log('processSyncBankFlag: SyncBank flag detected — starting import...');
 
   try {
-    var result = importBankTransactions();
+    var result = checkAndImport();
     log('processSyncBankFlag: import done — ' + JSON.stringify(result));
   } catch(err) {
     log('processSyncBankFlag ERROR: ' + err.toString());
-    // Restore flag so user can retry
     flagCell.setValue('YES');
   }
 }
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SOURCE 1: upi@hdfcbank.bank.in — Merchant Payout .xlsx attachment
@@ -238,6 +266,7 @@ function importMerchantPayoutXlsx(existingRRNs, rowsToAppend, stats) {
   }); // end threads
 }
 
+
 // ═══════════════════════════════════════════════════════════════════════════
 // SOURCE 2: alerts@hdfcbank.bank.in — plain text UPI credit/debit alerts
 // ═══════════════════════════════════════════════════════════════════════════
@@ -291,47 +320,38 @@ function importUpiAlerts(existingRRNs, rowsToAppend, stats) {
   }); // end threads
 }
 
+
 // ═══════════════════════════════════════════════════════════════════════════
 // extractAlertTransaction — parses plain text HDFC UPI alert email body
-//
-// Expected body format:
-//   Rs.500.00 credited to your A/c ...
-//   Sender: NAME (VPA: x@ybl)
-//   UPI Reference No.: 045209782909
-//   Date: 01-06-26
 // ═══════════════════════════════════════════════════════════════════════════
 function extractAlertTransaction(body) {
   try {
-    // Amount + credit/debit direction
     var amtMatch = body.match(/Rs\.?([\d,]+\.?\d*)\s+(credited|debited)/i);
     if (!amtMatch) return null;
     var amount = parseFloat(amtMatch[1].replace(/,/g, ''));
     var type   = amtMatch[2].toLowerCase() === 'credited' ? 'CR' : 'DR';
 
-    // Payer VPA and Sender name
     var vpaMatch    = body.match(/VPA:\s*([^\s\)]+)/i);
     var senderMatch = body.match(/Sender:\s*([^\(]+)/i);
     var vpa         = vpaMatch    ? vpaMatch[1].trim() : '';
     var sender      = senderMatch ? senderMatch[1].trim() : '';
     var narration   = 'UPI-' + (vpa || sender || 'UNKNOWN');
 
-    // UPI Reference No. (RRN)
     var rrnMatch = body.match(/UPI Reference No\.?:?\s*(\d+)/i);
     if (!rrnMatch) return null;
     var rrn = rrnMatch[1].trim();
 
-    // Date "01-06-26" or "01-06-2026" → real Date object
     var dateMatch = body.match(/Date:\s*(\d{1,2}-\d{2}-\d{2,4})/i);
     var dateObj;
     if (dateMatch) {
       var parts = dateMatch[1].split('-');
       var dd    = parseInt(parts[0], 10);
-      var mm    = parseInt(parts[1], 10) - 1;    // JS months 0-based
+      var mm    = parseInt(parts[1], 10) - 1;
       var yy    = parts[2];
       var yyyy  = yy.length === 2 ? 2000 + parseInt(yy, 10) : parseInt(yy, 10);
       dateObj   = new Date(yyyy, mm, dd);
     } else {
-      dateObj = new Date();                       // fallback: today
+      dateObj = new Date();
     }
 
     return { amount: amount, type: type, narration: narration, rrn: rrn, date: dateObj };
@@ -345,7 +365,6 @@ function extractAlertTransaction(body) {
 
 // ═══════════════════════════════════════════════════════════════════════════
 // appendToSheet — writes all queued rows to BankDetails in one batch
-// Passes Date objects directly — NO setNumberFormat (typed column safe)
 // ═══════════════════════════════════════════════════════════════════════════
 function appendToSheet(bankSheet, rowsToAppend) {
   if (rowsToAppend.length === 0) {
@@ -353,7 +372,6 @@ function appendToSheet(bankSheet, rowsToAppend) {
     return;
   }
 
-  // Sort by date ascending before writing
   rowsToAppend.sort(function(a, b) {
     var da = a[0] instanceof Date ? a[0].getTime() : new Date(a[0]).getTime();
     var db = b[0] instanceof Date ? b[0].getTime() : new Date(b[0]).getTime();
@@ -375,7 +393,7 @@ function appendToSheet(bankSheet, rowsToAppend) {
     }
     log('✅ Closing Balance formula applied to ' + rowsToAppend.length + ' row(s)');
   } else {
-    log('⚠️ Closing Balance: no formula in row above');
+    log('⚠️ Closing Balance: no formula in row above — writing raw values');
   }
 
   // Col 8: Reconciled formula
@@ -393,14 +411,11 @@ function appendToSheet(bankSheet, rowsToAppend) {
 
   SpreadsheetApp.flush();
   log('✅ Appended ' + rowsToAppend.length + ' new row(s) to BankDetails');
-
 }
-
 
 
 // ═══════════════════════════════════════════════════════════════════════════
 // shiftFormula — shifts ALL row numbers in a formula by offset
-// e.g. prevRow=629, newRow=631 shifts all row refs by +2
 // ═══════════════════════════════════════════════════════════════════════════
 function shiftFormula(formula, prevRow, newRow) {
   var offset = newRow - prevRow;
@@ -408,6 +423,7 @@ function shiftFormula(formula, prevRow, newRow) {
     return col + (parseInt(row, 10) + offset);
   });
 }
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // log — controlled by DEBUG_MP flag
@@ -417,27 +433,8 @@ function log(msg) {
 }
 
 
+// ── TEST FUNCTIONS ────────────────────────────────────────────────────────
 
-// ═══════════════════════════════════════════════════════════════════
-//  ONE-TIME FIX: fixTransactionTypeFormulas()
-//  Rewrites TransactionDetails Col D with absolute column refs
-//  Run once from GAS editor — fixes all existing + future rows
-
-
-// ═══════════════════════════════════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════════════════════
-//  restoreColDFormulas() — ONE-TIME RESTORE
-//  Rewrites TransactionDetails Col D with the ORIGINAL formula
-//  that was working before ReceiptPDF.gs development.
-//  Only fixes rows where formula has broken C[ structured refs.
-//  Run once from GAS editor, then this function is no longer needed.
-
-
-// TEST FUNCTIONS — run manually, no sheet writes
-// ═══════════════════════════════════════════════════════════════════════════
-
-// Shows unread email count per source
 function testEmailCounts() {
   var src1 = GmailApp.search(
     'from:upi@hdfcbank.bank.in subject:"Merchant Payout" is:unread', 0, 50
@@ -449,12 +446,13 @@ function testEmailCounts() {
   Logger.log('Source 2 (alert) unread threads: ' + src2.length);
 }
 
-// Dry run — logs exactly what would be imported WITHOUT writing to sheet
 function testDryRun() {
   var existingRRNs = {};
   var rowsToAppend = [];
-  importMerchantPayoutXlsx(existingRRNs, rowsToAppend);
-  importUpiAlerts(existingRRNs, rowsToAppend);
+  var stats = { threadsFound: 0, threadsProcessed: 0, messagesSeen: 0,
+                imported: 0, skipped: 0, errors: [] };
+  importMerchantPayoutXlsx(existingRRNs, rowsToAppend, stats);
+  importUpiAlerts(existingRRNs, rowsToAppend, stats);
   Logger.log('═══ DRY RUN RESULT ═══');
   Logger.log('Total rows that would be appended: ' + rowsToAppend.length);
   rowsToAppend.forEach(function(r, idx) {
@@ -467,31 +465,3 @@ function testDryRun() {
     );
   });
 }
-
-// ═══════════════════════════════════════════════════════════════════════════
-// WEB APP ENTRY POINT — called when Web App URL is opened
-// Triggers checkAndImport() and returns result as plain text
-// ═══════════════════════════════════════════════════════════════════════════
-function doGetImport(e) {
-  try {
-    var stats = checkAndImport();
-    var response = {
-      ok        : stats.errors.length === 0,
-      timestamp : Utilities.formatDate(new Date(), 'Asia/Calcutta', 'dd-MM-yyyy HH:mm:ss'),
-      stats     : stats
-    };
-    return ContentService
-      .createTextOutput(JSON.stringify(response, null, 2))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    var errResponse = {
-      ok        : false,
-      timestamp : Utilities.formatDate(new Date(), 'Asia/Calcutta', 'dd-MM-yyyy HH:mm:ss'),
-      stats     : { error: err.message }
-    };
-    return ContentService
-      .createTextOutput(JSON.stringify(errResponse, null, 2))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
