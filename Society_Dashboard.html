@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"><!-- v2026-07-27 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Society Dashboard | Live Data</title>
     <style>
@@ -27,68 +27,20 @@
         .header {
             background: linear-gradient(135deg, #003366 0%, #004080 100%);
             color: white;
-            padding: 22px 30px;
+            padding: 30px;
             border-radius: 15px;
+            text-align: center;
             margin-bottom: 25px;
             box-shadow: 0 10px 30px rgba(0,51,102,0.3);
         }
-        .header-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-        }
-        .header-logo-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            flex-shrink: 0;
-        }
-        .header-regd-no {
-            font-size: 0.68em;
-            color: #FFD700;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            text-align: center;
-            white-space: nowrap;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-        }
-        .header-logo-img {
-            flex-shrink: 0;
-            width: 90px;
-            height: 90px;
-            object-fit: contain;
-            border-radius: 50%;
-            background: white;
-            padding: 4px;
-            border: 3px solid #FFD700;
-            box-shadow: 0 0 15px rgba(255,215,0,0.6), 0 4px 15px rgba(0,0,0,0.3);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .header-logo-img:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 25px rgba(255,215,0,0.9), 0 6px 20px rgba(0,0,0,0.4);
-        }
-        @media (max-width: 600px) {
-            .header-logo-img { width: 60px; height: 60px; }
-        }
-        .header-center {
-            flex: 1;
-            text-align: center;
-        }
-        @media (max-width: 600px) {
-            .header-inner { flex-direction: column; gap: 10px; }
-            
-        }
         
         .header h1 {
-            font-size: 2em;
-            margin-bottom: 8px;
+            font-size: 2.2em;
+            margin-bottom: 10px;
         }
         
         .header p {
-            font-size: 1.05em;
+            font-size: 1.1em;
             opacity: 0.9;
         }
         
@@ -359,129 +311,11 @@
         .payment-box {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
-            padding: 20px 25px;
+            padding: 25px;
             border-radius: 12px;
             margin-top: 20px;
         }
         
-        /* Payment Box Layout */
-        .payment-box-inner {
-            display: flex;
-            gap: 0;
-        }
-        .payment-box-left {
-            flex: 1;
-        }
-        .payment-box-left .payment-details {
-            margin-bottom: 0;
-        }
-        .payment-box-right {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            background: white;
-            border-radius: 12px;
-            padding: 10px 10px 8px 10px;
-            width: 165px;
-            min-width: 165px;
-            max-width: 165px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.18);
-            gap: 6px;
-            margin-left: 18px;
-            margin-top: -8px;
-        }
-        .qr-code-img {
-            width: 148px;
-            height: 148px;
-            border-radius: 6px;
-            border: 1px solid #eee;
-            display: block;
-        }
-        .qr-upi-display {
-            text-align: center;
-            width: 100%;
-        }
-        .qr-upi-label {
-            font-size: 0.58em;
-            color: #888;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 4px;
-        }
-        .qr-upi-value {
-            display: block;
-            font-size: 0.62em;
-            color: #003366;
-            font-weight: 800;
-            word-break: break-all;
-            line-height: 1.4;
-            text-decoration: none;
-            background: #f0f7ff;
-            border: 1.5px solid #cce0ff;
-            border-radius: 8px;
-            padding: 5px 8px;
-            transition: all 0.2s;
-        }
-        .qr-upi-value:hover {
-            background: #dceeff;
-            color: #001a4d;
-        }
-        @media (max-width: 600px) {
-            .payment-box-inner { flex-direction: column; }
-            .payment-box-right {
-                width: 100%; min-width: unset; max-width: unset;
-                margin-left: 0; margin-top: 15px;
-            }
-        }
-            .payment-box-right {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            border-radius: 10px;
-            padding: 8px;
-            min-width: 160px;
-            max-width: 160px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
-            .payment-box-left { padding-right: 0; }
-        }
-        
-        
-        .qr-upi-display {
-            text-align: center;
-            width: 100%;
-        }
-        .qr-upi-label {
-            font-size: 0.58em;
-            color: #888;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 4px;
-        }
-        .qr-upi-value {
-            display: block;
-            font-size: 0.62em;
-            color: #003366;
-            font-weight: 800;
-            word-break: break-all;
-            line-height: 1.4;
-            text-decoration: none;
-            background: #f0f7ff;
-            border: 1.5px solid #cce0ff;
-            border-radius: 8px;
-            padding: 5px 8px;
-            transition: all 0.2s;
-        }
-        .qr-upi-value:hover {
-            background: #dceeff;
-            color: #001a4d;
-        }
         .payment-box h3 {
             color: white;
             border-bottom: 2px solid rgba(255,255,255,0.3);
@@ -680,7 +514,7 @@
         }
         
         .clickable-category::after {
-            content: ' 🔍';
+            content: ' &#128269;';
             font-size: 0.9em;
             display: inline-block;
             animation: searchPulse 1.5s ease-in-out infinite, searchBounce 2s ease-in-out infinite;
@@ -765,60 +599,35 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="header-inner">
-
-                <!-- Logo Left -->
-                <div class="header-logo-wrap">
-                    <img class="header-logo-img"
-                         src="icons/society_logo.png"
-                         alt="SCRWA Logo"
-                         onerror="this.style.display='none'">
-                    <span class="header-regd-no">Regd No. 2240/2006</span>
-                </div>
-
-                <!-- Center Title -->
-                <div class="header-center">
-                    <h1>&#127968; Senior Citizens Residential Welfare Association</h1>
-                    <p>Society Dashboard (Nov 2025 - <span id="currentPeriod">Loading...</span>) | <span id="currentDate">Loading...</span></p>
-                    <div class="live-indicator loading" id="liveIndicator">&#9679; Loading Data...</div>
-                </div>
-
-                <!-- Logo Right -->
-                <div class="header-logo-wrap">
-                    <img class="header-logo-img"
-                         src="icons/society_logo.png"
-                         alt="SCRWA Logo"
-                         onerror="this.style.display='none'">
-                    <span class="header-regd-no">Regd No. 2240/2006</span>
-                </div>
-
-            </div>
+            <h1>&#127960;&#65039; Senior Citizens Residential Welfare Association</h1>
+            <p>Society Dashboard (Nov 2025 - <span id="currentPeriod">Loading...</span>) | <span id="currentDate">Loading...</span></p>
+            <div class="live-indicator loading" id="liveIndicator">&#9203; Loading Data...</div>
         </div>
-
+        
         <!-- Key Metrics -->
         <div class="metrics-grid">
             <div class="metric-card green">
-                <div class="icon">💰</div>
+                <div class="icon">&#128176;</div>
                 <div class="value" id="currentBalance">--</div>
                 <div class="label">Current Balance</div>
             </div>
             <div class="metric-card blue">
-                <div class="icon">📥</div>
+                <div class="icon">&#128229;</div>
                 <div class="value" id="totalInflow">--</div>
                 <div class="label">Total Inflow</div>
             </div>
             <div class="metric-card orange">
-                <div class="icon">📤</div>
+                <div class="icon">&#128228;</div>
                 <div class="value" id="totalOutflow">--</div>
                 <div class="label">Total Outflow</div>
             </div>
             <div class="metric-card red">
-                <div class="icon">⚠️</div>
+                <div class="icon">&#9888;&#65039;</div>
                 <div class="value" id="totalOutstanding">--</div>
                 <div class="label">Outstanding Dues</div>
             </div>
             <div class="metric-card purple">
-                <div class="icon">🏠</div>
+                <div class="icon">&#127968;</div>
                 <div class="value" id="propertiesWithDues">--</div>
                 <div class="label">Properties with Dues</div>
             </div>
@@ -826,81 +635,81 @@
         
         <!-- Outstanding Alert -->
         <div class="alert-box">
-            <h2>⚠️ <span id="alertAmount">--</span></h2>
+            <h2>&#9888;&#65039; <span id="alertAmount">--</span></h2>
             <p id="alertText">Loading outstanding dues information...</p>
         </div>
         
         <!-- Member Summary -->
-        <div class="section-title">👥 Member Summary</div>
+        <div class="section-title">&#128101; Member Summary</div>
         
         <div class="metrics-grid">
             <div class="metric-card blue">
-                <div class="icon">👥</div>
+                <div class="icon">&#128101;</div>
                 <div class="value" id="totalMembers">--</div>
                 <div class="label">Total Members</div>
             </div>
             <div class="metric-card green">
-                <div class="icon">✅</div>
+                <div class="icon">&#9989;</div>
                 <div class="value" id="activeMembers">--</div>
                 <div class="label">Active Members</div>
             </div>
             <div class="metric-card orange">
-                <div class="icon">⏸️</div>
+                <div class="icon">&#9208;&#65039;</div>
                 <div class="value" id="inactiveMembers">--</div>
                 <div class="label">Inactive Members</div>
             </div>
             <div class="metric-card green">
-                <div class="icon">💯</div>
+                <div class="icon">&#128175;</div>
                 <div class="value" id="fullyPaid">--</div>
                 <div class="label">Fully Paid</div>
             </div>
         </div>
         
         <!-- Achievements Section -->
-        <div class="section-title">🏆 Key Achievements (Nov 2025 - <span id="achievementsPeriod">Loading...</span>)</div>
+        <div class="section-title">&#127942; Key Achievements (Nov 2025 - <span id="achievementsPeriod">Loading...</span>)</div>
         
         <div class="two-col">
             <div class="card">
-                <h3>✅ Governance & Registration</h3>
+                <h3>&#9989; Governance & Registration</h3>
                 <ul class="achievement-list">
-                    <li>✅ Elections completed, new committee formed</li>
-                    <li>✅ Society registration amended</li>
-                    <li>✅ MoA & Bye-Laws finalized</li>
-                    <li>✅ PAN Card obtained</li>
-                    <li>✅ Bank A/C opened (HDFC)</li>
-                    <li>✅ NOC mandate for property transactions</li>
+                    <li>&#9989; Elections completed, new committee formed</li>
+                    <li>&#9989; Society registration amended</li>
+                    <li>&#9989; MoA & Bye-Laws finalized</li>
+                    <li>&#9989; PAN Card obtained</li>
+                    <li>&#9989; Bank A/C opened (HDFC)</li>
+                    <li>&#9989; NOC mandate for property transactions</li>
                 </ul>
             </div>
             
             <div class="card">
-                <h3>🏗️ Infrastructure Projects</h3>
+                <h3>&#127959;&#65039; Infrastructure Projects</h3>
                 <ul class="achievement-list">
-                    <li>✅ Rs.42 Lakh - Drainage Project (Started) <span style="font-size: 0.85em; color: #856404; background: #fff3cd; padding: 2px 8px; border-radius: 4px; margin-left: 5px;">Phase I: 1-2 Lane only</span></li>
-                    <li>✅ Rs.40 Lakh - CC Roads (Approved)</li>
-                    <li>✅ 5 New Street Lights installed</li>
-                    <li>✅ Road repairs completed (Rs.46,900)</li>
-                    <li>✅ MLA Foundation Stone - 31 May 2026</li>
+                    <li>&#9989; Rs.42 Lakh - Drainage Project (Started) <span style="font-size: 0.85em; color: #856404; background: #fff3cd; padding: 2px 8px; border-radius: 4px; margin-left: 5px;">Phase I: 1-2 Lane only</span></li>
+                    <li>&#9989; Rs.40 Lakh - CC Roads (Approved)</li>
+                    <li>&#9989; 5 New Street Lights installed</li>
+                    <li>&#9989; Road repairs completed (Rs.46,900)</li>
+                    <li>&#9989; MLA Foundation Stone - 31 May 2026</li>
                 </ul>
             </div>
             
             <div class="card">
-                <h3>💻 Digital Transformation</h3>
+                <h3>&#128187; Digital Transformation</h3>
                 <ul class="achievement-list">
-                    <li>✅ Zero-cost Governance App built</li>
-                    <li>✅ <span id="digitizedOwners">250+</span> owners digitized</li>
-                    <li>✅ Live financial dashboards</li>
-                    <li>✅ 20 years data gap - now digitized</li>
-                    <li>✅ Monthly reports automated</li>
+                    <li>&#9989; Zero-cost Governance App built</li>
+                    <li>&#9989; <span id="digitizedOwners">250+</span> owners digitized</li>
+                    <li>&#9989; Live financial dashboards</li>
+                    <li>&#9989; 20 years data gap - now digitized</li>
+                    <li>&#9989; Monthly reports automated</li>
                 </ul>
             </div>
             
             <div class="card">
-                <h3>🤝 Community Issues Resolved</h3>
+                <h3>&#129309; Community Issues Resolved</h3>
                 <ul class="achievement-list">
-                    <li>✅ Road blockage cleared</li>
-                    <li>🔄 Dog menace reduced (Plot 143 tenant vacated) - monitoring</li>
-                    <li>✅ Route 43 bus resumed (Govt) - communicated to residents</li>
-                    <li class="pending">🔄 Encroachment - Monitoring</li>
+                    <li>&#9989; Road blockage cleared</li>
+                    <li>&#128260; Dog menace reduced (Plot 143 tenant vacated) - monitoring</li>
+                    <li>&#9989; Route 43 bus resumed (Govt) - communicated to residents</li>
+                    <li class="pending">&#128260; Encroachment - Monitoring</li>
                 </ul>
             </div>
         </div>
@@ -910,7 +719,7 @@
         
         <div class="two-col">
             <div class="card">
-                <h3>🏠 Lane-wise Breakdown</h3>
+                <h3>&#127968; Lane-wise Breakdown</h3>
                 <table>
                     <thead>
                         <tr>
@@ -927,7 +736,7 @@
             </div>
             
             <div class="card">
-                <h3>📊 Payment Status Summary</h3>
+                <h3>&#128202; Payment Status Summary</h3>
                 <div id="paymentStatusSummary">
                     <div style="text-align: center; padding: 30px; color: #666;">Loading payment status...</div>
                 </div>
@@ -935,11 +744,11 @@
         </div>
         
         <!-- Financial Overview Section -->
-        <div class="section-title">💰 Financial Overview <span class="live-badge" style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">🔴 LIVE</span></div>
+        <div class="section-title">&#128176; Financial Overview <span class="live-badge" style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">&#128308; LIVE</span></div>
         
         <div class="two-col">
             <div class="card">
-                <h3>📊 Year-wise Cash Flow</h3>
+                <h3>&#128202; Year-wise Cash Flow</h3>
                 <table>
                     <tr>
                         <th>Financial Year</th>
@@ -954,7 +763,7 @@
             </div>
             
             <div class="card">
-                <h3>📈 Income Sources</h3>
+                <h3>&#128200; Income Sources</h3>
                 <div id="incomeSourcesContainer">
                     <div style="text-align: center; padding: 30px; color: #666;">Loading income data...</div>
                 </div>
@@ -963,14 +772,14 @@
         
         <div class="two-col" style="margin-top: 20px;">
             <div class="card">
-                <h3>💸 Major Expense Categories</h3>
+                <h3>&#128184; Major Expense Categories</h3>
                 <div id="majorExpensesContainer">
                     <div style="text-align: center; padding: 30px; color: #666;">Loading expense data...</div>
                 </div>
             </div>
             
             <div class="card">
-                <h3>💸 Other Expenses</h3>
+                <h3>&#128184; Other Expenses</h3>
                 <div id="otherExpensesContainer">
                     <div style="text-align: center; padding: 30px; color: #666;">Loading expense data...</div>
                 </div>
@@ -981,11 +790,11 @@
         </div>
         
         <!-- Internal Order Analysis Section -->
-        <div class="section-title">📊 Internal Order Analysis <span class="live-badge" style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">🟢 LIVE</span></div>
+        <div class="section-title">&#128202; Internal Order Analysis <span class="live-badge" style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">&#128308; LIVE</span></div>
         
         <div class="two-col">
             <div class="card">
-                <h3>🏢 Society Related</h3>
+                <h3>&#127970; Society Related</h3>
                 <table>
                     <thead>
                         <tr>
@@ -1002,7 +811,7 @@
             </div>
             
             <div class="card">
-                <h3>🎉 Festival Events</h3>
+                <h3>&#127881; Festival Events</h3>
                 <table>
                     <thead>
                         <tr>
@@ -1021,65 +830,38 @@
         
         <!-- Payment Details -->
         <div class="payment-box">
-            <div class="payment-box-inner">
-
-                <!-- Left: Title + Bank Details -->
-                <div class="payment-box-left">
-                    <h3 style="color:white; border-bottom:2px solid rgba(255,255,255,0.3); padding-bottom:10px; margin-bottom:15px;">
-                        &#128179; Payment Details
-                    </h3>
-                    <div class="payment-details">
-                        <strong>Bank:</strong> HDFC Bank, Saket Road Branch<br>
-                        <strong>Account Name:</strong> Senior Citizens Residential Welfare Association<br>
-                        <strong>Account Number:</strong> 50200121383803<br>
-                        <strong>IFSC Code:</strong> HDFC0005443<br><br>
-                        <em>&#128736; Please clear your dues to support society maintenance - Roads, Street Lights, Drainage &amp; Security</em>
-                    </div>
-                </div>
-
-                <!-- Right: QR Code — top-right aligned -->
-                <div class="payment-box-right">
-                    <a href="upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&cu=INR"
-                       style="display:block;line-height:0;" title="Tap to pay">
-                        <img class="qr-code-img"
-                             src="https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&cu=INR&choe=UTF-8&chld=H|1"
-                             alt="UPI QR Code"
-                             onerror="this.onerror=null;this.src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&ecc=H&data=upi://pay?pa=seniorcitizensreside.82265756@hdfcbank'">
-                    </a>
-                    <div class="qr-upi-display">
-                        <div class="qr-upi-label">&#128247; Scan or tap to pay</div>
-                        <a class="qr-upi-value"
-                           href="upi://pay?pa=seniorcitizensreside.82265756@hdfcbank&pn=Senior+Citizens+Residential+Welfare+Asso&cu=INR">
-                           seniorcitizensreside<br>.82265756@hdfcbank
-                        </a>
-                    </div>
-                </div>
-
+            <h3>&#128179; Payment Details</h3>
+            <div class="payment-details">
+                <strong>Bank:</strong> HDFC Bank, Saket Road Branch<br>
+                <strong>Account Name:</strong> Senior Citizens Residential Welfare Association<br>
+                <strong>Account Number:</strong> 50200121383803<br>
+                <strong>IFSC Code:</strong> HDFC0005443<br><br>
+                <em>&#128591; Please clear your dues to support society maintenance - Roads, Street Lights, Drainage & Security</em>
             </div>
         </div>
-
+        
         <!-- Infrastructure Projects -->
-        <div class="section-title">🏗️ Infrastructure Projects</div>
+        <div class="section-title">&#127959;&#65039; Infrastructure Projects</div>
         
         <div class="metrics-grid">
             <div class="metric-card green">
-                <div class="icon">🚰</div>
+                <div class="icon">&#128688;</div>
                 <div class="value">Rs.42 Lakh</div>
                 <div class="label">Drainage Project<br><span class="badge badge-progress">In Progress</span></div>
-                <div style="font-size: 0.75em; color: #666; margin-top: 8px; padding: 6px; background: #fff3cd; border-radius: 6px;">⚠️ Phase I: Only 1-2 lane covered<br>(Not entire colony)</div>
+                <div style="font-size: 0.75em; color: #666; margin-top: 8px; padding: 6px; background: #fff3cd; border-radius: 6px;">&#9888;&#65039; Phase I: Only 1-2 lane covered<br>(Not entire colony)</div>
             </div>
             <div class="metric-card blue">
-                <div class="icon">🛣️</div>
+                <div class="icon">&#128739;&#65039;</div>
                 <div class="value">Rs.40 Lakh</div>
                 <div class="label">CC Roads<br><span class="badge badge-done">Approved</span></div>
             </div>
             <div class="metric-card purple">
-                <div class="icon">🏛️</div>
+                <div class="icon">&#127963;&#65039;</div>
                 <div class="value">Rs.82 Lakh</div>
                 <div class="label">Total Sanctioned</div>
             </div>
             <div class="metric-card orange">
-                <div class="icon">🎉</div>
+                <div class="icon">&#127881;</div>
                 <div class="value">31 May</div>
                 <div class="label">MLA Foundation Stone</div>
             </div>
@@ -1087,10 +869,10 @@
         
         <!-- Footer -->
         <div class="footer">
-            <p><strong>🏘️ Senior Citizens Residential Welfare Association</strong></p>
+            <p><strong>&#127960;&#65039; Senior Citizens Residential Welfare Association</strong></p>
             <p>Together for a Better Community | <span id="footerDate">--</span></p>
             <p style="margin-top: 10px; font-size: 0.9em;">
-                📊 Live Data Dashboard | Auto-refreshes from Google Sheets
+                &#128202; Live Data Dashboard | Auto-refreshes from Google Sheets
             </p>
         </div>
     </div>
@@ -1099,7 +881,7 @@
     <div class="modal-overlay" id="othersLaneModal" onclick="closeOthersLaneModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h3>🏠 Others Lane Breakdown</h3>
+                <h3>&#127968; Others Lane Breakdown</h3>
                 <button class="modal-close" onclick="closeOthersLaneModal()">&times;</button>
             </div>
             <div id="othersLaneBreakdownContent">
@@ -1112,7 +894,7 @@
     <div class="modal-overlay" id="miscModal" onclick="closeMiscModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h3>📋 Other Miscellaneous Breakdown</h3>
+                <h3>&#128203; Other Miscellaneous Breakdown</h3>
                 <button class="modal-close" onclick="closeMiscModal()">&times;</button>
             </div>
             <div id="miscBreakdownContent">
@@ -1122,13 +904,13 @@
     </div>
     
     <!-- Refresh Button -->
-    <button class="refresh-btn" onclick="refreshData()">🔄 Refresh Data</button>
+    <button class="refresh-btn" onclick="refreshData()">&#128260; Refresh Data</button>
     
     <script>
         // ============================================================
         // CONFIGURATION
         // ============================================================
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsAp9HoyJt2fUMtcUELvWNVMjsy5V7wGcaB0-_cxFAxEo5pRgKm8wg-opaMtCxUCyx5g/exec';
         
         // Store miscellaneous breakdown globally
         let miscBreakdownData = [];
@@ -1162,7 +944,7 @@
         async function loadData() {
             const indicator = document.getElementById('liveIndicator');
             indicator.className = 'live-indicator loading';
-            indicator.textContent = '⏳ Loading Data...';
+            indicator.textContent = '&#9203; Loading Data...';
             
             try {
                 const response = await fetch(APPS_SCRIPT_URL);
@@ -1174,20 +956,20 @@
                 processData(data);
                 
                 indicator.className = 'live-indicator';
-                indicator.textContent = '🔴 LIVE DATA | ' + new Date().toLocaleTimeString();
+                indicator.textContent = '&#128308; LIVE DATA | ' + new Date().toLocaleTimeString();
                 
                 document.getElementById('loadingOverlay').style.display = 'none';
                 
             } catch (error) {
                 console.error('Error loading data:', error);
                 indicator.className = 'live-indicator error';
-                indicator.textContent = '❌ Error: ' + error.message;
+                indicator.textContent = '&#10060; Error: ' + error.message;
                 document.getElementById('loadingOverlay').innerHTML = `
                     <div class="loading-content">
-                        <div style="font-size: 4rem; margin-bottom: 20px;">❌</div>
+                        <div style="font-size: 4rem; margin-bottom: 20px;">&#10060;</div>
                         <h3>Failed to Load Data</h3>
                         <p style="color: #666; margin: 20px 0;">${error.message}</p>
-                        <button onclick="location.reload()" style="padding: 12px 30px; background: #003366; color: white; border: none; border-radius: 8px; cursor: pointer;">🔄 Retry</button>
+                        <button onclick="location.reload()" style="padding: 12px 30px; background: #003366; color: white; border: none; border-radius: 8px; cursor: pointer;">&#128260; Retry</button>
                     </div>
                 `;
             }
@@ -1383,7 +1165,7 @@
             document.getElementById('paymentStatusSummary').innerHTML = `
                 <div class="progress-container">
                     <div class="progress-label">
-                        <span>✅ Fully Paid</span>
+                        <span>&#9989; Fully Paid</span>
                         <span>${status.fullyPaid} properties (${fullyPaidPct}%)</span>
                     </div>
                     <div class="progress-bar">
@@ -1392,7 +1174,7 @@
                 </div>
                 <div class="progress-container">
                     <div class="progress-label">
-                        <span>🔄 Partial Paid</span>
+                        <span>&#128260; Partial Paid</span>
                         <span>${status.partialPaid} properties (${partialPct}%)</span>
                     </div>
                     <div class="progress-bar">
@@ -1401,7 +1183,7 @@
                 </div>
                 <div class="progress-container">
                     <div class="progress-label">
-                        <span>❌ Not Paid</span>
+                        <span>&#10060; Not Paid</span>
                         <span>${status.notPaid} properties (${notPaidPct}%)</span>
                     </div>
                     <div class="progress-bar">
@@ -1409,7 +1191,7 @@
                     </div>
                 </div>
                 <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px;">
-                    <strong>✅ Fully Paid:</strong> ${fullyPaid} properties - Thank you! 🙏
+                    <strong>&#9989; Fully Paid:</strong> ${fullyPaid} properties - Thank you! &#128591;
                 </div>
             `;
         }
@@ -1442,24 +1224,19 @@
             });
             document.getElementById('yearWiseCashFlow').innerHTML = fyHTML;
             
-            // ── Dynamic color palette — auto-assigns to any AccountHead name ──
-            const COLOR_PALETTE = [
-                '#28a745', '#007bff', '#e91e63', '#fd7e14',
-                '#6f42c1', '#17a2b8', '#dc3545', '#ffc107',
-                '#20c997', '#6610f2', '#e67e22', '#1abc9c',
-                '#3498db', '#9b59b6', '#34495e', '#e74c3c'
-            ];
-            function getDynamicColor(index) {
-                return COLOR_PALETTE[index % COLOR_PALETTE.length];
-            }
-
-            // ── Income Sources (fully dynamic — no hard-coded names) ──────────
+            // Income Sources
+            const incomeColors = {
+                'Maintenance Charges': '#28a745',
+                'Festival Donations': '#007bff',
+                'Initial Deposits': '#6f42c1',
+                'Construction Deposits': '#fd7e14'
+            };
+            
             let incomeHTML = '';
-            let incomeIdx  = 0;
             for (const [category, data] of Object.entries(financial.income)) {
-                const color      = getDynamicColor(incomeIdx++);
-                const barWidth   = Math.max(data.pct, 5);
-                const dispWidth  = data.pct < 5 ? 'min-width: 35px;' : '';
+                const color = incomeColors[category] || '#6c757d';
+                const barWidth = Math.max(data.pct, 5); // Minimum 5% width for visibility
+                const displayWidth = data.pct < 5 ? 'min-width: 35px;' : '';
                 incomeHTML += `
                     <div class="progress-container">
                         <div class="progress-label">
@@ -1467,26 +1244,34 @@
                             <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${barWidth}%; ${dispWidth} background: ${color};">${data.pct}%</div>
+                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
                         </div>
                     </div>
                 `;
             }
-            document.getElementById('incomeSourcesContainer').innerHTML =
-                incomeHTML || '<p style="color:#666;padding:10px;">No income data</p>';
-
-            // ── Expense Categories (fully dynamic — sorted by amount desc) ────
-            const allExpenses = Object.entries(financial.expense)
-                .sort((a, b) => b[1].amount - a[1].amount);
-
-            const majorExpenses = allExpenses.slice(0, 4);
-            const otherExpenses = allExpenses.slice(4);
-
+            document.getElementById('incomeSourcesContainer').innerHTML = incomeHTML;
+            
+            // Expense Categories
+            const expenseColors = {
+                'Music & Entertainment': '#e74c3c',
+                'Road Repairs': '#3498db',
+                'Venue Setup (Events)': '#9b59b6',
+                'Society Registration': '#1abc9c',
+                'Refreshments (Events)': '#e67e22',
+                'GHMC Charges': '#34495e',
+                'Other Miscellaneous': '#95a5a6'
+            };
+            
+            // Split into Major (first 4) and Other (last 3)
+            const majorExpenses = ['Music & Entertainment', 'Road Repairs', 'Venue Setup (Events)', 'Society Registration'];
+            const otherExpenses = ['Refreshments (Events)', 'GHMC Charges', 'Other Miscellaneous'];
+            
             let majorHTML = '';
-            majorExpenses.forEach(([category, data], idx) => {
-                const color     = getDynamicColor(idx);
-                const barWidth  = Math.max(data.pct, 5);
-                const dispWidth = data.pct < 5 ? 'min-width: 35px;' : '';
+            majorExpenses.forEach(category => {
+                const data = financial.expense[category] || { amount: 0, pct: 0 };
+                const color = expenseColors[category] || '#6c757d';
+                const barWidth = Math.max(data.pct, 5);
+                const displayWidth = data.pct < 5 ? 'min-width: 35px;' : '';
                 majorHTML += `
                     <div class="progress-container">
                         <div class="progress-label">
@@ -1494,41 +1279,43 @@
                             <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${barWidth}%; ${dispWidth} background: ${color};">${data.pct}%</div>
+                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
                         </div>
                     </div>
                 `;
             });
-            document.getElementById('majorExpensesContainer').innerHTML =
-                majorHTML || '<p style="color:#666;padding:10px;">No expense data</p>';
-
+            document.getElementById('majorExpensesContainer').innerHTML = majorHTML;
+            
             // Store miscellaneous breakdown for modal
             if (financial.miscBreakdown) {
                 miscBreakdownData = financial.miscBreakdown;
             }
-
+            
             let otherHTML = '';
-            otherExpenses.forEach(([category, data], idx) => {
-                const color      = getDynamicColor(idx + 4);
-                const barWidth   = Math.max(data.pct, 5);
-                const dispWidth  = data.pct < 5 ? 'min-width: 35px;' : '';
-                const isMisc     = category.toLowerCase().includes('misc');
-                const clickAttr  = isMisc ? 'onclick="openMiscModal()" style="cursor:pointer;"' : '';
-                const label      = isMisc ? `${category} 🔍` : category;
+            otherExpenses.forEach(category => {
+                const data = financial.expense[category] || { amount: 0, pct: 0 };
+                const color = expenseColors[category] || '#6c757d';
+                const barWidth = Math.max(data.pct, 5);
+                const displayWidth = data.pct < 5 ? 'min-width: 35px;' : '';
+                
+                // Make "Other Miscellaneous" clickable
+                const isClickable = category === 'Other Miscellaneous';
+                const clickHandler = isClickable ? 'onclick="openMiscModal()"' : '';
+                const clickableClass = isClickable ? 'clickable-category' : '';
+                
                 otherHTML += `
                     <div class="progress-container">
                         <div class="progress-label">
-                            <span ${clickAttr}>${label}</span>
+                            <span class="${clickableClass}" ${clickHandler}>${category}</span>
                             <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${barWidth}%; ${dispWidth} background: ${color};">${data.pct}%</div>
+                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
                         </div>
                     </div>
                 `;
             });
-            document.getElementById('otherExpensesContainer').innerHTML =
-                otherHTML || '<p style="color:#666;padding:10px;">No other expenses</p>';
+            document.getElementById('otherExpensesContainer').innerHTML = otherHTML;
             
             // Total Outflow
             document.getElementById('totalOutflowBox').innerHTML = `<strong>Total Outflow: ${formatCurrency(financial.totalExpense)}</strong>`;
@@ -1538,116 +1325,94 @@
         // INTERNAL ORDER ANALYSIS
         // ============================================================
         function updateInternalOrderAnalysis(orderData) {
-
-            // ── Helper: Net badge ─────────────────────────────────────────────
-            function netBadge(net) { return ''; }
-
-            // ── Helper: display name (use ioName if available, else ioNo) ─────
-            function displayName(item) {
-                return (item.ioName && item.ioName.trim() && item.ioName !== item.name)
-                    ? item.ioName
-                    : item.name;
-            }
-
-            // ── Society Related Table ─────────────────────────────────────────
+            // Society Related Table
             let societyHTML = '';
             if (orderData.society && orderData.society.items.length > 0) {
-                let mergedItems      = [];
-                let societyExpItem   = null;
-                let republicDayItem  = null;
-
+                // Merge Republic Day into Society Expense
+                let mergedItems = [];
+                let societyExpenseItem = null;
+                let republicDayItem = null;
+                
                 orderData.society.items.forEach(item => {
-                    const nm = item.name || '';
-                    if (nm === 'Society Expense' || nm === 'SOCEX01') {
-                        societyExpItem = {...item};
-                    } else if (nm === 'Republic Day' || nm === 'INDPE01') {
+                    if (item.name === 'Society Expense') {
+                        societyExpenseItem = {...item};
+                    } else if (item.name === 'Republic Day') {
                         republicDayItem = item;
                     } else {
                         mergedItems.push(item);
                     }
                 });
-
-                if (societyExpItem) {
+                
+                // Merge Republic Day into Society Expense
+                if (societyExpenseItem) {
                     if (republicDayItem) {
-                        societyExpItem.income  += republicDayItem.income;
-                        societyExpItem.expense += republicDayItem.expense;
-                        societyExpItem.net     += republicDayItem.net;
+                        societyExpenseItem.income += republicDayItem.income;
+                        societyExpenseItem.expense += republicDayItem.expense;
+                        societyExpenseItem.net += republicDayItem.net;
                     }
-                    mergedItems.push(societyExpItem);
+                    mergedItems.push(societyExpenseItem);
                 }
-
+                
                 mergedItems.forEach(item => {
-                    const netClass  = item.net >= 0 ? 'color:#28a745;' : 'color:#dc3545;';
+                    const netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
                     const netPrefix = item.net >= 0 ? '+' : '';
-                    const label     = displayName(item);
                     societyHTML += `
                         <tr>
-                            <td><strong>${label}</strong></td>
-                            <td style="color:#28a745;">${formatCurrency(item.income)}</td>
-                            <td style="color:#dc3545;">${formatCurrency(item.expense)}</td>
-                            <td style="${netClass} font-weight:bold;">
-                                ${netPrefix}${formatCurrency(item.net)}<br>
-                                ${netBadge(item.net)}
-                            </td>
+                            <td>${item.name}</td>
+                            <td style="color: #28a745;">${formatCurrency(item.income)}</td>
+                            <td style="color: #dc3545;">${formatCurrency(item.expense)}</td>
+                            <td style="${netClass} font-weight: bold;">${netPrefix}${formatCurrency(item.net)}</td>
                         </tr>
                     `;
                 });
-
-                const totals        = orderData.society.totals;
-                const totalNetClass = totals.net >= 0 ? 'color:#28a745;' : 'color:#dc3545;';
-                const totalNetPfx   = totals.net >= 0 ? '+' : '';
+                
+                // Totals row
+                const totals = orderData.society.totals;
+                const totalNetClass = totals.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                const totalNetPrefix = totals.net >= 0 ? '+' : '';
                 societyHTML += `
                     <tr class="total-row">
                         <td><strong>TOTAL</strong></td>
-                        <td style="color:#28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
-                        <td style="color:#dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
-                        <td style="${totalNetClass}">
-                            <strong>${totalNetPfx}${formatCurrency(totals.net)}</strong><br>
-                            ${netBadge(totals.net)}
-                        </td>
+                        <td style="color: #28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
+                        <td style="color: #dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
+                        <td style="${totalNetClass}"><strong>${totalNetPrefix}${formatCurrency(totals.net)}</strong></td>
                     </tr>
                 `;
             } else {
-                societyHTML = '<tr><td colspan="4" style="text-align:center;color:#666;">No data available</td></tr>';
+                societyHTML = '<tr><td colspan="4" style="text-align: center;">No data available</td></tr>';
             }
             document.getElementById('societyOrdersTable').innerHTML = societyHTML;
-
-            // ── Festival Events Table ─────────────────────────────────────────
+            // Festival Events Table
             let festivalHTML = '';
             if (orderData.festival && orderData.festival.items.length > 0) {
                 orderData.festival.items.forEach(item => {
-                    const netClass  = item.net >= 0 ? 'color:#28a745;' : 'color:#dc3545;';
+                    const netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
                     const netPrefix = item.net >= 0 ? '+' : '';
-                    const label     = displayName(item);
+                    const netLabel = item.net >= 0 ? '&#9989; Surplus' : '&#10060; Deficit';
                     festivalHTML += `
                         <tr>
-                            <td><strong>${label}</strong></td>
-                            <td style="color:#28a745;">${formatCurrency(item.income)}</td>
-                            <td style="color:#dc3545;">${formatCurrency(item.expense)}</td>
-                            <td style="${netClass} font-weight:bold;">
-                                ${netPrefix}${formatCurrency(item.net)}<br>
-                                ${netBadge(item.net)}
-                            </td>
+                            <td>${item.name}</td>
+                            <td style="color: #28a745;">${formatCurrency(item.income)}</td>
+                            <td style="color: #dc3545;">${formatCurrency(item.expense)}</td>
+                            <td style="${netClass} font-weight: bold;">${netPrefix}${formatCurrency(item.net)}</td>
                         </tr>
                     `;
                 });
-
-                const totals        = orderData.festival.totals;
-                const totalNetClass = totals.net >= 0 ? 'color:#28a745;' : 'color:#dc3545;';
-                const totalNetPfx   = totals.net >= 0 ? '+' : '';
+                
+                // Totals row
+                const totals = orderData.festival.totals;
+                const totalNetClass = totals.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                const totalNetPrefix = totals.net >= 0 ? '+' : '';
                 festivalHTML += `
                     <tr class="total-row">
                         <td><strong>TOTAL</strong></td>
-                        <td style="color:#28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
-                        <td style="color:#dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
-                        <td style="${totalNetClass}">
-                            <strong>${totalNetPfx}${formatCurrency(totals.net)}</strong><br>
-                            ${netBadge(totals.net)}
-                        </td>
+                        <td style="color: #28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
+                        <td style="color: #dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
+                        <td style="${totalNetClass}"><strong>${totalNetPrefix}${formatCurrency(totals.net)}</strong></td>
                     </tr>
                 `;
             } else {
-                festivalHTML = '<tr><td colspan="4" style="text-align:center;color:#666;">No festival data — apply Apps Script fix to classify festival IOs</td></tr>';
+                festivalHTML = '<tr><td colspan="4" style="text-align: center;">No data available</td></tr>';
             }
             document.getElementById('festivalOrdersTable').innerHTML = festivalHTML;
         }
