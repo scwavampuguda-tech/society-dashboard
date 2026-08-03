@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SCRWA — Society Dashboard</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',Arial,sans-serif; background:#0f1923; color:#e0e8f0; min-height:100vh; }
+
+/* ── LOGIN ──────────────────────────────────────────────────────── */
+#loginScreen {
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0d2137 0%,#1a3a5c 60%,#0d3322 100%);
+}
+.login-box {
+  background:linear-gradient(145deg,#1a2e42,#152536);
+  border:1px solid #1e4060; border-radius:16px;
+  padding:44px 40px; width:400px;
+  box-shadow:0 24px 64px rgba(0,0,0,0.5);
+  text-align:center;
+}
+.login-box .logo { font-size:52px; margin-bottom:10px; }
+.login-box h2 { font-size:22px; font-weight:700; color:#fff; margin-bottom:4px; }
+.login-box p { font-size:12px; color:#5a8aaa; margin-bottom:28px; }
+.login-box input {
+  width:100%; padding:12px 16px;
+  background:#0f1923; border:1px solid #1e4060;
+  border-radius:8px; color:#e0e8f0; font-size:14px; outline:none;
+  transition:.2s;
+}
+.login-box input:focus { border-color:#4fc3f7; }
+.login-box button {
+  width:100%; padding:13px; margin-top:14px;
+  background:linear-gradient(90deg,#1565c0,#1e88e5);
+  color:#fff; border:none; border-radius:8px;
+  font-size:15px; font-weight:600; cursor:pointer; transition:.2s;
+}
+.login-box button:hover { background:linear-gradient(90deg,#1976d2,#42a5f5); }
+.login-box .err { color:#ef5350; font-size:12px; margin-top:10px; min-height:16px; }
+
+/* ── APP SHELL ──────────────────────────────────────────────────── */
+#app { display:none; }
+
+.topbar {
+  background:linear-gradient(135deg,#1a3a5c 0%,#0d2137 100%);
+  border-bottom:2px solid #1e5799;
+  padding:0 28px; height:56px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+}
+.topbar .brand { display:flex; align-items:center; gap:10px; }
+.topbar .brand .logo { font-size:26px; }
+.topbar .brand h1 { font-size:17px; font-weight:700; color:#fff; }
+.topbar .brand small { font-size:11px; color:#5a8aaa; display:block; }
+.topbar .right { display:flex; align-items:center; gap:10px; }
+.user-pill {
+  background:rgba(79,195,247,0.12); border:1px solid #1e4060;
+  border-radius:20px; padding:5px 14px;
+  font-size:12px; color:#4fc3f7;
+}
+.admin-pill {
+  background:rgba(255,167,38,0.15); border:1px solid #e65100;
+  border-radius:20px; padding:5px 12px;
+  font-size:11px; font-weight:700; color:#ffa726;
+}
+.refresh-btn {
+  background:rgba(255,255,255,.08); border:1px solid #1e4060;
+  color:#c8dcea; padding:6px 14px; border-radius:6px;
+  cursor:pointer; font-size:12px; transition:.2s;
+}
+.refresh-btn:hover { background:rgba(79,195,247,.15); color:#4fc3f7; }
+.logout-btn {
+  background:rgba(239,83,80,.15); border:1px solid #c62828;
+  color:#ef5350; padding:6px 14px; border-radius:6px;
+  cursor:pointer; font-size:12px;
+}
+.logout-btn:hover { background:rgba(239,83,80,.25); }
+
+/* ── MAIN CONTENT ───────────────────────────────────────────────── */
+.main { max-width:1360px; margin:0 auto; padding:28px 32px; }
+
+/* ── SECTION TITLE ──────────────────────────────────────────────── */
+.sec-title {
+  font-size:12px; font-weight:700; color:#4fc3f7;
+  text-transform:uppercase; letter-spacing:1px;
+  padding-bottom:8px; border-bottom:1px solid #1e4060;
+  margin-bottom:18px; display:flex; align-items:center; gap:8px;
+}
+
+/* ── KPI CARDS ──────────────────────────────────────────────────── */
+.kpi-row { display:grid; gap:16px; margin-bottom:28px; }
+.kpi-row.cols4 { grid-template-columns:repeat(4,1fr); }
+.kpi-row.cols3 { grid-template-columns:repeat(3,1fr); }
+.kpi-row.cols2 { grid-template-columns:repeat(2,1fr); }
+@media(max-width:900px){ .kpi-row.cols4,.kpi-row.cols3 { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:560px){ .kpi-row { grid-template-columns:1fr!important; } }
+
+.kpi {
+  background:linear-gradient(145deg,#1a2e42,#152536);
+  border:1px solid #1e4060; border-radius:12px;
+  padding:20px 22px; position:relative; overflow:hidden;
+}
+.kpi::before {
+  content:''; position:absolute; top:0; left:0; right:0;
+  height:3px; border-radius:12px 12px 0 0;
+}
+.kpi.blue::before   { background:linear-gradient(90deg,#1565c0,#4fc3f7); }
+.kpi.green::before  { background:linear-gradient(90deg,#2e7d32,#66bb6a); }
+.kpi.red::before    { background:linear-gradient(90deg,#c62828,#ef5350); }
+.kpi.amber::before  { background:linear-gradient(90deg,#e65100,#ffa726); }
+.kpi.purple::before { background:linear-gradient(90deg,#6a1b9a,#ce93d8); }
+.kpi.teal::before   { background:linear-gradient(90deg,#00695c,#4db6ac); }
+.kpi-icon { position:absolute; right:18px; top:50%; transform:translateY(-50%); font-size:36px; opacity:.1; }
+.kpi-label { font-size:11px; color:#7fb3d3; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.kpi-value { font-size:26px; font-weight:700; }
+.kpi.blue   .kpi-value { color:#4fc3f7; }
+.kpi.green  .kpi-value { color:#66bb6a; }
+.kpi.red    .kpi-value { color:#ef5350; }
+.kpi.amber  .kpi-value { color:#ffa726; }
+.kpi.purple .kpi-value { color:#ce93d8; }
+.kpi.teal   .kpi-value { color:#4db6ac; }
+.kpi-sub { font-size:11px; color:#5a8aaa; margin-top:5px; }
+
+/* ── GRID LAYOUTS ───────────────────────────────────────────────── */
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+.grid3 { display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:24px; }
+@media(max-width:860px){ .grid2,.grid3 { grid-template-columns:1fr; } }
+
+/* ── CARD ───────────────────────────────────────────────────────── */
+.card {
+  background:#152536; border:1px solid #1e4060;
+  border-radius:12px; padding:20px; margin-bottom:20px;
+  overflow:hidden;
+}
+.card h4 { font-size:12px; color:#7fb3d3; text-transform:uppercase;
+           letter-spacing:.8px; margin-bottom:16px; }
+
+/* ── FY CARDS ───────────────────────────────────────────────────── */
+.fy-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:24px; }
+.fy-card {
+  background:#152536; border:1px solid #1e4060;
+  border-radius:12px; padding:18px 20px;
+  border-top:3px solid #1565c0;
+}
+.fy-card h4 { font-size:13px; font-weight:700; color:#4fc3f7; margin-bottom:12px; }
+.fy-row { display:flex; justify-content:space-between; padding:5px 0;
+          border-bottom:1px solid #1a2e42; font-size:13px; }
+.fy-row:last-child { border:none; font-weight:700; padding-top:8px; }
+
+/* ── PROGRESS BARS ──────────────────────────────────────────────── */
+.prog { margin-bottom:12px; }
+.prog .row { display:flex; justify-content:space-between; margin-bottom:5px; font-size:12px; }
+.prog .name { color:#c8dcea; }
+.prog .amt  { color:#7fb3d3; font-weight:600; }
+.prog-bar { height:6px; background:#0f1923; border-radius:3px; overflow:hidden; }
+.prog-fill { height:100%; border-radius:3px; }
+
+/* ── TABLE ──────────────────────────────────────────────────────── */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:12px; }
+thead th {
+  background:#1a3a5c; color:#4fc3f7; padding:10px 14px;
+  text-align:left; font-size:10px; text-transform:uppercase;
+  letter-spacing:.8px; border-bottom:2px solid #1e5799; white-space:nowrap;
+}
+thead th.rc { text-align:right; }
+thead th.cc { text-align:center; }
+tbody tr { border-bottom:1px solid #1a2e42; transition:background .15s; }
+tbody tr:hover { background:#1a3550; }
+tbody td { padding:9px 14px; color:#c8dcea; vertical-align:middle; }
+tbody td.rc { text-align:right; }
+tbody td.cc { text-align:center; }
+
+/* ── BADGES ─────────────────────────────────────────────────────── */
+.badge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:10px; font-weight:600; }
+.badge.paid    { background:#1b5e20; color:#66bb6a; }
+.badge.unpaid  { background:#7f1d1d; color:#ef5350; }
+.badge.partial { background:#4a2500; color:#ffa726; }
+.badge.in      { background:#1b5e20; color:#66bb6a; }
+.badge.out     { background:#7f1d1d; color:#ef5350; }
+
+/* ── MEMBER STAT PILLS ──────────────────────────────────────────── */
+.stat-pills { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+.stat-pill {
+  background:#1a2e42; border:1px solid #1e4060; border-radius:10px;
+  padding:10px 18px; text-align:center; min-width:120px;
+}
+.stat-pill .n { font-size:22px; font-weight:700; color:#4fc3f7; }
+.stat-pill .l { font-size:10px; color:#7fb3d3; text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
+
+/* ── MEMBER DUES CARD ───────────────────────────────────────────── */
+.dues-header {
+  background:linear-gradient(135deg,#1a3a5c,#0d2137);
+  border:1px solid #1e5799; border-radius:12px;
+  padding:20px 24px; margin-bottom:20px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.dues-header .member-name { font-size:20px; font-weight:700; color:#fff; }
+.dues-header .member-plot { font-size:13px; color:#5a8aaa; margin-top:4px; }
+.dues-amount { text-align:right; }
+.dues-amount .big { font-size:28px; font-weight:700; color:#ef5350; }
+.dues-amount .lbl { font-size:11px; color:#7fb3d3; }
+
+/* ── ALERT ──────────────────────────────────────────────────────── */
+.alert {
+  border-radius:8px; padding:12px 16px; margin-bottom:16px;
+  font-size:13px; display:flex; align-items:center; gap:10px;
+}
+.alert.info  { background:rgba(21,101,192,.2); border-left:3px solid #4fc3f7; color:#b3d9f7; }
+.alert.warn  { background:rgba(230,81,0,.2);   border-left:3px solid #ffa726; color:#ffd180; }
+.alert.good  { background:rgba(46,125,50,.2);  border-left:3px solid #66bb6a; color:#a5d6a7; }
+
+/* ── LOADER ─────────────────────────────────────────────────────── */
+#loader {
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(15,25,35,.95);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  z-index:9999;
+}
+.spinner {
+  width:48px; height:48px; border:3px solid #1e4060;
+  border-top-color:#4fc3f7; border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+#loaderMsg { margin-top:16px; color:#5a8aaa; font-size:13px; }
+
+/* ── FOOTER ─────────────────────────────────────────────────────── */
+.footer {
+  text-align:center; padding:16px; font-size:11px;
+  color:#2d5a7a; border-top:1px solid #1a2e42; margin-top:16px;
+}
+
+/* ── DATA TIMESTAMP ─────────────────────────────────────────────── */
+.data-ts { font-size:11px; color:#2d5a7a; text-align:right; margin-bottom:16px; }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader" style="display:none">
+  <div class="spinner"></div>
+  <p id="loaderMsg">Loading society data...</p>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="logo">🏘️</div>
+    <h2>SCRWA Society Portal</h2>
+    <p>Vampuguda Reddy Colony Welfare Association</p>
+    <input type="email" id="loginEmail" placeholder="Enter your registered email" autocomplete="email"/>
+    <button onclick="doLogin()">🔐 Enter Portal</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">
+      <span class="logo">🏘️</span>
+      <div>
+        <h1>SCRWA Society Portal</h1>
+        <small>Vampuguda Reddy Colony Welfare Association</small>
+      </div>
+    </div>
+    <div class="right">
+      <span id="adminPill" style="display:none" class="admin-pill">👑 Admin</span>
+      <span id="userPill" class="user-pill">👤 —</span>
+      <button class="refresh-btn" onclick="forceRefresh()">🔄 Refresh</button>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main" id="mainContent"></div>
+
+  <div class="footer">SCRWA — Reddy Colony, Vampuguda &nbsp;|&nbsp; Live data from Google Sheets &nbsp;|&nbsp; <span id="footerTs"></span></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════════════
+const API_URL  = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+const CACHE_KEY = 'scrwa_dash_v2';
+const CACHE_TTL = 4 * 60 * 60 * 1000;
+const ADMINS   = ['bilsaibaba@gmail.com','premikakatta1@gmail.com','parthok@gmail.com'];
+
+let G = { data:null, user:null, isAdmin:false, memberData:null };
+
+// ════════════════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════════════════
+const fmt    = n => '₹' + Number(n||0).toLocaleString('en-IN');
+const fmtN   = n => Number(n||0).toLocaleString('en-IN');
+const pct    = (a,b) => b>0 ? (a/b*100).toFixed(1)+'%' : '—';
+
+// ════════════════════════════════════════════════════════════════
+// LOGIN / LOGOUT
+// ════════════════════════════════════════════════════════════════
+function doLogin() {
+  const email = (document.getElementById('loginEmail').value||'').trim().toLowerCase();
+  if(!email) { document.getElementById('loginErr').textContent='Please enter your email.'; return; }
+  G.user    = email;
+  G.isAdmin = ADMINS.includes(email);
+  document.getElementById('loginErr').textContent = '';
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('userPill').textContent = '👤 ' + email;
+  if(G.isAdmin) document.getElementById('adminPill').style.display='inline-block';
+  loadData();
+}
+function doLogout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  G.data=null; G.user=null; G.isAdmin=false; G.memberData=null;
+}
+document.getElementById('loginEmail').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// ════════════════════════════════════════════════════════════════
+// DATA LOADING
+// ════════════════════════════════════════════════════════════════
+function setLoader(msg) { document.getElementById('loaderMsg').textContent=msg||'Loading...'; document.getElementById('loader').style.display='flex'; }
+function hideLoader()   { document.getElementById('loader').style.display='none'; }
+
+async function loadData(force=false) {
+  setLoader('Connecting to Google Sheets...');
+  try {
+    if(!force) {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if(cached) {
+        const {ts,payload} = JSON.parse(cached);
+        if(Date.now()-ts < CACHE_TTL) { G.data=payload; afterLoad(); hideLoader(); return; }
+      }
+    }
+    setLoader('Fetching live data...');
+    const res = await fetch(API_URL+'?t='+Date.now());
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    G.data = await res.json();
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(),payload:G.data}));
+    afterLoad();
+  } catch(e) {
+    hideLoader();
+    document.getElementById('mainContent').innerHTML = `<div class="alert warn">⚠️ Failed to load data: ${e.message}. Please check your connection and refresh.</div>`;
+  }
+  hideLoader();
+}
+function forceRefresh() { localStorage.removeItem(CACHE_KEY); loadData(true); }
+
+function afterLoad() {
+  // Always find member record for logged-in user (admins are members too)
+  const members = Object.keys(G.data).filter(k=>!k.startsWith('_')).map(k=>G.data[k]);
+  G.memberData = members.find(m =>
+    (m.email||'').toLowerCase()===G.user ||
+    (m.proxyEmail||'').toLowerCase()===G.user
+  ) || null;
+
+  // Timestamp
+  const ts = G.data._summary?.generatedAt || G.data._meta?.generatedAt || '';
+  if(ts) {
+    document.getElementById('footerTs').textContent = 'Data as of: '+ts;
+  }
+  // Render
+  if(G.isAdmin) renderAdminDash();
+  else          renderMemberDash();
+}
+
+// ════════════════════════════════════════════════════════════════
+// ── ADMIN DASHBOARD ─────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+function renderAdminDash() {
+  const s = G.data._summary;
+  const members = Object.keys(G.data).filter(k=>!k.startsWith('_')).map(k=>G.data[k]);
+  const txns = G.data._transactions || [];
+
+  // Member counts
+  const active    = members.filter(m=>(m.status||'').includes('Active')).length;
+  const inactive  = members.filter(m=>(m.status||'').includes('Inactive')).length;
+  const exited    = members.filter(m=>(m.status||'').includes('Exited')).length;
+
+  // Invoice stats
+  let totalBilled=0, totalPaid=0, totalPending=0, paidCount=0, unpaidCount=0;
+  members.forEach(m=>{
+    (m.invoices||[]).forEach(inv=>{
+      totalBilled  += inv.billAmount||0;
+      totalPaid    += inv.paidAmount||0;
+      totalPending += inv.balance||0;
+      const pv=inv.paidAmount||0; const bv=inv.billAmount||0;
+      if(pv>=bv && bv>0) paidCount++;
+      else unpaidCount++;
+    });
+  });
+  const collPct = totalBilled>0 ? (totalPaid/totalBilled*100).toFixed(1) : 0;
+
+  // Recent transactions (last 10)
+  const recent = [...txns].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10);
+
+  // Pending members (balance > 0), sorted desc
+  const pendingMembers = members
+    .map(m=>({ m, bal: (m.invoices||[]).reduce((a,inv)=>a+(inv.balance||0),0) }))
+    .filter(x=>x.bal>0)
+    .sort((a,b)=>b.bal-a.bal)
+    .slice(0,15);
+
+  // Month-wise cash in/out for chart
+  const monthMap = {};
+  txns.forEach(tx=>{
+    const ym = tx.yyyymm || (tx.date||'').slice(0,7).replace('-','');
+    if(!ym) return;
+    if(!monthMap[ym]) monthMap[ym]={in:0,out:0};
+    if(tx.flowType==='in')  monthMap[ym].in  += tx.amount||0;
+    if(tx.flowType==='out') monthMap[ym].out += tx.amount||0;
+  });
+  const sortedMonths = Object.keys(monthMap).sort();
+
+  // Income & Expense breakdowns
+  const incByHead = s.incomeByHead || {};
+  const expByHead = s.expenseByHead || {};
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="data-ts" id="adminTs"></div>
+
+    <!-- ── KPI Row ── -->
+    <div class="sec-title">📊 Society Overview</div>
+    <div class="kpi-row cols4">
+      <div class="kpi green">
+        <span class="kpi-icon">💰</span>
+        <div class="kpi-label">Total Income</div>
+        <div class="kpi-value">${fmt(s.totalIncome)}</div>
+        <div class="kpi-sub">${fmtN(s.cashInCount)} transactions</div>
+      </div>
+      <div class="kpi red">
+        <span class="kpi-icon">💸</span>
+        <div class="kpi-label">Total Expense</div>
+        <div class="kpi-value">${fmt(s.totalExpense)}</div>
+        <div class="kpi-sub">${fmtN(s.cashOutCount)} transactions</div>
+      </div>
+      <div class="kpi blue">
+        <span class="kpi-icon">🏦</span>
+        <div class="kpi-label">Net Balance</div>
+        <div class="kpi-value">${fmt(s.netBalance)}</div>
+        <div class="kpi-sub">Closing balance</div>
+      </div>
+      <div class="kpi amber">
+        <span class="kpi-icon">👥</span>
+        <div class="kpi-label">Active Members</div>
+        <div class="kpi-value">${active}</div>
+        <div class="kpi-sub">${inactive} inactive · ${exited} exited</div>
+      </div>
+    </div>
+
+    <!-- ── Collection KPIs ── -->
+    <div class="sec-title">🧾 Collection Health</div>
+    <div class="kpi-row cols4">
+      <div class="kpi blue">
+        <span class="kpi-icon">📄</span>
+        <div class="kpi-label">Total Billed</div>
+        <div class="kpi-value">${fmt(totalBilled)}</div>
+        <div class="kpi-sub">${fmtN(paidCount+unpaidCount)} invoices raised</div>
+      </div>
+      <div class="kpi green">
+        <span class="kpi-icon">✅</span>
+        <div class="kpi-label">Collected</div>
+        <div class="kpi-value">${fmt(totalPaid)}</div>
+        <div class="kpi-sub">${paidCount} paid invoices · ${collPct}%</div>
+      </div>
+      <div class="kpi red">
+        <span class="kpi-icon">⚠️</span>
+        <div class="kpi-label">Pending</div>
+        <div class="kpi-value">${fmt(totalPending)}</div>
+        <div class="kpi-sub">${unpaidCount} unpaid invoices</div>
+      </div>
+      <div class="kpi amber">
+        <span class="kpi-icon">📈</span>
+        <div class="kpi-label">Collection Rate</div>
+        <div class="kpi-value">${collPct}%</div>
+        <div class="kpi-sub">${parseFloat(collPct)>=60?'🟢 Healthy':parseFloat(collPct)>=30?'🟡 Moderate':'🔴 Needs attention'}</div>
+      </div>
+    </div>
+
+    <!-- ── FY Summary ── -->
+    <div class="sec-title">📆 Financial Year Summary</div>
+    <div class="fy-grid" id="fyCards"></div>
+
+    <!-- ── Chart + Expense breakdown ── -->
+    <div class="sec-title">📉 Cash Flow Analysis</div>
+    <div class="grid3">
+      <div class="card">
+        <h4>📈 Month-on-Month Cash In vs Out</h4>
+        <canvas id="adminBarChart" height="220"></canvas>
+      </div>
+      <div class="card">
+        <h4>🍩 Income vs Expense</h4>
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <canvas id="adminDonut" width="220" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Income & Expense Breakdown ── -->
+    <div class="grid2">
+      <div class="card">
+        <h4>💚 Income by Category</h4>
+        <div id="incBreak"></div>
+      </div>
+      <div class="card">
+        <h4>🔴 Expense by Category</h4>
+        <div id="expBreak"></div>
+      </div>
+    </div>
+
+    <!-- ── Member Stats + Pending Members ── -->
+    <div class="sec-title">👥 Member Dues — Top Pending</div>
+    <div class="stat-pills" id="memberPills"></div>
+    <div class="card">
+      <h4>⚠️ Members with Highest Pending (Top 15)</h4>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Plot</th><th>Member Name</th><th>Lane</th>
+              <th class="rc">Total Pending</th><th class="cc">Invoices Unpaid</th><th class="cc">Status</th>
+            </tr>
+          </thead>
+          <tbody id="pendingBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Recent Transactions ── -->
+    <div class="sec-title">🕐 Recent Transactions (Last 10)</div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Type</th><th>Account Head</th>
+              <th>Remarks</th><th>Mode</th><th class="rc">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="recentBody"></tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  // ── FY Cards
+  const fyWise = s.fyWise || {};
+  document.getElementById('fyCards').innerHTML = Object.entries(fyWise).map(([fy,v])=>`
+    <div class="fy-card">
+      <h4>📆 FY ${fy}</h4>
+      <div class="fy-row"><span>💚 Inflow</span><span style="color:#66bb6a;font-weight:700">${fmt(v.inflow)}</span></div>
+      <div class="fy-row"><span>🔴 Outflow</span><span style="color:#ef5350;font-weight:700">${fmt(v.outflow)}</span></div>
+      <div class="fy-row"><span>🏦 Closing</span><span style="color:${v.closing>=0?'#4fc3f7':'#ef5350'};font-weight:700">${fmt(v.closing)}</span></div>
+    </div>
+  `).join('');
+
+  // ── Income breakdown
+  const totalIn = s.totalIncome||1;
+  const incColors = ['#2e7d32','#1565c0','#4a148c','#00695c','#e65100','#c62828'];
+  document.getElementById('incBreak').innerHTML = Object.entries(incByHead).map(([h,v],i)=>{
+    const p=Math.round(v/totalIn*100);
+    return `<div class="prog"><div class="row"><span class="name">${h}</span><span class="amt">${fmt(v)} · ${p}%</span></div><div class="prog-bar"><div class="prog-fill" style="width:${p}%;background:${incColors[i%incColors.length]}"></div></div></div>`;
+  }).join('');
+
+  // ── Expense breakdown
+  const totalOut = s.totalExpense||1;
+  const expColors = ['#c62828','#e65100','#6a1b9a','#1565c0','#00695c','#f57f17'];
+  document.getElementById('expBreak').innerHTML = Object.entries(expByHead).map(([h,v],i)=>{
+    const p=Math.round(v/totalOut*100);
+    return `<div class="prog"><div class="row"><span class="name">${h}</span><span class="amt">${fmt(v)} · ${p}%</span></div><div class="prog-bar"><div class="prog-fill" style="width:${p}%;background:${expColors[i%expColors.length]}"></div></div></div>`;
+  }).join('');
+
+  // ── Member pills
+  const statuses={};
+  Object.keys(G.data).filter(k=>!k.startsWith('_')).forEach(k=>{ const st=G.data[k].status||'Unknown'; statuses[st]=(statuses[st]||0)+1; });
+  document.getElementById('memberPills').innerHTML = Object.entries(statuses).map(([s2,c])=>`
+    <div class="stat-pill"><div class="n">${c}</div><div class="l">${s2}</div></div>
+  `).join('');
+
+  // ── Pending members table
+  document.getElementById('pendingBody').innerHTML = pendingMembers.map((x,i)=>{
+    const unpaid=(x.m.invoices||[]).filter(inv=>(inv.balance||0)>0).length;
+    return `<tr>
+      <td style="color:#5a8aaa">${i+1}</td>
+      <td style="font-weight:700;color:#fff">${x.m.plotNo||'—'}</td>
+      <td>${x.m.name}</td>
+      <td>${x.m.laneNo?'Lane '+x.m.laneNo:'—'}</td>
+      <td class="rc" style="color:#ef5350;font-weight:700">${fmt(x.bal)}</td>
+      <td class="cc" style="color:#ffa726">${unpaid}</td>
+      <td class="cc"><span class="badge ${(x.m.status||'').includes('Active')?'paid':'unpaid'}">${x.m.status||'—'}</span></td>
+    </tr>`;
+  }).join('');
+
+  // ── Recent transactions
+  document.getElementById('recentBody').innerHTML = recent.map(t=>`
+    <tr>
+      <td style="color:#7fb3d3">${t.date}</td>
+      <td><span class="badge ${t.flowType==='in'?'in':'out'}">${t.flowType==='in'?'💚 IN':'🔴 OUT'}</span></td>
+      <td style="color:#c8dcea">${t.accountHead||'—'}</td>
+      <td style="font-size:11px;color:#7fb3d3">${t.remarks||t.notes||'—'}</td>
+      <td style="font-size:11px">${t.mode||'—'}</td>
+      <td class="rc" style="font-weight:700;color:${t.flowType==='in'?'#66bb6a':'#ef5350'}">${fmt(t.amount)}</td>
+    </tr>
+  `).join('');
+
+  // ── Draw charts
+  setTimeout(()=>{ drawAdminBar(sortedMonths, monthMap); drawAdminDonut(); }, 100);
+
+  // ── Admin's own member section ──────────────────────────────────────────────
+  appendAdminMemberSection();
+}
+
+function appendAdminMemberSection() {
+  const m = G.memberData;
+  if(!m) return; // admin not found as member — skip
+
+  const invoices = m.invoices || [];
+  const myBilled  = invoices.reduce((a,inv)=>a+(inv.billAmount||0),0);
+  const myPaid    = invoices.reduce((a,inv)=>a+(inv.paidAmount||0),0);
+  const myPending = invoices.reduce((a,inv)=>a+(inv.balance||0),0);
+  const myUnpaid  = invoices.filter(inv=>(inv.balance||0)>0);
+  const myPaidInv = invoices.filter(inv=>(inv.paidAmount||0)>0)
+                            .sort((a,b)=>(b.lastPaidDate||'').localeCompare(a.lastPaidDate||''))
+                            .slice(0,12);
+
+  const alertHtml = myPending > 0
+    ? `<div class="alert warn">⚠️ You have <b>${fmt(myPending)}</b> pending dues across <b>${myUnpaid.length}</b> invoice(s).</div>`
+    : `<div class="alert good">✅ Your dues are all cleared!</div>`;
+
+  const section = document.createElement('div');
+  section.innerHTML = `
+    <div class="sec-title" style="margin-top:8px">🏠 My Account — ${m.name}</div>
+    ${alertHtml}
+
+    <!-- Identity -->
+    <div class="dues-header">
+      <div>
+        <div class="member-name">🏠 ${m.name}</div>
+        <div class="member-plot">Plot: <b>${m.plotNo||'—'}</b> &nbsp;·&nbsp; Lane: <b>${m.laneNo?'Lane '+m.laneNo:'—'}</b> &nbsp;·&nbsp; House: <b>${m.house||'—'}</b></div>
+        <div style="font-size:12px;color:#5a8aaa;margin-top:4px;">Occupancy: ${m.occupancyStatus||'—'} &nbsp;·&nbsp;
+          Status: <span style="color:${(m.status||'').includes('Active')?'#66bb6a':'#ef5350'}">${m.status||'—'}</span>
+        </div>
+      </div>
+      <div class="dues-amount">
+        <div class="big">${fmt(myPending)}</div>
+        <div class="lbl">My Pending</div>
+      </div>
+    </div>
+
+    <!-- My KPIs -->
+    <div class="kpi-row cols3">
+      <div class="kpi blue">
+        <div class="kpi-label">My Total Billed</div>
+        <div class="kpi-value">${fmt(myBilled)}</div>
+        <div class="kpi-sub">${invoices.length} invoices</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">My Total Paid</div>
+        <div class="kpi-value">${fmt(myPaid)}</div>
+        <div class="kpi-sub">${invoices.filter(i=>(i.paidAmount||0)>0).length} paid</div>
+      </div>
+      <div class="kpi red">
+        <div class="kpi-label">My Pending</div>
+        <div class="kpi-value">${fmt(myPending)}</div>
+        <div class="kpi-sub">${myUnpaid.length} unpaid invoices</div>
+      </div>
+    </div>
+
+    <!-- My pending invoices -->
+    ${myUnpaid.length > 0 ? `
+    <div class="card">
+      <h4>⚠️ My Pending Dues</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr>
+          <th>Period</th><th>FY</th>
+          <th class="rc">Billed</th><th class="rc">Paid</th>
+          <th class="rc">Balance</th><th class="cc">Status</th>
+        </tr></thead>
+        <tbody>
+          ${myUnpaid.map(inv=>`<tr>
+            <td style="font-weight:600;color:#fff">${inv.period||'—'}</td>
+            <td style="color:#7fb3d3">${inv.fyYear||'—'}</td>
+            <td class="rc">${fmt(inv.billAmount)}</td>
+            <td class="rc" style="color:#66bb6a">${fmt(inv.paidAmount)}</td>
+            <td class="rc" style="color:#ef5350;font-weight:700">${fmt(inv.balance)}</td>
+            <td class="cc"><span class="badge ${(inv.paidAmount||0)>0?'partial':'unpaid'}">${(inv.paidAmount||0)>0?'⚠️ Partial':'❌ Unpaid'}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>
+    </div>` : ''}
+
+    <!-- My payment history -->
+    ${myPaidInv.length > 0 ? `
+    <div class="card">
+      <h4>✅ My Payment History</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr>
+          <th>Period</th><th>FY</th>
+          <th class="rc">Billed</th><th class="rc">Paid</th>
+          <th class="cc">Status</th>
+        </tr></thead>
+        <tbody>
+          ${myPaidInv.map(inv=>`<tr>
+            <td style="font-weight:600;color:#fff">${inv.period||'—'}</td>
+            <td style="color:#7fb3d3">${inv.fyYear||'—'}</td>
+            <td class="rc">${fmt(inv.billAmount)}</td>
+            <td class="rc" style="color:#66bb6a;font-weight:600">${fmt(inv.paidAmount)}</td>
+            <td class="cc"><span class="badge ${(inv.balance||0)<=0?'paid':'partial'}">${(inv.balance||0)<=0?'✅ Paid':'⚠️ Partial'}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>
+    </div>` : ''}
+  `;
+
+  document.getElementById('mainContent').appendChild(section);
+}
+
+// ── Admin Bar Chart
+function drawAdminBar(months, monthMap) {
+  const c = document.getElementById('adminBarChart'); if(!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.parentElement.clientWidth; const H = 220;
+  c.width=W; c.height=H;
+  ctx.clearRect(0,0,W,H);
+  if(!months.length) return;
+
+  const inData  = months.map(m=>monthMap[m].in);
+  const outData = months.map(m=>monthMap[m].out);
+  const maxVal  = Math.max(...inData,...outData,1);
+
+  const pad={l:56,r:16,t:16,b:38};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const grp=cW/months.length;
+  const bw=Math.max(6,grp*0.32);
+
+  // Grid
+  for(let i=0;i<=4;i++){
+    const y=pad.t+cH-(i/4)*cH;
+    ctx.strokeStyle='#1e4060'; ctx.lineWidth=.5;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+    ctx.fillStyle='#5a8aaa'; ctx.font='9px Segoe UI'; ctx.textAlign='right';
+    ctx.fillText('₹'+(maxVal*i/4/1000).toFixed(0)+'k', pad.l-4, y+3);
+  }
+
+  months.forEach((m,i)=>{
+    const x=pad.l+i*grp+grp/2;
+    const base=pad.t+cH;
+    const hIn =(inData[i] /maxVal)*cH;
+    const hOut=(outData[i]/maxVal)*cH;
+    ctx.fillStyle='#2e7d32'; ctx.fillRect(x-bw-1,base-hIn, bw,hIn);
+    ctx.fillStyle='#c62828'; ctx.fillRect(x+1,   base-hOut,bw,hOut);
+    ctx.fillStyle='#5a8aaa'; ctx.font='9px Segoe UI'; ctx.textAlign='center';
+    // Month label: yyyymm → mmm
+    const mn=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const lbl = mn[parseInt(m.slice(4,6))] || m.slice(4,6);
+    ctx.fillText(lbl, x, H-4);
+    ctx.fillText(m.slice(2,4), x, H-14);
+  });
+
+  // Legend
+  ctx.fillStyle='#2e7d32'; ctx.fillRect(pad.l,3,12,8);
+  ctx.fillStyle='#7fb3d3'; ctx.font='10px Segoe UI'; ctx.textAlign='left';
+  ctx.fillText('Cash In',pad.l+16,11);
+  ctx.fillStyle='#c62828'; ctx.fillRect(pad.l+80,3,12,8);
+  ctx.fillStyle='#7fb3d3'; ctx.fillText('Cash Out',pad.l+96,11);
+}
+
+// ── Admin Donut Chart
+function drawAdminDonut() {
+  const c=document.getElementById('adminDonut'); if(!c) return;
+  const ctx=c.getContext('2d');
+  const s=G.data._summary;
+  const total=(s.totalIncome+s.totalExpense)||1;
+  ctx.clearRect(0,0,220,220);
+  const cx=110,cy=110,R=85,r=52;
+  const slices=[
+    {v:s.totalIncome,color:'#2e7d32'},
+    {v:s.totalExpense,color:'#c62828'}
+  ];
+  let angle=-Math.PI/2;
+  slices.forEach(sl=>{
+    const sweep=(sl.v/total)*2*Math.PI;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,angle,angle+sweep); ctx.closePath();
+    ctx.fillStyle=sl.color; ctx.fill(); angle+=sweep;
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,2*Math.PI);
+  ctx.fillStyle='#152536'; ctx.fill();
+  ctx.fillStyle='#4fc3f7'; ctx.font='bold 14px Segoe UI'; ctx.textAlign='center';
+  ctx.fillText(fmt(s.netBalance),cx,cy+5);
+  ctx.fillStyle='#7fb3d3'; ctx.font='10px Segoe UI';
+  ctx.fillText('Net Balance',cx,cy+20);
+  // legend
+  let ly=200;
+  [['#2e7d32','Income: '+fmt(s.totalIncome)],['#c62828','Expense: '+fmt(s.totalExpense)]].forEach(([col,lbl])=>{
+    ctx.fillStyle=col; ctx.fillRect(cx-70,ly,12,10);
+    ctx.fillStyle='#c8dcea'; ctx.font='11px Segoe UI'; ctx.textAlign='left';
+    ctx.fillText(lbl,cx-54,ly+9); ly+=18;
+  });
+}
+
+// ════════════════════════════════════════════════════════════════
+// ── MEMBER DASHBOARD ────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+function renderMemberDash() {
+  const m = G.memberData;
+  const txns = G.data._transactions || [];
+
+  // Month-wise society cash in/out (community view only)
+  const monthMap={};
+  txns.forEach(tx=>{
+    const ym=tx.yyyymm||(tx.date||'').slice(0,7).replace('-','');
+    if(!ym) return;
+    if(!monthMap[ym]) monthMap[ym]={in:0,out:0};
+    if(tx.flowType==='in')  monthMap[ym].in  +=tx.amount||0;
+    if(tx.flowType==='out') monthMap[ym].out +=tx.amount||0;
+  });
+  const sortedMonths=Object.keys(monthMap).sort().slice(-12);
+
+  // Society summary (limited view)
+  const s=G.data._summary;
+
+  if(!m) {
+    // Email not found in member list
+    document.getElementById('mainContent').innerHTML = `
+      <div class="alert warn">⚠️ Your email <b>${G.user}</b> is not registered as a member. Please contact your society admin.</div>
+      <div class="sec-title">📊 Society Overview</div>
+      <div class="kpi-row cols3">
+        <div class="kpi blue"><div class="kpi-label">Net Balance</div><div class="kpi-value">${fmt(s.netBalance)}</div><div class="kpi-sub">Society funds</div></div>
+        <div class="kpi green"><div class="kpi-label">Active Members</div><div class="kpi-value">${Object.keys(G.data).filter(k=>!k.startsWith('_')).filter(k=>(G.data[k].status||'').includes('Active')).length}</div><div class="kpi-sub">Registered members</div></div>
+        <div class="kpi amber"><div class="kpi-label">Total Transactions</div><div class="kpi-value">${fmtN(s.totalTxCount)}</div><div class="kpi-sub">All time</div></div>
+      </div>
+      <div class="sec-title">📈 Society Monthly Cash Flow</div>
+      <div class="card"><h4>Month-on-Month Cash In vs Out (Last 12 months)</h4><canvas id="memberBarChart" height="220"></canvas></div>
+    `;
+    setTimeout(()=>drawMemberBar(sortedMonths,monthMap),100);
+    return;
+  }
+
+  // Member found — compute their dues
+  const invoices = m.invoices||[];
+  const myBilled  = invoices.reduce((a,inv)=>a+(inv.billAmount||0),0);
+  const myPaid    = invoices.reduce((a,inv)=>a+(inv.paidAmount||0),0);
+  const myPending = invoices.reduce((a,inv)=>a+(inv.balance||0),0);
+  const myUnpaid  = invoices.filter(inv=>(inv.balance||0)>0);
+  const myPaidInv = invoices.filter(inv=>(inv.paidAmount||0)>0).sort((a,b)=>(b.lastPaidDate||'').localeCompare(a.lastPaidDate||'')).slice(0,12);
+
+  const alertHtml = myPending>0
+    ? `<div class="alert warn">⚠️ You have <b>${fmt(myPending)}</b> pending dues across <b>${myUnpaid.length}</b> invoice(s). Please clear at your earliest.</div>`
+    : `<div class="alert good">✅ All dues are cleared! You have no pending payments.</div>`;
+
+  document.getElementById('mainContent').innerHTML = `
+    ${alertHtml}
+
+    <!-- Member identity card -->
+    <div class="dues-header">
+      <div>
+        <div class="member-name">🏠 ${m.name}</div>
+        <div class="member-plot">Plot: <b>${m.plotNo||'—'}</b> &nbsp;·&nbsp; Lane: <b>${m.laneNo?'Lane '+m.laneNo:'—'}</b> &nbsp;·&nbsp; House: <b>${m.house||'—'}</b></div>
+        <div style="font-size:12px;color:#5a8aaa;margin-top:4px;">Occupancy: ${m.occupancyStatus||'—'} &nbsp;·&nbsp; Status: <span style="color:${(m.status||'').includes('Active')?'#66bb6a':'#ef5350'}">${m.status||'—'}</span></div>
+      </div>
+      <div class="dues-amount">
+        <div class="big">${fmt(myPending)}</div>
+        <div class="lbl">Total Pending</div>
+      </div>
+    </div>
+
+    <!-- My KPIs -->
+    <div class="sec-title">💳 My Account Summary</div>
+    <div class="kpi-row cols3">
+      <div class="kpi blue">
+        <div class="kpi-label">Total Billed</div>
+        <div class="kpi-value">${fmt(myBilled)}</div>
+        <div class="kpi-sub">${invoices.length} invoices raised</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Total Paid</div>
+        <div class="kpi-value">${fmt(myPaid)}</div>
+        <div class="kpi-sub">${invoices.filter(i=>(i.paidAmount||0)>0).length} invoices paid</div>
+      </div>
+      <div class="kpi red">
+        <div class="kpi-label">Total Pending</div>
+        <div class="kpi-value">${fmt(myPending)}</div>
+        <div class="kpi-sub">${myUnpaid.length} unpaid invoices</div>
+      </div>
+    </div>
+
+    <!-- My pending invoices -->
+    ${myUnpaid.length>0 ? `
+    <div class="sec-title">⚠️ My Pending Dues</div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Period</th><th>FY</th><th class="rc">Billed</th><th class="rc">Paid</th><th class="rc">Balance</th><th class="cc">Status</th></tr>
+          </thead>
+          <tbody>
+            ${myUnpaid.map(inv=>`<tr>
+              <td style="font-weight:600;color:#fff">${inv.period||'—'}</td>
+              <td style="color:#7fb3d3">${inv.fyYear||'—'}</td>
+              <td class="rc">${fmt(inv.billAmount)}</td>
+              <td class="rc" style="color:#66bb6a">${fmt(inv.paidAmount)}</td>
+              <td class="rc" style="color:#ef5350;font-weight:700">${fmt(inv.balance)}</td>
+              <td class="cc"><span class="badge ${(inv.paidAmount||0)>0?'partial':'unpaid'}">${(inv.paidAmount||0)>0?'⚠️ Partial':'❌ Unpaid'}</span></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>` : ''}
+
+    <!-- My payment history -->
+    ${myPaidInv.length>0 ? `
+    <div class="sec-title">✅ My Payment History</div>
+    <div class="card">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Period</th><th>FY</th><th class="rc">Billed</th><th class="rc">Paid</th><th class="cc">Status</th></tr>
+          </thead>
+          <tbody>
+            ${myPaidInv.map(inv=>`<tr>
+              <td style="font-weight:600;color:#fff">${inv.period||'—'}</td>
+              <td style="color:#7fb3d3">${inv.fyYear||'—'}</td>
+              <td class="rc">${fmt(inv.billAmount)}</td>
+              <td class="rc" style="color:#66bb6a;font-weight:600">${fmt(inv.paidAmount)}</td>
+              <td class="cc"><span class="badge ${(inv.balance||0)<=0?'paid':'partial'}">${(inv.balance||0)<=0?'✅ Paid':'⚠️ Partial'}</span></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>` : ''}
+
+    <!-- Society cash flow chart -->
+    <div class="sec-title">📊 Society Monthly Cash Flow (Community View)</div>
+    <div class="card">
+      <h4>Month-on-Month Cash In vs Out — Last 12 Months</h4>
+      <canvas id="memberBarChart" height="220"></canvas>
+    </div>
+
+    <!-- Society balance only -->
+    <div class="kpi-row cols2">
+      <div class="kpi teal">
+        <span class="kpi-icon">🏦</span>
+        <div class="kpi-label">Society Net Balance</div>
+        <div class="kpi-value">${fmt(s.netBalance)}</div>
+        <div class="kpi-sub">Current society funds</div>
+      </div>
+      <div class="kpi purple">
+        <span class="kpi-icon">👥</span>
+        <div class="kpi-label">Active Members</div>
+        <div class="kpi-value">${Object.keys(G.data).filter(k=>!k.startsWith('_')).filter(k=>(G.data[k].status||'').includes('Active')).length}</div>
+        <div class="kpi-sub">Out of ${Object.keys(G.data).filter(k=>!k.startsWith('_')).length} total</div>
+      </div>
+    </div>
+  `;
+
+  setTimeout(()=>drawMemberBar(sortedMonths,monthMap),100);
+}
+
+// ── Member Bar Chart (community cash flow)
+function drawMemberBar(months, monthMap) {
+  const c=document.getElementById('memberBarChart'); if(!c) return;
+  const ctx=c.getContext('2d');
+  const W=c.parentElement.clientWidth; const H=220;
+  c.width=W; c.height=H;
+  ctx.clearRect(0,0,W,H);
+  if(!months.length) return;
+
+  const inData  = months.map(m=>(monthMap[m]||{}).in||0);
+  const outData = months.map(m=>(monthMap[m]||{}).out||0);
+  const maxVal  = Math.max(...inData,...outData,1);
+
+  const pad={l:56,r:16,t:16,b:38};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const grp=cW/months.length;
+  const bw=Math.max(6,grp*0.32);
+
+  for(let i=0;i<=4;i++){
+    const y=pad.t+cH-(i/4)*cH;
+    ctx.strokeStyle='#1e4060'; ctx.lineWidth=.5;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+    ctx.fillStyle='#5a8aaa'; ctx.font='9px Segoe UI'; ctx.textAlign='right';
+    ctx.fillText('₹'+(maxVal*i/4/1000).toFixed(0)+'k',pad.l-4,y+3);
+  }
+
+  const mn=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  months.forEach((m,i)=>{
+    const x=pad.l+i*grp+grp/2;
+    const base=pad.t+cH;
+    const hIn =(inData[i]/maxVal)*cH;
+    const hOut=(outData[i]/maxVal)*cH;
+    ctx.fillStyle='#2e7d32'; ctx.fillRect(x-bw-1,base-hIn, bw,hIn);
+    ctx.fillStyle='#c62828'; ctx.fillRect(x+1,   base-hOut,bw,hOut);
+    ctx.fillStyle='#5a8aaa'; ctx.font='9px Segoe UI'; ctx.textAlign='center';
+    ctx.fillText(mn[parseInt(m.slice(4,6))]||m.slice(4,6),x,H-4);
+    ctx.fillText(m.slice(2,4),x,H-14);
+  });
+
+  ctx.fillStyle='#2e7d32'; ctx.fillRect(pad.l,3,12,8);
+  ctx.fillStyle='#7fb3d3'; ctx.font='10px Segoe UI'; ctx.textAlign='left';
+  ctx.fillText('Society Cash In',pad.l+16,11);
+  ctx.fillStyle='#c62828'; ctx.fillRect(pad.l+130,3,12,8);
+  ctx.fillStyle='#7fb3d3'; ctx.fillText('Cash Out',pad.l+146,11);
+}
+
+// ════════════════════════════════════════════════════════════════
+// RESIZE
+// ════════════════════════════════════════════════════════════════
+window.addEventListener('resize', ()=>{
+  if(G.isAdmin) {
+    const txns=G.data._transactions||[];
+    const mm={};
+    txns.forEach(tx=>{const ym=tx.yyyymm||(tx.date||'').slice(0,7).replace('-','');if(!ym)return;if(!mm[ym])mm[ym]={in:0,out:0};if(tx.flowType==='in')mm[ym].in+=tx.amount||0;else mm[ym].out+=tx.amount||0;});
+    drawAdminBar(Object.keys(mm).sort(), mm);
+    drawAdminDonut();
+  }
+});
+</script>
+</body>
+</html>
