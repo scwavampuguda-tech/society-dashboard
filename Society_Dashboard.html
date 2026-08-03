@@ -751,7 +751,7 @@
             .card, .metric-card { box-shadow: none; border: 1px solid #ddd; }
         }
     </style>
-</head>
+<!-- pushed 202607262326 --></head>
 <body>
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -981,7 +981,7 @@
         </div>
         
         <!-- Internal Order Analysis Section -->
-        <div class="section-title">📊 Internal Order Analysis <span class="live-badge" style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">🔴 LIVE</span></div>
+        <div class="section-title">📊 Internal Order Analysis <span class="live-badge" style="font-size: 0.6em; background: #28a745; padding: 3px 10px; border-radius: 10px; margin-left: 10px;">🟢 LIVE</span></div>
         
         <div class="two-col">
             <div class="card">
@@ -1128,7 +1128,7 @@
         // ============================================================
         // CONFIGURATION
         // ============================================================
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcMBZQW6uTR01QukqPa13Xo3gBdvqp_q5K4hJcoWq8vghQ6HtZl7u4sR8gud-dak_LLA/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsAp9kH5pYc2tMjh7VQWvL9yvt-KDAZ6g9ubH6aQe7wJTTBP6pVRUDhKVHXx-nQWn0/exec';
         
         // Store miscellaneous breakdown globally
         let miscBreakdownData = [];
@@ -1442,19 +1442,24 @@
             });
             document.getElementById('yearWiseCashFlow').innerHTML = fyHTML;
             
-            // Income Sources
-            const incomeColors = {
-                'Maintenance Charges': '#28a745',
-                'Festival Donations': '#007bff',
-                'Initial Deposits': '#6f42c1',
-                'Construction Deposits': '#fd7e14'
-            };
-            
+            // ── Dynamic color palette — auto-assigns to any AccountHead name ──
+            const COLOR_PALETTE = [
+                '#28a745', '#007bff', '#e91e63', '#fd7e14',
+                '#6f42c1', '#17a2b8', '#dc3545', '#ffc107',
+                '#20c997', '#6610f2', '#e67e22', '#1abc9c',
+                '#3498db', '#9b59b6', '#34495e', '#e74c3c'
+            ];
+            function getDynamicColor(index) {
+                return COLOR_PALETTE[index % COLOR_PALETTE.length];
+            }
+
+            // ── Income Sources (fully dynamic — no hard-coded names) ──────────
             let incomeHTML = '';
+            let incomeIdx  = 0;
             for (const [category, data] of Object.entries(financial.income)) {
-                const color = incomeColors[category] || '#6c757d';
-                const barWidth = Math.max(data.pct, 5); // Minimum 5% width for visibility
-                const displayWidth = data.pct < 5 ? 'min-width: 35px;' : '';
+                const color      = getDynamicColor(incomeIdx++);
+                const barWidth   = Math.max(data.pct, 5);
+                const dispWidth  = data.pct < 5 ? 'min-width: 35px;' : '';
                 incomeHTML += `
                     <div class="progress-container">
                         <div class="progress-label">
@@ -1462,34 +1467,26 @@
                             <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
+                            <div class="progress-fill" style="width: ${barWidth}%; ${dispWidth} background: ${color};">${data.pct}%</div>
                         </div>
                     </div>
                 `;
             }
-            document.getElementById('incomeSourcesContainer').innerHTML = incomeHTML;
-            
-            // Expense Categories
-            const expenseColors = {
-                'Music & Entertainment': '#e74c3c',
-                'Road Repairs': '#3498db',
-                'Venue Setup (Events)': '#9b59b6',
-                'Society Registration': '#1abc9c',
-                'Refreshments (Events)': '#e67e22',
-                'GHMC Charges': '#34495e',
-                'Other Miscellaneous': '#95a5a6'
-            };
-            
-            // Split into Major (first 4) and Other (last 3)
-            const majorExpenses = ['Music & Entertainment', 'Road Repairs', 'Venue Setup (Events)', 'Society Registration'];
-            const otherExpenses = ['Refreshments (Events)', 'GHMC Charges', 'Other Miscellaneous'];
-            
+            document.getElementById('incomeSourcesContainer').innerHTML =
+                incomeHTML || '<p style="color:#666;padding:10px;">No income data</p>';
+
+            // ── Expense Categories (fully dynamic — sorted by amount desc) ────
+            const allExpenses = Object.entries(financial.expense)
+                .sort((a, b) => b[1].amount - a[1].amount);
+
+            const majorExpenses = allExpenses.slice(0, 4);
+            const otherExpenses = allExpenses.slice(4);
+
             let majorHTML = '';
-            majorExpenses.forEach(category => {
-                const data = financial.expense[category] || { amount: 0, pct: 0 };
-                const color = expenseColors[category] || '#6c757d';
-                const barWidth = Math.max(data.pct, 5);
-                const displayWidth = data.pct < 5 ? 'min-width: 35px;' : '';
+            majorExpenses.forEach(([category, data], idx) => {
+                const color     = getDynamicColor(idx);
+                const barWidth  = Math.max(data.pct, 5);
+                const dispWidth = data.pct < 5 ? 'min-width: 35px;' : '';
                 majorHTML += `
                     <div class="progress-container">
                         <div class="progress-label">
@@ -1497,43 +1494,41 @@
                             <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
+                            <div class="progress-fill" style="width: ${barWidth}%; ${dispWidth} background: ${color};">${data.pct}%</div>
                         </div>
                     </div>
                 `;
             });
-            document.getElementById('majorExpensesContainer').innerHTML = majorHTML;
-            
+            document.getElementById('majorExpensesContainer').innerHTML =
+                majorHTML || '<p style="color:#666;padding:10px;">No expense data</p>';
+
             // Store miscellaneous breakdown for modal
             if (financial.miscBreakdown) {
                 miscBreakdownData = financial.miscBreakdown;
             }
-            
+
             let otherHTML = '';
-            otherExpenses.forEach(category => {
-                const data = financial.expense[category] || { amount: 0, pct: 0 };
-                const color = expenseColors[category] || '#6c757d';
-                const barWidth = Math.max(data.pct, 5);
-                const displayWidth = data.pct < 5 ? 'min-width: 35px;' : '';
-                
-                // Make "Other Miscellaneous" clickable
-                const isClickable = category === 'Other Miscellaneous';
-                const clickHandler = isClickable ? 'onclick="openMiscModal()"' : '';
-                const clickableClass = isClickable ? 'clickable-category' : '';
-                
+            otherExpenses.forEach(([category, data], idx) => {
+                const color      = getDynamicColor(idx + 4);
+                const barWidth   = Math.max(data.pct, 5);
+                const dispWidth  = data.pct < 5 ? 'min-width: 35px;' : '';
+                const isMisc     = category.toLowerCase().includes('misc');
+                const clickAttr  = isMisc ? 'onclick="openMiscModal()" style="cursor:pointer;"' : '';
+                const label      = isMisc ? `${category} 🔍` : category;
                 otherHTML += `
                     <div class="progress-container">
                         <div class="progress-label">
-                            <span class="${clickableClass}" ${clickHandler}>${category}</span>
+                            <span ${clickAttr}>${label}</span>
                             <span>${formatCurrency(data.amount)} (${data.pct}%)</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${barWidth}%; ${displayWidth} background: ${color};">${data.pct}%</div>
+                            <div class="progress-fill" style="width: ${barWidth}%; ${dispWidth} background: ${color};">${data.pct}%</div>
                         </div>
                     </div>
                 `;
             });
-            document.getElementById('otherExpensesContainer').innerHTML = otherHTML;
+            document.getElementById('otherExpensesContainer').innerHTML =
+                otherHTML || '<p style="color:#666;padding:10px;">No other expenses</p>';
             
             // Total Outflow
             document.getElementById('totalOutflowBox').innerHTML = `<strong>Total Outflow: ${formatCurrency(financial.totalExpense)}</strong>`;
@@ -1543,94 +1538,116 @@
         // INTERNAL ORDER ANALYSIS
         // ============================================================
         function updateInternalOrderAnalysis(orderData) {
-            // Society Related Table
+
+            // ── Helper: Net badge ─────────────────────────────────────────────
+            function netBadge(net) { return ''; }
+
+            // ── Helper: display name (use ioName if available, else ioNo) ─────
+            function displayName(item) {
+                return (item.ioName && item.ioName.trim() && item.ioName !== item.name)
+                    ? item.ioName
+                    : item.name;
+            }
+
+            // ── Society Related Table ─────────────────────────────────────────
             let societyHTML = '';
             if (orderData.society && orderData.society.items.length > 0) {
-                // Merge Republic Day into Society Expense
-                let mergedItems = [];
-                let societyExpenseItem = null;
-                let republicDayItem = null;
-                
+                let mergedItems      = [];
+                let societyExpItem   = null;
+                let republicDayItem  = null;
+
                 orderData.society.items.forEach(item => {
-                    if (item.name === 'Society Expense') {
-                        societyExpenseItem = {...item};
-                    } else if (item.name === 'Republic Day') {
+                    const nm = item.name || '';
+                    if (nm === 'Society Expense' || nm === 'SOCEX01') {
+                        societyExpItem = {...item};
+                    } else if (nm === 'Republic Day' || nm === 'INDPE01') {
                         republicDayItem = item;
                     } else {
                         mergedItems.push(item);
                     }
                 });
-                
-                // Merge Republic Day into Society Expense
-                if (societyExpenseItem) {
+
+                if (societyExpItem) {
                     if (republicDayItem) {
-                        societyExpenseItem.income += republicDayItem.income;
-                        societyExpenseItem.expense += republicDayItem.expense;
-                        societyExpenseItem.net += republicDayItem.net;
+                        societyExpItem.income  += republicDayItem.income;
+                        societyExpItem.expense += republicDayItem.expense;
+                        societyExpItem.net     += republicDayItem.net;
                     }
-                    mergedItems.push(societyExpenseItem);
+                    mergedItems.push(societyExpItem);
                 }
-                
+
                 mergedItems.forEach(item => {
-                    const netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                    const netClass  = item.net >= 0 ? 'color:#28a745;' : 'color:#dc3545;';
                     const netPrefix = item.net >= 0 ? '+' : '';
+                    const label     = displayName(item);
                     societyHTML += `
                         <tr>
-                            <td>${item.name}</td>
-                            <td style="color: #28a745;">${formatCurrency(item.income)}</td>
-                            <td style="color: #dc3545;">${formatCurrency(item.expense)}</td>
-                            <td style="${netClass} font-weight: bold;">${netPrefix}${formatCurrency(item.net)}</td>
+                            <td><strong>${label}</strong></td>
+                            <td style="color:#28a745;">${formatCurrency(item.income)}</td>
+                            <td style="color:#dc3545;">${formatCurrency(item.expense)}</td>
+                            <td style="${netClass} font-weight:bold;">
+                                ${netPrefix}${formatCurrency(item.net)}<br>
+                                ${netBadge(item.net)}
+                            </td>
                         </tr>
                     `;
                 });
-                
-                // Totals row
-                const totals = orderData.society.totals;
-                const totalNetClass = totals.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
-                const totalNetPrefix = totals.net >= 0 ? '+' : '';
+
+                const totals        = orderData.society.totals;
+                const totalNetClass = totals.net >= 0 ? 'color:#28a745;' : 'color:#dc3545;';
+                const totalNetPfx   = totals.net >= 0 ? '+' : '';
                 societyHTML += `
                     <tr class="total-row">
                         <td><strong>TOTAL</strong></td>
-                        <td style="color: #28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
-                        <td style="color: #dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
-                        <td style="${totalNetClass}"><strong>${totalNetPrefix}${formatCurrency(totals.net)}</strong></td>
+                        <td style="color:#28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
+                        <td style="color:#dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
+                        <td style="${totalNetClass}">
+                            <strong>${totalNetPfx}${formatCurrency(totals.net)}</strong><br>
+                            ${netBadge(totals.net)}
+                        </td>
                     </tr>
                 `;
             } else {
-                societyHTML = '<tr><td colspan="4" style="text-align: center;">No data available</td></tr>';
+                societyHTML = '<tr><td colspan="4" style="text-align:center;color:#666;">No data available</td></tr>';
             }
             document.getElementById('societyOrdersTable').innerHTML = societyHTML;
-            // Festival Events Table
+
+            // ── Festival Events Table ─────────────────────────────────────────
             let festivalHTML = '';
             if (orderData.festival && orderData.festival.items.length > 0) {
                 orderData.festival.items.forEach(item => {
-                    const netClass = item.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
+                    const netClass  = item.net >= 0 ? 'color:#28a745;' : 'color:#dc3545;';
                     const netPrefix = item.net >= 0 ? '+' : '';
-                    const netLabel = item.net >= 0 ? '✅ Surplus' : '❌ Deficit';
+                    const label     = displayName(item);
                     festivalHTML += `
                         <tr>
-                            <td>${item.name}</td>
-                            <td style="color: #28a745;">${formatCurrency(item.income)}</td>
-                            <td style="color: #dc3545;">${formatCurrency(item.expense)}</td>
-                            <td style="${netClass} font-weight: bold;">${netPrefix}${formatCurrency(item.net)}</td>
+                            <td><strong>${label}</strong></td>
+                            <td style="color:#28a745;">${formatCurrency(item.income)}</td>
+                            <td style="color:#dc3545;">${formatCurrency(item.expense)}</td>
+                            <td style="${netClass} font-weight:bold;">
+                                ${netPrefix}${formatCurrency(item.net)}<br>
+                                ${netBadge(item.net)}
+                            </td>
                         </tr>
                     `;
                 });
-                
-                // Totals row
-                const totals = orderData.festival.totals;
-                const totalNetClass = totals.net >= 0 ? 'color: #28a745;' : 'color: #dc3545;';
-                const totalNetPrefix = totals.net >= 0 ? '+' : '';
+
+                const totals        = orderData.festival.totals;
+                const totalNetClass = totals.net >= 0 ? 'color:#28a745;' : 'color:#dc3545;';
+                const totalNetPfx   = totals.net >= 0 ? '+' : '';
                 festivalHTML += `
                     <tr class="total-row">
                         <td><strong>TOTAL</strong></td>
-                        <td style="color: #28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
-                        <td style="color: #dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
-                        <td style="${totalNetClass}"><strong>${totalNetPrefix}${formatCurrency(totals.net)}</strong></td>
+                        <td style="color:#28a745;"><strong>${formatCurrency(totals.income)}</strong></td>
+                        <td style="color:#dc3545;"><strong>${formatCurrency(totals.expense)}</strong></td>
+                        <td style="${totalNetClass}">
+                            <strong>${totalNetPfx}${formatCurrency(totals.net)}</strong><br>
+                            ${netBadge(totals.net)}
+                        </td>
                     </tr>
                 `;
             } else {
-                festivalHTML = '<tr><td colspan="4" style="text-align: center;">No data available</td></tr>';
+                festivalHTML = '<tr><td colspan="4" style="text-align:center;color:#666;">No festival data — apply Apps Script fix to classify festival IOs</td></tr>';
             }
             document.getElementById('festivalOrdersTable').innerHTML = festivalHTML;
         }
