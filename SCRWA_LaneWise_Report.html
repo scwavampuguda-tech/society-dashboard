@@ -548,7 +548,7 @@ function applySearch() {
 
 
 // ── Cache constants ────────────────────────────────────────
-const CACHE_VERSION  = '202607040110';          // bumped on every rebuild
+const CACHE_VERSION  = '202608031700';          // bumped on every rebuild
 const CACHE_KEY      = 'scrwaReportData_'  + CACHE_VERSION;
 const CACHE_TIME_KEY = 'scrwaReportTime_'  + CACHE_VERSION;
 const CACHE_DURATION = 4 * 60 * 60 * 1000; // 4 hours — hard limit
@@ -636,7 +636,7 @@ function loadData(forceRefresh) {
   }
 
   // ── Fetch live from Google Apps Script ─────────────────────
-  const API = 'https://script.google.com/macros/s/AKfycbxwEAILeFAdVPJGE1RnpSFb7TP48gp-JHHF6-gXx-vhD59P_gTxV9fxIuFCGS-JDfY/exec';
+  const API = 'https://script.google.com/macros/s/AKfycbwsAp9kH5pYc2tMjh7VQWvL9yvt-KDAZ6g9ubH6aQe7wJTTBP6pVRUDhKVHXx-nQWn0/exec';
   fetch(API, { signal: AbortSignal.timeout(30000) })
     .then(r => r.ok ? r.json() : Promise.reject('HTTP ' + r.status))
     .then(data => {
